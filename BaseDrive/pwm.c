@@ -167,7 +167,7 @@ void TIM5_IRQHandler(void)
     {
 		Task_timer_flag = 1;
 		g_cantxquene_index++;
-		if(g_cantxquene_index > 20){
+		if(g_cantxquene_index > 16){
 			g_cantxquene_index = 1;
 		}
 		switch(g_cantxquene_index){
@@ -194,43 +194,31 @@ void TIM5_IRQHandler(void)
 				Start_Driver_Pos_Ctr(0x05);
 				break;
 			case 8:
-//				Read_Driver_Pos_Status(0X05);
-				break;
-			case 9:
 				Set_Driver_Pos(0x06,omgset_pos4);
 				break;
-			case 10:
+			case 9:
 				Set_Driver_Pos_Speed(0x06,speed);
 				break;
-			case 11:
+			case 10:
 				Start_Driver_Pos_Ctr(0x06);
 				break;
-			case 12:
-//				Read_Driver_Pos_Status(0X06);
-				break;
-			case 13:
+			case 11:
 				Set_Driver_Pos(0x07,omgset_pos4);
 				break;
-			case 14:
+			case 12:
 				Set_Driver_Pos_Speed(0x07,speed);
 				break;
-			case 15:
+			case 13:
 				Start_Driver_Pos_Ctr(0x07);
 				break;
-			case 16:
-//				Read_Driver_Pos_Status(0X07);
-				break;
-			case 17:
+			case 14:
 				Set_Driver_Pos(0x08,omgset_pos4);
 				break;
-			case 18:
+			case 15:
 				Set_Driver_Pos_Speed(0x08,speed);
 				break;
-			case 19:
+			case 16:
 				Start_Driver_Pos_Ctr(0x08);
-				break;
-			case 20:
-//				Read_Driver_Pos_Status(0X08);
 				break;
 			defalut:
 				break;
