@@ -41,8 +41,10 @@
 .\obj\dr16.o: ..\..\BaseDrive\bsp_usart.h
 .\obj\dr16.o: ..\..\User\config.h
 .\obj\dr16.o: ..\..\BaseDrive\can1.h
+.\obj\dr16.o: ..\..\BaseDrive\can2.h
 .\obj\dr16.o: ..\..\BaseDrive\pwm.h
 .\obj\dr16.o: ..\..\BaseDrive\led.h
 .\obj\dr16.o: ..\..\BaseDrive\dr16.h
 .\obj\dr16.o: ..\..\BaseDrive\ZL5SERVO.h
 .\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\obj\dr16.o: ..\..\BaseDrive\PickPlane.h

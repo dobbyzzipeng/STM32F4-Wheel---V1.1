@@ -44,3 +44,5 @@
 .\obj\pwm.o: ..\..\BaseDrive\can1.h
 .\obj\pwm.o: ..\..\BaseDrive\bsp_delay.h
 .\obj\pwm.o: ..\..\BaseDrive\ZL5SERVO.h
+.\obj\pwm.o: ..\..\BaseDrive\dr16.h
+.\obj\pwm.o: ..\..\BaseDrive\PickPlane.h

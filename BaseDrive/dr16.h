@@ -34,9 +34,9 @@
 #define left_Wheel_UP  1
 #define left_Wheel_DOWN  9
 
-#define right_Switch_UP  13
-#define right_Switch_MID  15
-#define right_Switch_DOWN  1
+#define right_Switch_UP  13u
+#define right_Switch_MID  15u
+#define right_Switch_DOWN  1u
 
 #define right_Wheel_UP  1
 #define right_Wheel_DOWN  4

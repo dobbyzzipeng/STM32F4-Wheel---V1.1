@@ -42,7 +42,9 @@
 .\obj\led.o: ..\..\BaseDrive\bsp_usart.h
 .\obj\led.o: ..\..\User\config.h
 .\obj\led.o: ..\..\BaseDrive\can1.h
+.\obj\led.o: ..\..\BaseDrive\can2.h
 .\obj\led.o: ..\..\BaseDrive\pwm.h
 .\obj\led.o: ..\..\BaseDrive\dr16.h
 .\obj\led.o: ..\..\BaseDrive\ZL5SERVO.h
 .\obj\led.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\obj\led.o: ..\..\BaseDrive\PickPlane.h

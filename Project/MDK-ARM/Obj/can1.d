@@ -41,8 +41,10 @@
 .\obj\can1.o: ..\..\BaseDrive\bsp_delay.h
 .\obj\can1.o: ..\..\BaseDrive\bsp_usart.h
 .\obj\can1.o: ..\..\User\config.h
+.\obj\can1.o: ..\..\BaseDrive\can2.h
 .\obj\can1.o: ..\..\BaseDrive\pwm.h
 .\obj\can1.o: ..\..\BaseDrive\led.h
 .\obj\can1.o: ..\..\BaseDrive\dr16.h
 .\obj\can1.o: ..\..\BaseDrive\ZL5SERVO.h
 .\obj\can1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\obj\can1.o: ..\..\BaseDrive\PickPlane.h

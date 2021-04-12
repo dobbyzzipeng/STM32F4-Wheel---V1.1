@@ -234,7 +234,7 @@ void CAN1_TX_PACKET(unsigned int CAN_ID,unsigned char cantxbuf[],unsigned char l
 		tx_message.Data[i] = cantxbuf[i];
 	}
 #if 1
-	while(CAN_Transmit(CAN1,&tx_message)==CAN_TxStatus_NoMailBox);
+	while(CAN_Transmit(CAN1,&tx_message)==CAN_TxStatus_NoMailBox && (i<0X7F)) i++;//³¬Ê±·¢ËÍÊ§°Ü
 #else
 	can1_tx_flag = 0;
 	CAN_Transmit(CAN1,&tx_message);

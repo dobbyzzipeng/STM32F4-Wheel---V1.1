@@ -18,15 +18,19 @@ void bsp_init(void)
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	delay_init(168);
 	LED_GPIO_Config();
+	Relay_Init();
 	bsp_InitUart(115200);//usart1 115200bps for debug
 	RC_Init();
+	Relay_ON(); 
+	delay_ms(1000);
 	CAN1_Configuration(0X01);
+	CAN2_Configuration(0X501);
 	TIM5_Init(2000-1,84-1);//1ms  SYS TIMER
 	delay_ms(3000);
 	u1_printf("sys init finish!\r\n");
 }
 
-#define DEAD_ZONE 80
+#define DEAD_ZONE 150
 #define LSB 2275.55f//外部电机轴转过1度，内部磁编码器要走的值
 #define RAD_TO_DU 57.32f
 #define RATIO	50
@@ -52,7 +56,7 @@ void chassic_control_task(void)
 	int32_t omgea1 = 0;
 	float womg = 0;
 
-	if(rc_data_flag!=0)
+	if(rc_data_flag!=0&&right_Switch==right_Switch_UP)//righ switch UP
 	{
 		ch1 = Channel_1-1000;	ch0 = Channel_0-1000;
 		
@@ -76,7 +80,7 @@ void chassic_control_task(void)
 				womg = 90;
 				speed = -ch0-ch1;
 			}
-			else if(ch0<DEAD_ZONE){
+			else if(ch0<-DEAD_ZONE){
 				womg = -90;
 				speed = ch0+ch1;
 			}
@@ -102,15 +106,10 @@ void chassic_control_task(void)
 			omgea1 = womg*LSB;
 		}
 		
-		
-		omgset_pos1 =  omgea1;
-		omgset_pos1 = -Limit(omgset_pos1,_90_ANGLE);
-		omgset_pos2 =  omgea1;
-		omgset_pos2 = -Limit(omgset_pos2,_90_ANGLE);
-		omgset_pos3 =  omgea1;
-		omgset_pos3 = -Limit(omgset_pos3,_90_ANGLE);
-		omgset_pos4 =  omgea1;
-		omgset_pos4 = -Limit(omgset_pos4,_90_ANGLE);
+		omgset_pos1 = -Limit(omgea1,_90_ANGLE);
+		omgset_pos2 = -Limit(omgea1,_90_ANGLE);
+		omgset_pos3 = -Limit(omgea1,_90_ANGLE);
+		omgset_pos4 = -Limit(omgea1,_90_ANGLE);
 		rc_data_flag = 0;
 		debug();
 	}
@@ -126,6 +125,62 @@ void debug(void)
 	}	
 }
 
+void Pick_Plane_Ctr_Task(void)
+{
+	int16_t s_ch0 = 0,s_ch1 = 0,s_ch2 = 0;
+	if(rc_data_flag!=0&&right_Switch==right_Switch_DOWN)//righ switch Down
+	{
+		s_ch2 = Channel_2-1000,s_ch1 = Channel_1-1000; s_ch0 = Channel_0-1000;
+		if(s_ch0>DEAD_ZONE)
+		{
+			CAMotor0_Sp = 100;
+			CAMotor1_Sp = -100;
+		}
+		else if(s_ch0<-DEAD_ZONE)
+		{
+			CAMotor0_Sp = -100;
+			CAMotor1_Sp = 100;
+		}
+		else 
+		{
+			CAMotor0_Sp = 0;
+			CAMotor1_Sp = 0;
+		}
+		
+		if(s_ch1>DEAD_ZONE)
+		{
+			PPMotor0_Sp = -100;
+			PPMotor1_Sp = 100;
+		}
+		else if(s_ch1<-DEAD_ZONE)
+		{
+			PPMotor0_Sp = 100;
+			PPMotor1_Sp = -100;
+		}
+		else 
+		{
+			PPMotor0_Sp = 0;
+			PPMotor1_Sp = 0;
+		}
+		
+		if(s_ch2>DEAD_ZONE)
+		{
+			UDMotor0_Sp = 100;
+			UDMotor1_Sp = 100;
+		}
+		else if(s_ch2<-DEAD_ZONE)
+		{
+			UDMotor0_Sp = -100;
+			UDMotor1_Sp = -100;
+		}
+		else 
+		{
+			UDMotor0_Sp = 0;
+			UDMotor1_Sp = 0;
+		}
+		rc_data_flag = 0;
+	}
+}
 
 int main(void)
 {
@@ -135,6 +190,7 @@ int main(void)
 	while(1)
 	{
 		chassic_control_task();
+		Pick_Plane_Ctr_Task();
 	}
 }
 

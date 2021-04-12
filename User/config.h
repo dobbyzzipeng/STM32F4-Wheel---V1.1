@@ -5,11 +5,13 @@
 #include "bsp_usart.h"
 #include "config.h"
 #include "can1.h"
+#include "can2.h"
 #include "pwm.h"
 #include "led.h"
 #include "dr16.h"
 #include "ZL5SERVO.h"
 #include <math.h>
+#include "PickPlane.h"
 
 #define USE_IAP 0
 #define MAIN_CAN_ID 0x200

@@ -16,9 +16,12 @@
 #define Big_LED_ON()         		GPIO_SetBits(GPIOE,GPIO_Pin_4)
 #define Big_LED_OFF()        		GPIO_ResetBits(GPIOE,GPIO_Pin_4)
 #define Big_LED_TOGGLE()       		GPIO_ToggleBits(GPIOE,GPIO_Pin_4)
+#define Relay_ON()         			GPIO_SetBits(GPIOD,GPIO_Pin_7)
+#define Relay_OFF()        			GPIO_ResetBits(GPIOD,GPIO_Pin_7)
 
 void Warm_Led_Init(void);
 void LED_GPIO_Config(void);
 void Big_LED_Init(void);
 void LED_task(void);
+void Relay_Init(void);
 #endif
