@@ -50,12 +50,12 @@ void Enable_All_Motor_Modbus(void)
 	delay_ms(10);
 	Set_Driver_Ready(0X05);
 	delay_ms(10);
-	Set_Driver_Pos(0x05,0);
-	delay_ms(10);
-	Start_Driver_Pos_Ctr(0x05);
-	delay_ms(10);
-	Read_Driver_Pos_Status(0X05);
-	delay_ms(10);		
+//	Set_Driver_Pos(0x05,0);
+//	delay_ms(10);
+//	Start_Driver_Pos_Ctr(0x05);
+//	delay_ms(10);
+//	Read_Driver_Pos_Status(0X05);
+//	delay_ms(10);		
 	
 	Config_Pos_Mode(0X06);
 	delay_ms(10);
@@ -63,12 +63,12 @@ void Enable_All_Motor_Modbus(void)
 	delay_ms(10);
 	Set_Driver_Ready(0X06);
 	delay_ms(10);
-	Set_Driver_Pos(0x06,0);
-	delay_ms(10);
-	Start_Driver_Pos_Ctr(0x06);
-	delay_ms(10);
-	Read_Driver_Pos_Status(0X06);
-	delay_ms(10);
+//	Set_Driver_Pos(0x06,0);
+//	delay_ms(10);
+//	Start_Driver_Pos_Ctr(0x06);
+//	delay_ms(10);
+//	Read_Driver_Pos_Status(0X06);
+//	delay_ms(10);
 	
 	Config_Pos_Mode(0X07);
 	delay_ms(10);
@@ -76,12 +76,12 @@ void Enable_All_Motor_Modbus(void)
 	delay_ms(10);
 	Set_Driver_Ready(0X07);
 	delay_ms(10);
-	Set_Driver_Pos(0x07,0);
-	delay_ms(10);
-	Start_Driver_Pos_Ctr(0x07);
-	delay_ms(10);
-	Read_Driver_Pos_Status(0X07);
-	delay_ms(10);
+//	Set_Driver_Pos(0x07,0);
+//	delay_ms(10);
+//	Start_Driver_Pos_Ctr(0x07);
+//	delay_ms(10);
+//	Read_Driver_Pos_Status(0X07);
+//	delay_ms(10);
 	
 	Config_Pos_Mode(0X08);
 	delay_ms(10);
@@ -89,12 +89,12 @@ void Enable_All_Motor_Modbus(void)
 	delay_ms(10);
 	Set_Driver_Ready(0X08);
 	delay_ms(10);
-	Set_Driver_Pos(0x08,0);
-	delay_ms(10);
-	Start_Driver_Pos_Ctr(0x08);
-	delay_ms(10);
-	Read_Driver_Pos_Status(0X08);
-	delay_ms(10);
+//	Set_Driver_Pos(0x08,0);
+//	delay_ms(10);
+//	Start_Driver_Pos_Ctr(0x08);
+//	delay_ms(10);
+//	Read_Driver_Pos_Status(0X08);
+//	delay_ms(10);
 	
 	Config_Vel_Mode(0X01);
 	delay_ms(10);
@@ -195,6 +195,7 @@ void Set_Driver_Pos_Speed(uint16_t id,int sp)
 void Start_Driver_Pos_Ctr(uint16_t id)
 {
 	uint8_t buf[8] = {0X2B,0X40,0X60,0X01,0X1F,0X00,0X00,0X00};
+//	uint8_t buf[8] = {0X2B,0X40,0X60,0X01,0X3F,0X00,0X00,0X00};
 	CAN1_TX_PACKET(id+CANOPEN_POS_ID,buf,8);
 }
 

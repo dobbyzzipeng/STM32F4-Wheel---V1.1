@@ -25,8 +25,8 @@ void bsp_init(void)
 	delay_ms(1000);
 	CAN1_Configuration(0X01);
 	CAN2_Configuration(0X501);
-	TIM5_Init(2000-1,84-1);//1ms  SYS TIMER
 	delay_ms(3000);
+	TIM5_Init(5000-1,84-1);//1ms  SYS TIMER
 	u1_printf("sys init finish!\r\n");
 }
 
@@ -53,36 +53,20 @@ void chassic_control_task(void)
 {
 	int16_t speed = 0;
 	int16_t ch1 = 0,ch0 = 0;
-	int32_t omgea1 = 0;
+	int32_t omgea1 = 0,omgea2 = 0,omgea3 = 0,omgea4 = 0;
 	float womg = 0;
 
 	if(rc_data_flag!=0&&right_Switch==right_Switch_UP)//righ switch UP
 	{
 		ch1 = Channel_1-1000;	ch0 = Channel_0-1000;
-		
-		if(myabs(ch0)>DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
-			womg = RAD_TO_DU*atan(ch0/ch1);
-			
-			if(ch0 > DEAD_ZONE && ch1 < -DEAD_ZONE){
-				womg = 180 + womg;
-				speed = myabs(ch0)+myabs(ch1);
-			}
-			else if(ch0 < -DEAD_ZONE && ch1 < -DEAD_ZONE){
-				womg = womg - 180;
-				speed = myabs(ch0)+myabs(ch1);
-			}
-			else{
-				speed = ch0+ch1;
-			}
-		}
-		else if(myabs(ch0)>DEAD_ZONE && myabs(ch1)<DEAD_ZONE){
+		if(myabs(ch0)>DEAD_ZONE && myabs(ch1)<DEAD_ZONE){
 			if(ch0>DEAD_ZONE){
-				womg = 90;
-				speed = -ch0-ch1;
+				womg = ch0/8.0f;
+				speed = ch0+ch1;
 			}
 			else if(ch0<-DEAD_ZONE){
-				womg = -90;
-				speed = ch0+ch1;
+				womg = ch0/8.0f;
+				speed = -ch0-ch1;
 			}
 		}
 		else if(myabs(ch0)<DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
@@ -96,7 +80,11 @@ void chassic_control_task(void)
 			motor2_speed = -speed;
 			motor3_speed = speed;
 			motor4_speed = speed;
-			omgea1 = 0;
+			womg = 45;
+			omgea1 = -womg*LSB;
+			omgea2 = womg*LSB;
+			omgea3 = -womg*LSB;
+			omgea4 = womg*LSB;
 		}
 		else{
 			motor1_speed = speed;
@@ -104,12 +92,15 @@ void chassic_control_task(void)
 			motor3_speed = speed;
 			motor4_speed = speed;
 			omgea1 = womg*LSB;
+			omgea2 = womg*LSB;
+			omgea3 = womg*LSB;
+			omgea4 = womg*LSB;
 		}
 		
-		omgset_pos1 = -Limit(omgea1,_90_ANGLE);
-		omgset_pos2 = -Limit(omgea1,_90_ANGLE);
-		omgset_pos3 = -Limit(omgea1,_90_ANGLE);
-		omgset_pos4 = -Limit(omgea1,_90_ANGLE);
+		omgset_pos1 = Limit(omgea1,_90_ANGLE);
+		omgset_pos2 = Limit(omgea2,_90_ANGLE);
+		omgset_pos3 = Limit(omgea3,_90_ANGLE);
+		omgset_pos4 = Limit(omgea4,_90_ANGLE);
 		rc_data_flag = 0;
 		debug();
 	}

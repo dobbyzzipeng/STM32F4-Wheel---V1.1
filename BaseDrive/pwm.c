@@ -161,7 +161,7 @@ void TIM5_Init(uint16_t arr,uint16_t psc)
 //}
 }
 
-uint16_t speed = 4000;
+uint16_t speed = 8000;
 volatile uint8_t g_cantxquene_index = 0;
 void TIM5_IRQHandler(void)
 {
@@ -189,7 +189,7 @@ void TIM5_IRQHandler(void)
 					break;
 				
 				case 5:
-					Set_Driver_Pos(0x05,omgset_pos4);
+					Set_Driver_Pos(0x05,omgset_pos1);
 					break;
 				case 6:
 					Set_Driver_Pos_Speed(0x05,speed);
@@ -198,7 +198,7 @@ void TIM5_IRQHandler(void)
 					Start_Driver_Pos_Ctr(0x05);
 					break;
 				case 8:
-					Set_Driver_Pos(0x06,omgset_pos4);
+					Set_Driver_Pos(0x06,omgset_pos2);
 					break;
 				case 9:
 					Set_Driver_Pos_Speed(0x06,speed);
@@ -207,7 +207,7 @@ void TIM5_IRQHandler(void)
 					Start_Driver_Pos_Ctr(0x06);
 					break;
 				case 11:
-					Set_Driver_Pos(0x07,omgset_pos4);
+					Set_Driver_Pos(0x07,omgset_pos3);
 					break;
 				case 12:
 					Set_Driver_Pos_Speed(0x07,speed);
