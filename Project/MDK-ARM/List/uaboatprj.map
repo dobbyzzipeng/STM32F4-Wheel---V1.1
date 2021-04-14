@@ -50,7 +50,6 @@ Section Cross References
     pwm.o(.text) refers to zl5servo.o(.text) for Set_Driver_Vel
     pwm.o(.text) refers to pickplane.o(.text) for Send_CatchMotor_Speed
     pwm.o(.text) refers to pwm.o(.data) for s_screw_cnt
-    pwm.o(.text) refers to dr16.o(.data) for right_Switch
     pwm.o(.text) refers to zl5servo.o(.data) for motor1_speed
     pwm.o(.text) refers to pickplane.o(.data) for CAMotor1_Sp
     dr16.o(.text) refers to stm32f4xx_rcc.o(.text) for RCC_AHB1PeriphClockCmd
@@ -1104,8 +1103,8 @@ Image Symbol Table
     EXTIX_Encoder_Init                       0x08001151   Thumb Code   120  pwm.o(.text)
     TIM3_PWM_Init                            0x080011c9   Thumb Code   232  pwm.o(.text)
     TIM5_Init                                0x080012b1   Thumb Code   112  pwm.o(.text)
-    TIM5_IRQHandler                          0x08001321   Thumb Code   412  pwm.o(.text)
-    TIM1_PWM_Init                            0x080014bd   Thumb Code   316  pwm.o(.text)
+    TIM5_IRQHandler                          0x08001321   Thumb Code   414  pwm.o(.text)
+    TIM1_PWM_Init                            0x080014bf   Thumb Code   314  pwm.o(.text)
     TIM12_PWM_Init                           0x080015f9   Thumb Code   170  pwm.o(.text)
     TIM8_PWM_Init                            0x080016a3   Thumb Code   182  pwm.o(.text)
     RC_Init                                  0x08001771   Thumb Code   168  dr16.o(.text)
@@ -1885,7 +1884,7 @@ Image component sizes
       1056        152         65          2          0     285946   main.o
        224         20          0          0          0       2061   misc.o
        150          0          0         12          0       1838   pickplane.o
-      1724        134          0          9          0       4639   pwm.o
+      1724        132          0          9          0       4635   pwm.o
         64         26        392          0       4096        968   startup_stm32f4xx.o
       2544         38          0          0          0       8384   stm32f4xx_can.o
        936         32          0          0          0       6633   stm32f4xx_dma.o
@@ -1901,7 +1900,7 @@ Image component sizes
       1124        116          0         28          0       5395   zl5servo.o
 
     ----------------------------------------------------------------------
-     22072       1140        536        216       7624     437335   Object Totals
+     22072       1138        536        216       7624     437331   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          6          0         47         10          7          0   (incl. Padding)
 
@@ -2015,9 +2014,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     29552       1422      11264        216       7720     434607   Grand Totals
-     29552       1422      11264        216       7720     434607   ELF Image Totals
-     29552       1422      11264        216          0          0   ROM Totals
+     29552       1420      11264        216       7720     434603   Grand Totals
+     29552       1420      11264        216       7720     434603   ELF Image Totals
+     29552       1420      11264        216          0          0   ROM Totals
 
 ==============================================================================
 

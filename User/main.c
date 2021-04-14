@@ -26,11 +26,11 @@ void bsp_init(void)
 	CAN1_Configuration(0X01);
 	CAN2_Configuration(0X501);
 	delay_ms(3000);
-	TIM5_Init(5000-1,84-1);//1ms  SYS TIMER
+	TIM5_Init(2000-1,84-1);//1ms  SYS TIMER
 	u1_printf("sys init finish!\r\n");
 }
 
-#define DEAD_ZONE 150
+#define DEAD_ZONE 200
 #define LSB 2275.55f//外部电机轴转过1度，内部磁编码器要走的值
 #define RAD_TO_DU 57.32f
 #define RATIO	50

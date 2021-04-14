@@ -194,8 +194,8 @@ void Set_Driver_Pos_Speed(uint16_t id,int sp)
 
 void Start_Driver_Pos_Ctr(uint16_t id)
 {
-	uint8_t buf[8] = {0X2B,0X40,0X60,0X01,0X1F,0X00,0X00,0X00};
-//	uint8_t buf[8] = {0X2B,0X40,0X60,0X01,0X3F,0X00,0X00,0X00};
+//	uint8_t buf[8] = {0X2B,0X40,0X60,0X01,0X1F,0X00,0X00,0X00};
+	uint8_t buf[8] = {0X2B,0X40,0X60,0X01,0X3F,0X00,0X00,0X00};
 	CAN1_TX_PACKET(id+CANOPEN_POS_ID,buf,8);
 }
 

@@ -169,81 +169,67 @@ void TIM5_IRQHandler(void)
     {
 		Task_timer_flag = 1;
 		g_cantxquene_index++;
-		if(right_Switch==right_Switch_UP)
-		{
-			if(g_cantxquene_index > 16){
-				g_cantxquene_index = 1;
-			}
-			switch(g_cantxquene_index){
-				case 1:
-					Set_Driver_Vel(0x01,motor1_speed*10);
-					break;
-				case 2:
-					Set_Driver_Vel(0x02,motor2_speed*10);
-					break;
-				case 3:
-					Set_Driver_Vel(0x03,motor3_speed*10);
-					break;
-				case 4:
-					Set_Driver_Vel(0x04,motor4_speed*10);
-					break;
-				
-				case 5:
-					Set_Driver_Pos(0x05,omgset_pos1);
-					break;
-				case 6:
-					Set_Driver_Pos_Speed(0x05,speed);
-					break;
-				case 7:
-					Start_Driver_Pos_Ctr(0x05);
-					break;
-				case 8:
-					Set_Driver_Pos(0x06,omgset_pos2);
-					break;
-				case 9:
-					Set_Driver_Pos_Speed(0x06,speed);
-					break;
-				case 10:
-					Start_Driver_Pos_Ctr(0x06);
-					break;
-				case 11:
-					Set_Driver_Pos(0x07,omgset_pos3);
-					break;
-				case 12:
-					Set_Driver_Pos_Speed(0x07,speed);
-					break;
-				case 13:
-					Start_Driver_Pos_Ctr(0x07);
-					break;
-				case 14:
-					Set_Driver_Pos(0x08,omgset_pos4);
-					break;
-				case 15:
-					Set_Driver_Pos_Speed(0x08,speed);
-					break;
-				case 16:
-					Start_Driver_Pos_Ctr(0x08);
-					break;
-				defalut:
-					break;
-			}
+		if(g_cantxquene_index > 16){
+			g_cantxquene_index = 1;
 		}
-		else if(right_Switch==right_Switch_DOWN)
-		{
-			if(g_cantxquene_index > 3){
-				g_cantxquene_index = 1;
-			}
-			switch(g_cantxquene_index){
-				case 1:
-					Send_CatchMotor_Speed(CAMOTOR_ID,CAMotor0_Sp,CAMotor1_Sp);
-					break;
-				case 2:
-					Send_PushPullMotor_Speed(PPMOTOR_ID,PPMotor0_Sp,PPMotor1_Sp);
-					break;
-				case 3:
-					Send_UpDownMotor_Speed(UDMOTOR_ID,UDMotor0_Sp,UDMotor1_Sp);
-					break;
-			}			
+		switch(g_cantxquene_index){
+			case 1:
+				Set_Driver_Vel(0x01,motor1_speed*10);
+			Send_CatchMotor_Speed(CAMOTOR_ID,CAMotor0_Sp,CAMotor1_Sp);
+				break;
+			case 2:
+				Set_Driver_Vel(0x02,motor2_speed*10);
+			Send_PushPullMotor_Speed(PPMOTOR_ID,PPMotor0_Sp,PPMotor1_Sp);
+				break;
+			case 3:
+				Set_Driver_Vel(0x03,motor3_speed*10);
+			Send_UpDownMotor_Speed(UDMOTOR_ID,UDMotor0_Sp,UDMotor1_Sp);
+				break;
+			case 4:
+				Set_Driver_Vel(0x04,motor4_speed*10);
+				break;
+			
+			case 5:
+				Set_Driver_Pos(0x05,omgset_pos1);
+				break;
+			case 6:
+				Set_Driver_Pos_Speed(0x05,speed);
+				break;
+			case 7:
+				Start_Driver_Pos_Ctr(0x05);
+				break;
+			case 8:
+				Set_Driver_Pos(0x06,omgset_pos2);
+			Send_CatchMotor_Speed(CAMOTOR_ID,CAMotor0_Sp,CAMotor1_Sp);
+				break;
+			case 9:
+				Set_Driver_Pos_Speed(0x06,speed);
+			Send_PushPullMotor_Speed(PPMOTOR_ID,PPMotor0_Sp,PPMotor1_Sp);
+				break;
+			case 10:
+				Start_Driver_Pos_Ctr(0x06);
+			Send_UpDownMotor_Speed(UDMOTOR_ID,UDMotor0_Sp,UDMotor1_Sp);
+				break;
+			case 11:
+				Set_Driver_Pos(0x07,omgset_pos3);
+				break;
+			case 12:
+				Set_Driver_Pos_Speed(0x07,speed);
+				break;
+			case 13:
+				Start_Driver_Pos_Ctr(0x07);
+				break;
+			case 14:
+				Set_Driver_Pos(0x08,omgset_pos4);
+				break;
+			case 15:
+				Set_Driver_Pos_Speed(0x08,speed);
+				break;
+			case 16:
+				Start_Driver_Pos_Ctr(0x08);
+				break;
+			defalut:
+				break;		
 		}
 		TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }
