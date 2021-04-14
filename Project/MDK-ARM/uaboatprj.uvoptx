@@ -125,7 +125,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>d</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -150,7 +150,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U20090928 -O78 -S4 -ZTIFSpeedSel2000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -TO19 -TC168000000 -TP21 -TDS8025 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB2 -TFE0 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_512.FLM -FS08000000 -FL080000 -FP0($$Device:STM32F407VE$CMSIS\Flash\STM32F4xx_512.FLM)</Name>
+          <Name>-U59603194 -O78 -S4 -ZTIFSpeedSel2000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO19 -TC168000000 -TP21 -TDS16 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB2 -TFE0 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_512.FLM -FS08000000 -FL080000 -FP0($$Device:STM32F407VE$CMSIS\Flash\STM32F4xx_512.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -164,14 +164,14 @@
           <Type>0</Type>
           <LineNumber>154</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134224284</Address>
+          <Address>134224260</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\dr16.c</Filename>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\dr16.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\uaboatprj\../../BaseDrive/dr16.c\154</Expression>
         </Bp>
@@ -187,7 +187,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\uaboatprj\../../User/main.c\20</Expression>
         </Bp>
@@ -203,7 +203,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\uaboatprj\../../User/main.c\23</Expression>
         </Bp>
@@ -212,144 +212,128 @@
           <Type>0</Type>
           <LineNumber>25</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134218498</Address>
+          <Address>134218496</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\uaboatprj\../../User/main.c\25</Expression>
         </Bp>
         <Bp>
           <Number>4</Number>
           <Type>0</Type>
-          <LineNumber>106</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>134219064</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\uaboatprj\../../User/main.c\106</Expression>
-        </Bp>
-        <Bp>
-          <Number>5</Number>
-          <Type>0</Type>
           <LineNumber>237</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134221242</Address>
+          <Address>134221206</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\can1.c</Filename>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\can1.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\uaboatprj\../../BaseDrive/can1.c\237</Expression>
         </Bp>
         <Bp>
-          <Number>6</Number>
+          <Number>5</Number>
           <Type>0</Type>
-          <LineNumber>186</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134219362</Address>
+          <LineNumber>226</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134223006</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\data\keil project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\User\main.c</Filename>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\pwm.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\uaboatprj\../../User/main.c\186</Expression>
+          <Expression>\\uaboatprj\../../BaseDrive/pwm.c\226</Expression>
+        </Bp>
+        <Bp>
+          <Number>6</Number>
+          <Type>0</Type>
+          <LineNumber>230</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134223024</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\pwm.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\uaboatprj\../../BaseDrive/pwm.c\230</Expression>
         </Bp>
         <Bp>
           <Number>7</Number>
           <Type>0</Type>
-          <LineNumber>177</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>0</Address>
+          <LineNumber>117</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134221752</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\..\BaseDrive\pwm.c</Filename>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\can2.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\uaboatprj\../../BaseDrive/can2.c\117</Expression>
         </Bp>
         <Bp>
           <Number>8</Number>
           <Type>0</Type>
-          <LineNumber>180</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>0</Address>
+          <LineNumber>132</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134221780</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\..\BaseDrive\pwm.c</Filename>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\can2.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\uaboatprj\../../BaseDrive/can2.c\132</Expression>
         </Bp>
         <Bp>
           <Number>9</Number>
           <Type>0</Type>
-          <LineNumber>26</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>0</Address>
+          <LineNumber>130</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134221770</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\..\User\main.c</Filename>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\can2.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\uaboatprj\../../BaseDrive/can2.c\130</Expression>
         </Bp>
         <Bp>
           <Number>10</Number>
           <Type>0</Type>
-          <LineNumber>29</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>0</Address>
+          <LineNumber>116</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134221744</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\..\User\main.c</Filename>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workproject\JZI\project\绉诲姩浣滀笟鏈哄发\STM32F4-Wheel - V1.1\BaseDrive\can2.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>11</Number>
-          <Type>0</Type>
-          <LineNumber>28</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\..\User\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\uaboatprj\../../BaseDrive/can2.c\116</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
