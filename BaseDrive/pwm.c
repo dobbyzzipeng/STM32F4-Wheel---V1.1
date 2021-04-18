@@ -9,6 +9,7 @@
 #include "ZL5SERVO.h"
 #include "dr16.h"
 #include "PickPlane.h"
+#include "bms.h"
 
 void TIM4_Encoder_Init(void)
 {
@@ -191,6 +192,7 @@ void TIM5_IRQHandler(void)
 			
 			case 5:
 				Set_Driver_Pos(0x05,omgset_pos1);
+				Bms_Get_Soc();
 				break;
 			case 6:
 				Set_Driver_Pos_Speed(0x05,speed);

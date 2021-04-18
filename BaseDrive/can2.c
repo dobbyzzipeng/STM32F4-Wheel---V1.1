@@ -1,4 +1,5 @@
 #include "can2.h"
+#include "bms.h"
 /*----CAN2_TX-----PB6----*/
 /*----CAN2_RX-----PB5----*/
 
@@ -53,7 +54,7 @@ void CAN2_Configuration(uint16_t canid)
     can.CAN_SJW  = CAN_SJW_1tq;
     can.CAN_BS1 = CAN_BS1_9tq;
     can.CAN_BS2 = CAN_BS2_4tq;
-    can.CAN_Prescaler = 6;       //CAN BaudRate   42/(1+9+4)/6=500Kbps
+    can.CAN_Prescaler = 12;       //CAN BaudRate   42/(1+9+4)/12=250Kbps
     CAN_Init(CAN2, &can);
     
     can_filter.CAN_FilterNumber = 14;
@@ -115,7 +116,18 @@ void CAN2_RX0_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
         CAN_Receive(CAN2, CAN_FIFO0, &rx_message);
-	
+		
+		uint32_t GET_TOTAL_SOC_id = PROPOTY<<24|GET_TOTAL_SOC<<16|PC_ADDR<<8|BMS_ADDR;
+		
+		if(rx_message.ExtId == GET_TOTAL_SOC_id)
+		{
+			Battery_Msg.Voltage=((((uint16_t)rx_message.Data[0])<<8)|rx_message.Data[1])/10.0f;
+			Battery_Msg.Current=((((uint16_t)rx_message.Data[4])<<8)|rx_message.Data[5])/10.0f-3000;
+			Battery_Msg.Soc=((((uint16_t)rx_message.Data[6])<<8)|rx_message.Data[7])/10.0f;
+
+			//u1_printf("Voltage:%f\t Current:%f\t Soc:%f\r\n",Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
+			
+		}
 	}
 }
 

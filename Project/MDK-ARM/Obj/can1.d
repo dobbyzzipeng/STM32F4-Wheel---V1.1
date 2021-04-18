@@ -48,3 +48,4 @@
 .\obj\can1.o: ..\..\BaseDrive\ZL5SERVO.h
 .\obj\can1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\can1.o: ..\..\BaseDrive\PickPlane.h
+.\obj\can1.o: ..\..\BaseDrive\bms.h

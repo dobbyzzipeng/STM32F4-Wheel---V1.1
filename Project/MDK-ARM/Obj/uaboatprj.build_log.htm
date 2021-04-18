@@ -22,19 +22,22 @@ Dialog DLL:      TCM.DLL V1.36.1.0
  
 <h2>Project:</h2>
 D:\workproject\JZI\project\移动作业机巢\STM32F4-Wheel - V1.1\Project\MDK-ARM\uaboatprj.uvprojx
-Project File Date:  04/12/2021
+Project File Date:  04/16/2021
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'uaboatprj'
-compiling pwm.c...
-..\..\BaseDrive\pwm.c(231): warning:  #177-D: label "defalut"  was declared but never referenced
-  			defalut:
-..\..\BaseDrive\pwm.c: 1 warning, 0 errors
+compiling BMS.c...
+compiling can1.c...
+..\..\BaseDrive\can1.c(234): warning:  #177-D: variable "cnt"  was declared but never referenced
+      uint8_t i = 0,cnt = 0;
+..\..\BaseDrive\can1.c(175): warning:  #550-D: variable "can1_tx_flag"  was set but never used
+  static uint8_t can1_tx_flag = 0;
+..\..\BaseDrive\can1.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=29552 RO-data=11264 RW-data=216 ZI-data=7720  
+Program Size: Code=29812 RO-data=11004 RW-data=224 ZI-data=7736  
 FromELF: creating hex file...
-".\Obj\uaboatprj.axf" - 0 Error(s), 1 Warning(s).
+".\Obj\uaboatprj.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 

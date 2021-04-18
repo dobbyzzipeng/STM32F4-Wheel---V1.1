@@ -408,11 +408,6 @@
               <FilePath>..\..\BaseDrive\bsp_usart.c</FilePath>
             </File>
             <File>
-              <FileName>sys.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BaseDrive\sys.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BaseDrive\bsp_delay.c</FilePath>
@@ -426,6 +421,11 @@
               <FileName>can2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BaseDrive\can2.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BaseDrive\sys.c</FilePath>
             </File>
             <File>
               <FileName>pwm.c</FileName>
@@ -448,6 +448,11 @@
               <FilePath>..\..\BaseDrive\usart.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_stmflash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BaseDrive\bsp_stmflash.c</FilePath>
+            </File>
+            <File>
               <FileName>T12_remote_controller.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BaseDrive\T12_remote_controller.c</FilePath>
@@ -461,6 +466,11 @@
               <FileName>PickPlane.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BaseDrive\PickPlane.c</FilePath>
+            </File>
+            <File>
+              <FileName>BMS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BaseDrive\BMS.c</FilePath>
             </File>
           </Files>
         </Group>

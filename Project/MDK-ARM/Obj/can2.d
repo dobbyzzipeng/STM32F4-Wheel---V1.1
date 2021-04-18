@@ -36,3 +36,5 @@
 .\obj\can2.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h
 .\obj\can2.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_wwdg.h
 .\obj\can2.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
+.\obj\can2.o: ..\..\BaseDrive\bms.h
+.\obj\can2.o: ..\..\BaseDrive\sys.h

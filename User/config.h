@@ -12,6 +12,7 @@
 #include "ZL5SERVO.h"
 #include <math.h>
 #include "PickPlane.h"
+#include "bms.h"
 
 #define USE_IAP 0
 #define MAIN_CAN_ID 0x200

@@ -61,7 +61,7 @@ void CAN1_Configuration(uint16_t canid)
     can.CAN_SJW  = CAN_SJW_1tq;
     can.CAN_BS1 = CAN_BS1_9tq;
     can.CAN_BS2 = CAN_BS2_4tq;
-    can.CAN_Prescaler = 6;   //CAN BaudRate 42/(1+9+4)/3=1Mbps
+    can.CAN_Prescaler = 6;   //CAN BaudRate 42/(1+9+4)/6=500Kbps
     CAN_Init(CAN1, &can);
 	
 	can_filter.CAN_FilterNumber = 0;
@@ -193,6 +193,15 @@ void CAN1_RX0_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
         CAN_Receive(CAN1, CAN_FIFO0, &rx_message);
+		
+//		uint32_t GET_TOTAL_SOC_id = PROPOTY<<24|GET_TOTAL_SOC<<16|PC_ADDR<<8|BMS_ADDR;
+//		
+//		if(rx_message.ExtId == GET_TOTAL_SOC_id)
+//		{
+//			Battery_Msg.Voltage=((((uint16_t)rx_message.Data[0])<<8)|rx_message.Data[1])/10.0f;
+//			Battery_Msg.Current=((((uint16_t)rx_message.Data[4])<<8)|rx_message.Data[5])/10.0f-3000;
+//			Battery_Msg.Soc=((((uint16_t)rx_message.Data[6])<<8)|rx_message.Data[7])/10.0f;
+//		}
 	}
 }
 /*************************************************************************
@@ -242,6 +251,31 @@ void CAN1_TX_PACKET(unsigned int CAN_ID,unsigned char cantxbuf[],unsigned char l
 #endif
 }
 
+//发送扩展帧
+void CAN1_TX_EXTID(uint32_t CAN_ID,uint8_t cantxbuf[],uint8_t len)
+{
+    CanTxMsg tx_message;
+    uint8_t i = 0,cnt = 0;
+	
+    tx_message.IDE = CAN_ID_EXT;    //扩展帧
+    tx_message.RTR = CAN_RTR_DATA;  //数据帧
+    tx_message.DLC = len;          //帧长度
+    tx_message.ExtId = CAN_ID;      //帧ID为传入参数的CAN_ID
+    
+	for(i=0;i<len;i++)
+	{
+		tx_message.Data[i] = cantxbuf[i];
+	}
 
+	while(CAN_Transmit(CAN1,&tx_message)==CAN_TxStatus_NoMailBox)
+	{
+		cnt++;
+		if(cnt>5)
+		{
+			cnt = 0;
+			break;
+		}
+	}
+}
 
 

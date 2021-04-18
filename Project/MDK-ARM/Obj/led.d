@@ -48,3 +48,4 @@
 .\obj\led.o: ..\..\BaseDrive\ZL5SERVO.h
 .\obj\led.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\led.o: ..\..\BaseDrive\PickPlane.h
+.\obj\led.o: ..\..\BaseDrive\bms.h
