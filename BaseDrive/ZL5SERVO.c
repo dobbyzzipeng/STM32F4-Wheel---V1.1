@@ -3,7 +3,7 @@
 #include "bsp_delay.h"
 
 int16_t motor1_speed = 0,motor2_speed = 0,motor3_speed = 0,motor4_speed = 0;
-int32_t omgea1 = 0,omgset_pos1 = 0,omgset_pos2 = 0,omgset_pos3 = 0,omgset_pos4 = 0;
+int32_t omgset_pos1 = 0,omgset_pos2 = 0,omgset_pos3 = 0,omgset_pos4 = 0;
 //底盘轮子ID:1~4,舵轮ID：5~8.
 //speed+:正看轮子逆时针转
 //speed-:正看轮子顺时针转
@@ -234,4 +234,12 @@ void Set_Driver_Vel(uint16_t id,int vel)
 	CAN1_TX_PACKET(id+CANOPEN_POS_ID,buf,8);
 }
 
+void Stop_All_Chassicmotor(void)
+{
+	motor1_speed = 0;
+	motor2_speed = 0;
+	motor3_speed = 0;
+	motor4_speed = 0;
+	omgset_pos1 = 0;omgset_pos2 = 0;omgset_pos3 = 0;omgset_pos4 = 0;
 
+}

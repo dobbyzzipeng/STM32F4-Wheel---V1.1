@@ -49,3 +49,4 @@
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\main.o: ..\..\BaseDrive\PickPlane.h
 .\obj\main.o: ..\..\BaseDrive\bms.h
+.\obj\main.o: ..\..\BaseDrive\hmcsensor.h

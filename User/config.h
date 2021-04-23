@@ -13,12 +13,21 @@
 #include <math.h>
 #include "PickPlane.h"
 #include "bms.h"
+#include "hmcsensor.h"
 
 #define USE_IAP 0
 #define MAIN_CAN_ID 0x200
 #define Cabin_CAN_ID 0x300
 #define ANCHOR_Index 0
 #define Version 1
+
+//------------------------------------------------------------------------------
+#define VERINFO_ADDR_BASE  (0x8009F00) // 版本信息在FLASH中的存放地址
+//const char Hardware_Ver[] __attribute__((at(VERINFO_ADDR_BASE + 0x00)))  = "Hardware: 1.0.0";
+//const char Firmware_Ver[] __attribute__((at(VERINFO_ADDR_BASE + 0x20)))  = "Firmware: 1.0.0";
+//const char Compiler_Date[] __attribute__((at(VERINFO_ADDR_BASE + 0x40))) = "Date: "__DATE__;
+//const char Compiler_Time[] __attribute__((at(VERINFO_ADDR_BASE + 0x60))) = "Time: "__TIME__;
+
 
 #define	myabs(x)	((x>0)?(x):(-(x))) 
 #endif

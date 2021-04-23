@@ -15,6 +15,7 @@
 ".\obj\zl5servo.o"
 ".\obj\pickplane.o"
 ".\obj\bms.o"
+".\obj\hmcsensor.o"
 ".\obj\misc.o"
 ".\obj\stm32f4xx_adc.o"
 ".\obj\stm32f4xx_can.o"

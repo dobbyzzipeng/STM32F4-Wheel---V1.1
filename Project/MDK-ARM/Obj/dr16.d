@@ -49,3 +49,4 @@
 .\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\dr16.o: ..\..\BaseDrive\PickPlane.h
 .\obj\dr16.o: ..\..\BaseDrive\bms.h
+.\obj\dr16.o: ..\..\BaseDrive\hmcsensor.h

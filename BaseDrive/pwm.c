@@ -175,19 +175,19 @@ void TIM5_IRQHandler(void)
 		}
 		switch(g_cantxquene_index){
 			case 1:
-				Set_Driver_Vel(0x01,motor1_speed*10);
+				Set_Driver_Vel(0x01,motor1_speed);
 			Send_CatchMotor_Speed(CAMOTOR_ID,CAMotor0_Sp,CAMotor1_Sp);
 				break;
 			case 2:
-				Set_Driver_Vel(0x02,motor2_speed*10);
+				Set_Driver_Vel(0x02,motor2_speed);
 			Send_PushPullMotor_Speed(PPMOTOR_ID,PPMotor0_Sp,PPMotor1_Sp);
 				break;
 			case 3:
-				Set_Driver_Vel(0x03,motor3_speed*10);
+				Set_Driver_Vel(0x03,motor3_speed);
 			Send_UpDownMotor_Speed(UDMOTOR_ID,UDMotor0_Sp,UDMotor1_Sp);
 				break;
 			case 4:
-				Set_Driver_Vel(0x04,motor4_speed*10);
+				Set_Driver_Vel(0x04,motor4_speed);
 				break;
 			
 			case 5:

@@ -47,5 +47,6 @@ void Read_Driver_Pos_Status(uint16_t id);
 void Config_Vel_Mode(uint16_t id);
 void Set_Driver_Ready_Vel(uint16_t id);
 void Set_Driver_Vel(uint16_t id,int vel);
+void Stop_All_Chassicmotor(void);
 #endif
 

@@ -38,3 +38,4 @@
 .\obj\can2.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
 .\obj\can2.o: ..\..\BaseDrive\bms.h
 .\obj\can2.o: ..\..\BaseDrive\sys.h
+.\obj\can2.o: ..\..\BaseDrive\hmcsensor.h

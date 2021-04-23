@@ -36,3 +36,10 @@ void Send_CatchMotor_Speed(uint16_t id,int16_t sp0,int16_t sp1)
 	CAN2_TX_PACKET(id,canbuf,8);
 }
 
+void Stop_All_Bldcmotor(void)
+{
+	UDMotor0_Sp = 0;UDMotor1_Sp = 0;
+	PPMotor0_Sp = 0;PPMotor1_Sp = 0;
+	CAMotor0_Sp = 0;CAMotor1_Sp = 0;
+}
+

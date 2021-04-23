@@ -49,3 +49,4 @@
 .\obj\led.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\led.o: ..\..\BaseDrive\PickPlane.h
 .\obj\led.o: ..\..\BaseDrive\bms.h
+.\obj\led.o: ..\..\BaseDrive\hmcsensor.h
