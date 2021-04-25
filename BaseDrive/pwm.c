@@ -132,7 +132,7 @@ void TIM3_PWM_Init(uint16_t arr,uint16_t psc)
 }
 
 
-unsigned char Task_timer_flag = 0;
+unsigned char Task_timer_flag = 0,timer_cnt = 0;
 void TIM5_Init(uint16_t arr,uint16_t psc)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -168,7 +168,11 @@ void TIM5_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM5, TIM_IT_Update))
     {
-		Task_timer_flag = 1;
+		timer_cnt++;
+		if(timer_cnt>10){
+			timer_cnt = 0;
+			Task_timer_flag = 1;
+		}
 		g_cantxquene_index++;
 		if(g_cantxquene_index > 16){
 			g_cantxquene_index = 1;

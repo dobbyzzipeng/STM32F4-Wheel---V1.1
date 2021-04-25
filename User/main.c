@@ -15,12 +15,11 @@ void bsp_init(void)
 	Relay_Init();
 	bsp_InitUart(115200);//usart1 115200bps for debug
 	RC_Init();
-	Relay_ON(); 
 	delay_ms(1000);
 	CAN1_Configuration(0X01);
 	CAN2_Configuration(0X501);
-	delay_ms(3000);
-	TIM5_Init(2000-1,84-1);//1ms  SYS TIMER
+	delay_ms(100);
+	TIM5_Init(2000-1,84-1);//2ms  SYS TIMER
 	u1_printf("sys init finish!\r\n");
 }
 
@@ -49,13 +48,14 @@ static float last_womg = 0;
 void chassic_control_task(void)
 {
 	int16_t speed = 0;
-	int16_t ch1 = 0,ch0 = 0;
+	int16_t ch1 = 0,ch0 = 0,ch3 = 0;
 	int32_t omgea1 = 0,omgea2 = 0,omgea3 = 0,omgea4 = 0;
 	
 	
 	if(rc_data_flag!=0&&right_Switch==right_Switch_UP)//righ switch UP
 	{
 		ch1 = Channel_1-1000;	ch0 = Channel_0-1000;
+		ch3 = Channel_3-1000;
 
 		if(myabs(ch0)>DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
 			last_womg = womg;
@@ -80,21 +80,32 @@ void chassic_control_task(void)
 			last_womg = womg;
 			if(ch0>DEAD_ZONE){
 				womg = 90;
-				speed = (ch0+ch1);
+				speed = (ch0-DEAD_ZONE);
 			}
-			else if(ch0<DEAD_ZONE){
+			else if(ch0<-DEAD_ZONE){
 				womg = -90;
-				speed = -(ch0+ch1);
+				speed = -(ch0+DEAD_ZONE);
 			}
 		}
 		else if(myabs(ch0)<DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
 			last_womg = womg;
 			womg = 0;
-			speed = ch0+ch1;
+			if(ch1>DEAD_ZONE){
+				speed = ch1-DEAD_ZONE;
+			}
+			else{
+				speed = ch1+DEAD_ZONE;
+			}
 		}
 		
-		if(myabs(Channel_3-1000)>DEAD_ZONE){
-			speed = (Channel_3-1000);
+		if(myabs(ch3)>DEAD_ZONE){
+			
+			if(ch3>DEAD_ZONE){
+				speed = ch3-DEAD_ZONE;
+			}
+			else{
+				speed = ch3+DEAD_ZONE;
+			}
 			last_womg = womg;
 			womg = 45;
 			if(myabs(last_womg-womg)>20.0f){
@@ -103,10 +114,10 @@ void chassic_control_task(void)
 			delaycnt--;
 			if(delaycnt<=0){
 				delaycnt = 0;
-				motor1_speed = -speed*4;
-				motor2_speed = -speed*4;
-				motor3_speed =  speed*4;
-				motor4_speed =  speed*4;
+				motor1_speed = speed*3;
+				motor2_speed = speed*3;
+				motor3_speed = speed*3;
+				motor4_speed = speed*3;
 				omgea1 = -womg*LSB;
 				omgea2 =  womg*LSB;
 				omgea3 = -womg*LSB;
@@ -116,8 +127,8 @@ void chassic_control_task(void)
 		else if(myabs(ch0)<DEAD_ZONE && myabs(ch1)<DEAD_ZONE){
 			womg = 0;
 			speed = 0;
-			motor1_speed = speed*5;
-			motor2_speed = speed*5;
+			motor1_speed = -speed*5;
+			motor2_speed = -speed*5;
 			motor3_speed = speed*5;
 			motor4_speed = speed*5;
 			omgea1 = womg*LSB;
@@ -135,8 +146,8 @@ void chassic_control_task(void)
 			delaycnt--;
 			if(delaycnt<=0){
 				delaycnt = 0;
-				motor1_speed = speed*6;
-				motor2_speed = speed*6;
+				motor1_speed = -speed*6;
+				motor2_speed = -speed*6;
 				motor3_speed = speed*6;
 				motor4_speed = speed*6;
 			}
@@ -152,7 +163,6 @@ void chassic_control_task(void)
 		omgset_pos4 = Limit(omgea4,_90_ANGLE);
 		Stop_All_Bldcmotor();
 		rc_data_flag = 0;
-		debug();
 	}
 }
 
@@ -160,11 +170,11 @@ void debug(void)
 {
 	static uint8_t dbgcnt = 0;
 	dbgcnt++;
-	if(dbgcnt>10){
+	if(dbgcnt>100){
 		u1_printf("ch0:%d ch1:%d sp:%d omg:%d f1-8:%d f9-16:%d b1-8:%d b9-16:%d\r\n",\
 Channel_0,Channel_1,motor1_speed,omgset_pos1,T_hmcf.flag1_8,T_hmcf.flag9_16,T_hmcb.flag1_8,T_hmcb.flag9_16);
 		dbgcnt = 0;
-	}	
+	}
 }
 
 void Pick_Plane_Ctr_Task(void)
@@ -227,10 +237,91 @@ void Pick_Plane_Ctr_Task(void)
 
 void Auto_GoHome_Task(void)
 {
+	int16_t speed = 0;
+	float omg = 0;
+	static uint16_t runcnt = 0;
+	int8_t turn_flag = 0;
+	
 	if(rc_data_flag!=0&&right_Switch==right_Switch_MID)
 	{
-		
-		rc_data_flag = 0;
+		runcnt++;
+		if(runcnt>60){
+			runcnt = 0;
+			if(T_hmcb.flag>=1920 && T_hmcf.flag>=1920){
+				speed = 70;
+				omg = 45;
+				turn_flag = 1;
+			}
+			else if(T_hmcb.flag<=960 && T_hmcf.flag<=960){
+				speed = 70;
+				omg = 45;
+				turn_flag = -1;
+			}
+			else if(T_hmcb.flag<800 && T_hmcf.flag>=1920){
+				speed = 70;
+				omg = 45;
+				turn_flag = -1;
+				u1_printf("1\r\n");
+			}
+			else if(T_hmcf.flag<800 && T_hmcb.flag>=1920){
+				speed = 70;
+				omg = 45;
+				turn_flag = 1;
+				u1_printf("2\r\n");
+			}
+			else if(T_hmcf.flag>=1984){
+				speed = 60;
+				omg = 90;
+				turn_flag = 0;
+			}	
+			else if(T_hmcf.flag<960){
+				speed = 60;
+				omg = -90;
+				turn_flag = 0;
+			}
+			else if(T_hmcf.flag==0||T_hmcb.flag==0){
+				speed = 0;
+				omg = 0;
+				turn_flag = 0;
+			}
+			else{
+				speed = -100;
+				omg = 0;
+				turn_flag = 0;
+				u1_printf("line on mid,car run back\r\n");
+			}
+			if(turn_flag == 1){//turn riht
+				motor1_speed = speed;
+				motor2_speed = speed;
+				motor3_speed = speed;
+				motor4_speed = speed;
+				omgset_pos1 = -Limit(omg*LSB,_90_ANGLE);
+				omgset_pos2 = Limit(omg*LSB,_90_ANGLE);
+				omgset_pos3 = -Limit(omg*LSB,_90_ANGLE);
+				omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
+			}
+			else if(turn_flag == -1){//turn left
+				motor1_speed = -speed;
+				motor2_speed = -speed;
+				motor3_speed = -speed;
+				motor4_speed = -speed;
+				omgset_pos1 = -Limit(omg*LSB,_90_ANGLE);
+				omgset_pos2 = Limit(omg*LSB,_90_ANGLE);
+				omgset_pos3 = -Limit(omg*LSB,_90_ANGLE);
+				omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
+			}
+			else{
+				motor1_speed = -speed;
+				motor2_speed = -speed;
+				motor3_speed = speed;
+				motor4_speed = speed;
+				omgset_pos1 = Limit(omg*LSB,_90_ANGLE);
+				omgset_pos2 = Limit(omg*LSB,_90_ANGLE);
+				omgset_pos3 = Limit(omg*LSB,_90_ANGLE);
+				omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
+			}
+			rc_data_flag = 0;
+		}
 	}
 }
 
@@ -241,9 +332,13 @@ int main(void)
 	delay_ms(100);
 	while(1)
 	{
-		chassic_control_task();
-		Pick_Plane_Ctr_Task();
-		Auto_GoHome_Task();
+		if(Task_timer_flag){//50HZ
+			chassic_control_task();
+			Pick_Plane_Ctr_Task();
+			Auto_GoHome_Task();
+//			debug();
+			Task_timer_flag = 0;
+		}
 	}
 }
 

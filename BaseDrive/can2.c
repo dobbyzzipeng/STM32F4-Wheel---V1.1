@@ -1,5 +1,6 @@
 #include "can2.h"
 #include "bms.h"
+#include "bsp_usart.h"
 #include "hmcsensor.h"
 /*----CAN2_TX-----PB6----*/
 /*----CAN2_RX-----PB5----*/
@@ -94,22 +95,22 @@ void CAN2_Configuration(uint16_t canid)
 	can_filter.CAN_FilterNumber = 17;
 	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
 	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-	can_filter.CAN_FilterIdHigh = (6)<<5;
+	can_filter.CAN_FilterIdHigh = (0X06)<<5;
 	can_filter.CAN_FilterIdLow = 0x0000;
 	can_filter.CAN_FilterMaskIdHigh = 0x0000;
 	can_filter.CAN_FilterMaskIdLow = 0x0000;
-	can_filter.CAN_FilterFIFOAssignment = 1;
+	can_filter.CAN_FilterFIFOAssignment = 0;
 	can_filter.CAN_FilterActivation=ENABLE;
     CAN_FilterInit(&can_filter);
 	
 	can_filter.CAN_FilterNumber = 18;
 	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
 	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-	can_filter.CAN_FilterIdHigh = (7)<<5;
+	can_filter.CAN_FilterIdHigh = (0X07)<<5;
 	can_filter.CAN_FilterIdLow = 0x0000;
 	can_filter.CAN_FilterMaskIdHigh = 0x0000;
 	can_filter.CAN_FilterMaskIdLow = 0x0000;
-	can_filter.CAN_FilterFIFOAssignment = 1;
+	can_filter.CAN_FilterFIFOAssignment = 0;
 	can_filter.CAN_FilterActivation=ENABLE;
     CAN_FilterInit(&can_filter);
 	
@@ -148,8 +149,19 @@ void CAN2_RX0_IRQHandler(void)
 			Battery_Msg.Voltage=((((uint16_t)rx_message.Data[0])<<8)|rx_message.Data[1])/10.0f;
 			Battery_Msg.Current=((((uint16_t)rx_message.Data[4])<<8)|rx_message.Data[5])/10.0f-3000;
 			Battery_Msg.Soc=((((uint16_t)rx_message.Data[6])<<8)|rx_message.Data[7])/10.0f;
-
 			//u1_printf("Voltage:%f\t Current:%f\t Soc:%f\r\n",Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
+		}
+		else if(rx_message.StdId == 0X06)//ºó  ÓÒ16£¬×ó1
+		{
+			T_hmcb.flag1_8 = rx_message.Data[1];
+			T_hmcb.flag9_16 = rx_message.Data[2];
+			T_hmcb.flag = rx_message.Data[1]<<8|rx_message.Data[2];
+		}
+		else if(rx_message.StdId == 0X07)//Ç°  ÓÒ1£¬×ó16
+		{
+			T_hmcf.flag1_8 = rx_message.Data[1];
+			T_hmcf.flag9_16 = rx_message.Data[2];
+			T_hmcf.flag = rx_message.Data[1]<<8|rx_message.Data[2];
 		}
 	}
 }
@@ -166,6 +178,7 @@ void CAN2_RX1_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP1);
         CAN_Receive(CAN2, CAN_FIFO1, &rx_message);
+		u1_printf("get1\r\n");
 		if(rx_message.StdId == 0X06)//ºó  ÓÒ16£¬×ó1
 		{
 			T_hmcb.flag1_8 = rx_message.Data[1];

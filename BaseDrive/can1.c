@@ -1,5 +1,4 @@
 #include "can1.h"
-#include "config.h"
 #include "bsp_usart.h"
 #include "led.h"
 #include "pwm.h"
@@ -217,10 +216,6 @@ void CAN1_RX1_IRQHandler(void)
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP1);
         CAN_Receive(CAN1, CAN_FIFO1, &rx_message);
 		
-		if(rx_message.StdId == (Cabin_CAN_ID+8))
-		{
-
-		}
 
    }
 }

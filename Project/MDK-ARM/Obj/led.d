@@ -36,17 +36,3 @@
 .\obj\led.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h
 .\obj\led.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_wwdg.h
 .\obj\led.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
-.\obj\led.o: ..\..\User\config.h
-.\obj\led.o: ..\..\BaseDrive\sys.h
-.\obj\led.o: ..\..\BaseDrive\bsp_delay.h
-.\obj\led.o: ..\..\BaseDrive\bsp_usart.h
-.\obj\led.o: ..\..\User\config.h
-.\obj\led.o: ..\..\BaseDrive\can1.h
-.\obj\led.o: ..\..\BaseDrive\can2.h
-.\obj\led.o: ..\..\BaseDrive\pwm.h
-.\obj\led.o: ..\..\BaseDrive\dr16.h
-.\obj\led.o: ..\..\BaseDrive\ZL5SERVO.h
-.\obj\led.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
-.\obj\led.o: ..\..\BaseDrive\PickPlane.h
-.\obj\led.o: ..\..\BaseDrive\bms.h
-.\obj\led.o: ..\..\BaseDrive\hmcsensor.h
