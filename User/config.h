@@ -3,7 +3,6 @@
 #include "sys.h"
 #include "bsp_delay.h"
 #include "bsp_usart.h"
-#include "config.h"
 #include "can1.h"
 #include "can2.h"
 #include "pwm.h"
@@ -14,6 +13,8 @@
 #include "PickPlane.h"
 #include "bms.h"
 #include "hmcsensor.h"
+#include "stdio.h"
+#include "stdint.h"
 
 #define USE_IAP 0
 #define MAIN_CAN_ID 0x200
@@ -27,6 +28,11 @@
 //const char Firmware_Ver[] __attribute__((at(VERINFO_ADDR_BASE + 0x20)))  = "Firmware: 1.0.0";
 //const char Compiler_Date[] __attribute__((at(VERINFO_ADDR_BASE + 0x40))) = "Date: "__DATE__;
 //const char Compiler_Time[] __attribute__((at(VERINFO_ADDR_BASE + 0x60))) = "Time: "__TIME__;
+
+typedef union{
+	float fdata;
+	uint8_t buf[4];
+}U_Data;
 
 
 #define	myabs(x)	((x>0)?(x):(-(x))) 

@@ -12,7 +12,11 @@
 #define Relay2_ON()         		GPIO_SetBits(GPIOD,GPIO_Pin_7)
 #define Relay2_OFF()        		GPIO_ResetBits(GPIOD,GPIO_Pin_7)
 
+#define READ_EXTI1()	GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_10)
+#define READ_EXTI2()	GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_12)
+
 void LED_GPIO_Config(void);
-void LED_task(void);
 void Relay_Init(void);
+void Exti_Gpio_Init(void);
+
 #endif

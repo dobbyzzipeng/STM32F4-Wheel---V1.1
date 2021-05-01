@@ -33,8 +33,8 @@ int fputc(int ch, FILE *f)
 
 /********************USART3 CONFIG****************************/
 #define USE_USART3_TX_DMA 1
-#define USE_USART3_RX_DMA 0
-#define USE_USART3_RX_IDLE 0
+#define USE_USART3_RX_DMA 1
+#define USE_USART3_RX_IDLE 1
 //´®¿Ú·¢ËÍ»º´æÇø 	
 __align(8) uint8_t USART3_TX_BUF[USART3_MAX_SEND_LEN] = {0};
 void usart3_init(unsigned long int baudrate)

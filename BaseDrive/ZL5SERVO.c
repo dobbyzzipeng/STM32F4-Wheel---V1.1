@@ -44,6 +44,7 @@ void Set_Motor_Stop(uint16_t motorid)
 
 void Enable_All_Motor_Modbus(void)
 {
+	delay_ms(500);
 	Config_Pos_Mode(0X05);
 	delay_ms(10);
 	Clear_Errcode(0X05);

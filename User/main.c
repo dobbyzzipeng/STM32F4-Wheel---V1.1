@@ -5,7 +5,6 @@
 //use 10CH_T8FB Remote controler
 */
 
-void debug(void);
 //------------------------------------------------------------------------------
 void bsp_init(void)
 {
@@ -13,6 +12,7 @@ void bsp_init(void)
 	delay_init(168);
 	LED_GPIO_Config();
 	Relay_Init();
+	Exti_Gpio_Init();
 	bsp_InitUart(115200);//usart1 115200bps for debug
 	RC_Init();
 	delay_ms(1000);
@@ -171,10 +171,40 @@ void debug(void)
 	static uint8_t dbgcnt = 0;
 	dbgcnt++;
 	if(dbgcnt>100){
-		u1_printf("ch0:%d ch1:%d sp:%d omg:%d f1-8:%d f9-16:%d b1-8:%d b9-16:%d\r\n",\
-Channel_0,Channel_1,motor1_speed,omgset_pos1,T_hmcf.flag1_8,T_hmcf.flag9_16,T_hmcb.flag1_8,T_hmcb.flag9_16);
+		u1_printf("ch0:%d ch1:%d ch3:%d sp:%d omg:%d bat:%.2f cur:%.2f soc:%.2f\r\n",\
+Channel_0,Channel_1,Channel_3,motor1_speed,omgset_pos1,Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
 		dbgcnt = 0;
 	}
+}
+
+uint8_t Rtk_State_buf[64] = {0};
+void Data_Send(void)
+{
+	uint8_t Send_data_cnt=0;
+	U_Data udata = {0};
+	Rtk_State_buf[Send_data_cnt++] = 0X01;
+
+	udata.fdata = Battery_Msg.Voltage;
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[0];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[1];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[2];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[3];
+
+	udata.fdata = Battery_Msg.Current;
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[0];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[1];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[2];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[3];
+
+	udata.fdata = Battery_Msg.Soc;
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[0];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[1];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[2];
+	Rtk_State_buf[Send_data_cnt++] = udata.buf[3];
+
+	Rtk_State_buf[Send_data_cnt++] = 0X11;
+
+	send_data_dma_u1(Rtk_State_buf,16);
 }
 
 void Pick_Plane_Ctr_Task(void)
@@ -185,13 +215,13 @@ void Pick_Plane_Ctr_Task(void)
 		s_ch2 = Channel_2-1000,s_ch1 = Channel_1-1000; s_ch0 = Channel_0-1000;
 		if(s_ch0>DEAD_ZONE)
 		{
-			CAMotor0_Sp = 100;
-			CAMotor1_Sp = -100;
+			CAMotor0_Sp = 200;
+			CAMotor1_Sp = -200;
 		}
 		else if(s_ch0<-DEAD_ZONE)
 		{
-			CAMotor0_Sp = -100;
-			CAMotor1_Sp = 100;
+			CAMotor0_Sp = -200;
+			CAMotor1_Sp = 200;
 		}
 		else 
 		{
@@ -201,13 +231,13 @@ void Pick_Plane_Ctr_Task(void)
 		
 		if(s_ch1>DEAD_ZONE)
 		{
-			PPMotor0_Sp = -120;
-			PPMotor1_Sp = 100;
+			PPMotor0_Sp = -220;
+			PPMotor1_Sp = 200;
 		}
 		else if(s_ch1<-DEAD_ZONE)
 		{
-			PPMotor0_Sp = 120;
-			PPMotor1_Sp = -100;
+			PPMotor0_Sp = 220;
+			PPMotor1_Sp = -200;
 		}
 		else 
 		{
@@ -217,13 +247,13 @@ void Pick_Plane_Ctr_Task(void)
 		
 		if(s_ch2>DEAD_ZONE)
 		{
-			UDMotor0_Sp = 270;
-			UDMotor1_Sp = 300;
+			UDMotor0_Sp = 370;
+			UDMotor1_Sp = 400;
 		}
 		else if(s_ch2<-DEAD_ZONE)
 		{
-			UDMotor0_Sp = -335;
-			UDMotor1_Sp = -280;
+			UDMotor0_Sp = -435;
+			UDMotor1_Sp = -380;
 		}
 		else 
 		{
@@ -261,13 +291,13 @@ void Auto_GoHome_Task(void)
 				speed = 70;
 				omg = 45;
 				turn_flag = -1;
-				u1_printf("1\r\n");
+//				u1_printf("1\r\n");
 			}
 			else if(T_hmcf.flag<800 && T_hmcb.flag>=1920){
 				speed = 70;
 				omg = 45;
 				turn_flag = 1;
-				u1_printf("2\r\n");
+//				u1_printf("2\r\n");
 			}
 			else if(T_hmcf.flag>=1984){
 				speed = 60;
@@ -288,7 +318,7 @@ void Auto_GoHome_Task(void)
 				speed = -100;
 				omg = 0;
 				turn_flag = 0;
-				u1_printf("line on mid,car run back\r\n");
+//				u1_printf("line on mid,car run back\r\n");
 			}
 			if(turn_flag == 1){//turn riht
 				motor1_speed = speed;
@@ -325,6 +355,23 @@ void Auto_GoHome_Task(void)
 	}
 }
 
+uint8_t g_exti_flag1 = 0,g_exti_flag2 = 0;
+void Plane_Check_Task(void)
+{
+	if(READ_EXTI1()==0){
+		g_exti_flag1 = 1;
+	}
+	else{
+		g_exti_flag1 = 0;
+	}
+	if(READ_EXTI2()==0){
+		g_exti_flag2 = 1;
+	}
+	else{
+		g_exti_flag2 = 0;
+	}
+}
+
 int main(void)
 {
 	bsp_init();
@@ -336,7 +383,8 @@ int main(void)
 			chassic_control_task();
 			Pick_Plane_Ctr_Task();
 			Auto_GoHome_Task();
-//			debug();
+			Plane_Check_Task();
+			debug();
 			Task_timer_flag = 0;
 		}
 	}
