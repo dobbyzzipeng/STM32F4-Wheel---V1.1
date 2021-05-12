@@ -282,7 +282,7 @@ void Auto_GoHome_Task(void)
 				omg = 45;
 				turn_flag = 1;
 			}
-			else if(T_hmcb.flag<=960 && T_hmcf.flag<=960){
+			else if(T_hmcb.flag<=960&&T_hmcb.flag>0&&T_hmcf.flag<=960 && T_hmcf.flag>0){
 				speed = 70;
 				omg = 45;
 				turn_flag = -1;
@@ -300,12 +300,12 @@ void Auto_GoHome_Task(void)
 //				u1_printf("2\r\n");
 			}
 			else if(T_hmcf.flag>=1984){
-				speed = 60;
+				speed = 70;
 				omg = 90;
 				turn_flag = 0;
 			}	
-			else if(T_hmcf.flag<960){
-				speed = 60;
+			else if(T_hmcf.flag<960&&T_hmcf.flag>0){
+				speed = 70;
 				omg = -90;
 				turn_flag = 0;
 			}
@@ -315,7 +315,7 @@ void Auto_GoHome_Task(void)
 				turn_flag = 0;
 			}
 			else{
-				speed = -100;
+				speed = -150;
 				omg = 0;
 				turn_flag = 0;
 //				u1_printf("line on mid,car run back\r\n");
@@ -367,7 +367,7 @@ void Plane_Check_Task(void)
 	if(READ_EXTI2()==0){
 		g_exti_flag2 = 1;
 	}
-	else{
+else{
 		g_exti_flag2 = 0;
 	}
 }
