@@ -15,11 +15,9 @@
 #include "hmcsensor.h"
 #include "stdio.h"
 #include "stdint.h"
+#include "comunication.h"
 
 #define USE_IAP 0
-#define MAIN_CAN_ID 0x200
-#define Cabin_CAN_ID 0x300
-#define ANCHOR_Index 0
 #define Version 1
 
 //------------------------------------------------------------------------------
@@ -29,11 +27,14 @@
 //const char Compiler_Date[] __attribute__((at(VERINFO_ADDR_BASE + 0x40))) = "Date: "__DATE__;
 //const char Compiler_Time[] __attribute__((at(VERINFO_ADDR_BASE + 0x60))) = "Time: "__TIME__;
 
-typedef union{
-	float fdata;
-	uint8_t buf[4];
-}U_Data;
 
+typedef enum{
+	STANDBY = 0,
+	REMOTE_CTR = 1,
+	GO_HOME = 2,
+//	PICK_MODE = 3,
+	CV_CTR = 4,
+}E_WORK_MODE;
 
 #define	myabs(x)	((x>0)?(x):(-(x))) 
 #endif

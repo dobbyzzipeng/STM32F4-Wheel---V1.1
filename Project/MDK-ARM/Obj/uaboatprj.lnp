@@ -1,6 +1,7 @@
 --cpu=Cortex-M4.fp
 ".\obj\main.o"
 ".\obj\stm32f4xx_it.o"
+".\obj\comunication.o"
 ".\obj\bsp_usart.o"
 ".\obj\bsp_delay.o"
 ".\obj\can1.o"
@@ -11,7 +12,6 @@
 ".\obj\led.o"
 ".\obj\usart.o"
 ".\obj\bsp_stmflash.o"
-".\obj\t12_remote_controller.o"
 ".\obj\zl5servo.o"
 ".\obj\pickplane.o"
 ".\obj\bms.o"

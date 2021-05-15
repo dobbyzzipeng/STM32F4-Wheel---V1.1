@@ -397,6 +397,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\stm32f4xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>comunication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\comunication.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -451,11 +456,6 @@
               <FileName>bsp_stmflash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BaseDrive\bsp_stmflash.c</FilePath>
-            </File>
-            <File>
-              <FileName>T12_remote_controller.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\BaseDrive\T12_remote_controller.c</FilePath>
             </File>
             <File>
               <FileName>ZL5SERVO.c</FileName>

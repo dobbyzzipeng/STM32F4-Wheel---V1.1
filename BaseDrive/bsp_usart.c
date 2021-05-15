@@ -158,7 +158,7 @@ void bsp_InitUart(int badu)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-
+extern void DownLoad_prase(uint8_t buf[]);
 void USART1_IRQHandler(void)
 {
 	uint8_t Res = 0,clear = 0;
@@ -168,7 +168,7 @@ void USART1_IRQHandler(void)
 	}
 	if(USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
 	{
-		
+		DownLoad_prase(USART1_RX_BUF);
 		usart1_dma_tx_len = USART1_DMA_RX_LEN(DMA2_Stream2,USART1_REC_LEN);
 		DMA_Cmd(DMA2_Stream2,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA2_Stream2));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功

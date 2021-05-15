@@ -23,6 +23,10 @@
 extern uint8_t USART1_RX_BUF[USART1_REC_LEN];	/* Ω” ’ª∫≥Â«¯ */
 extern uint16_t USART1_RX_STA;
 extern uint8_t USART1_TX_BUF[UART1_TX_SIZE];
+typedef union{
+	float fdata;
+	uint8_t buf[4];
+}U_Data;
 
 void bsp_InitUart(int badu);
 void UsartDMA_Init(void);

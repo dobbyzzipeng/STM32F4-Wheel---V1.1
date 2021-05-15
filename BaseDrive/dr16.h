@@ -42,13 +42,10 @@
 #define right_Wheel_DOWN  4
 
 void RC_Init(void);
-extern volatile unsigned short Channel_0,Channel_1,Channel_2,Channel_3,Channel_7,Channel_8;
-extern uint8_t Init_Mid_RC_flag;
-extern volatile uint8_t Switch_left,Switch_right,pump_switch,fire_switch,last_swleft,last_swright;
-//extern int Mouse_X,Mouse_Y,Mouse_Z,Mouse_Left,Mouse_Right,KeyBoard_value;
-extern volatile short left_horizontal,left_vertical,right_horizontal,right_vertical;
-extern volatile unsigned short left_Switch,left_Wheel,right_Switch,right_Wheel,last_right_Wheel;
+void DR16_Unlink_Check(void);
 
-extern int rc_data_count;
-extern volatile uint8_t rc_data_flag;
+extern volatile unsigned short Channel_0,Channel_1,Channel_2,Channel_3,Channel_7,Channel_8;
+//extern int Mouse_X,Mouse_Y,Mouse_Z,Mouse_Left,Mouse_Right,KeyBoard_value;
+extern volatile unsigned short left_Switch,left_Wheel,right_Switch,right_Wheel,last_right_Wheel;
+extern volatile uint8_t rc_data_flag,rc_data_count;
 #endif

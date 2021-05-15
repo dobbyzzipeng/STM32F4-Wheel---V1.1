@@ -45,17 +45,14 @@ uint8_t chassic_ctr_cnt = 0;
 static int16_t delaycnt = 0;
 float womg = 0;
 static float last_womg = 0;
-void chassic_control_task(void)
+void chassic_control_task(int16_t x,int16_t y,int16_t w)
 {
 	int16_t speed = 0;
 	int16_t ch1 = 0,ch0 = 0,ch3 = 0;
 	int32_t omgea1 = 0,omgea2 = 0,omgea3 = 0,omgea4 = 0;
 	
-	
-	if(rc_data_flag!=0&&right_Switch==right_Switch_UP)//righ switch UP
-	{
-		ch1 = Channel_1-1000;	ch0 = Channel_0-1000;
-		ch3 = Channel_3-1000;
+		ch1 = y-1000;	ch0 = x-1000;
+		ch3 = w-1000;
 
 		if(myabs(ch0)>DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
 			last_womg = womg;
@@ -162,8 +159,6 @@ void chassic_control_task(void)
 		omgset_pos3 = Limit(omgea3,_90_ANGLE);
 		omgset_pos4 = Limit(omgea4,_90_ANGLE);
 		Stop_All_Bldcmotor();
-		rc_data_flag = 0;
-	}
 }
 
 void debug(void)
@@ -177,42 +172,10 @@ Channel_0,Channel_1,Channel_3,motor1_speed,omgset_pos1,Battery_Msg.Voltage,Batte
 	}
 }
 
-uint8_t Rtk_State_buf[64] = {0};
-void Data_Send(void)
-{
-	uint8_t Send_data_cnt=0;
-	U_Data udata = {0};
-	Rtk_State_buf[Send_data_cnt++] = 0X01;
-
-	udata.fdata = Battery_Msg.Voltage;
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[0];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[1];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[2];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[3];
-
-	udata.fdata = Battery_Msg.Current;
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[0];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[1];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[2];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[3];
-
-	udata.fdata = Battery_Msg.Soc;
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[0];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[1];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[2];
-	Rtk_State_buf[Send_data_cnt++] = udata.buf[3];
-
-	Rtk_State_buf[Send_data_cnt++] = 0X11;
-
-	send_data_dma_u1(Rtk_State_buf,16);
-}
-
-void Pick_Plane_Ctr_Task(void)
+void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w)
 {
 	int16_t s_ch0 = 0,s_ch1 = 0,s_ch2 = 0;
-	if(rc_data_flag!=0&&right_Switch==right_Switch_DOWN)//righ switch Down
-	{
-		s_ch2 = Channel_2-1000,s_ch1 = Channel_1-1000; s_ch0 = Channel_0-1000;
+	s_ch2 = w-1000,s_ch1 = y-1000; s_ch0 = x-1000;
 		if(s_ch0>DEAD_ZONE)
 		{
 			CAMotor0_Sp = 200;
@@ -261,8 +224,6 @@ void Pick_Plane_Ctr_Task(void)
 			UDMotor1_Sp = 0;
 		}
 		Stop_All_Chassicmotor();
-		rc_data_flag = 0;
-	}
 }
 
 void Auto_GoHome_Task(void)
@@ -367,8 +328,31 @@ void Plane_Check_Task(void)
 	if(READ_EXTI2()==0){
 		g_exti_flag2 = 1;
 	}
-else{
+	else{
 		g_exti_flag2 = 0;
+	}
+}
+
+uint8_t g_rgb_cmd = 0;
+void RGB_Ctr_Task(void)
+{
+	
+}
+
+uint8_t g_agv_work_mode = STANDBY;
+void AGV_Work_Mode_Choose(void)
+{
+	if(rc_data_flag==1&&CV.cv_data_flag==0){
+		g_agv_work_mode = REMOTE_CTR;
+	}
+	else if(CV.cv_data_flag==1){
+		g_agv_work_mode = CV_CTR;
+	}
+	else if(CV.cv_data_flag==2){
+		g_agv_work_mode = GO_HOME;
+	}
+	else if((rc_data_flag==0&&CV.cv_data_flag==0)||(AGV_CMD.agv_charge==1)){
+		g_agv_work_mode = STANDBY;
 	}
 }
 
@@ -379,11 +363,36 @@ int main(void)
 	delay_ms(100);
 	while(1)
 	{
-		if(Task_timer_flag){//50HZ
-			chassic_control_task();
-			Pick_Plane_Ctr_Task();
-			Auto_GoHome_Task();
-			Plane_Check_Task();
+		if(Task_timer_flag){//20HZ
+			AGV_Work_Mode_Choose();
+			switch(g_agv_work_mode)
+			{
+				case STANDBY:
+					Stop_All_Chassicmotor();
+					Stop_All_Bldcmotor();
+					u1_printf("standby\r\n");
+				break;
+				case REMOTE_CTR:
+					if(right_Switch==right_Switch_UP){
+						chassic_control_task(Channel_0,Channel_1,Channel_3);
+					}
+					if(right_Switch==right_Switch_DOWN){
+						Pick_Plane_Ctr_Task(Channel_0,Channel_1,Channel_3);
+					}
+				break;
+				case GO_HOME:
+					Auto_GoHome_Task();
+					//RTK
+				break;
+				case CV_CTR:
+					Plane_Check_Task();
+					chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
+					Pick_Plane_Ctr_Task(CV.pick_spx,CV.pick_spy,CV.pick_spw);
+				break;
+			}
+			RGB_Ctr_Task();
+			DR16_Unlink_Check();
+			Data_Upload();
 			debug();
 			Task_timer_flag = 0;
 		}

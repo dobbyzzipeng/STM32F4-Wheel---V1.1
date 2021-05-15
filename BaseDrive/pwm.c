@@ -169,7 +169,7 @@ void TIM5_IRQHandler(void)
     if (TIM_GetITStatus(TIM5, TIM_IT_Update))
     {
 		timer_cnt++;
-		if(timer_cnt>10){
+		if(timer_cnt>25){
 			timer_cnt = 0;
 			Task_timer_flag = 1;
 		}

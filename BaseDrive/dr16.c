@@ -2,9 +2,8 @@
 /* ------ ----------------- Internal Data ----------------------------------- */
 volatile unsigned char sbus_rx_buffer[25] = {0};
 volatile unsigned short Channel_0 = 1000,Channel_1 = 1000,Channel_2 = 1000,Channel_3 = 1000;
-volatile uint8_t Switch_left = 3,Switch_right = 0,pump_switch,fire_switch,last_swleft = 0,last_swright = 3;
-int rc_data_count = 0;
-volatile uint8_t rc_data_flag = 0;
+//volatile uint8_t Switch_left = 3,Switch_right = 0,last_swleft = 0,last_swright = 3;
+volatile uint8_t rc_data_flag = 0,rc_data_count = 0;
 /* ----------------------- Function Implements ---------------------------- */
 /******************************************************************************
 * @fn RC_Init
@@ -68,20 +67,15 @@ void RC_Init(void)
 	}
 }
 
-volatile short Init_Mid_RC_value=950;
-uint8_t Init_Mid_RC_flag=0;
-short RC_Data_pro(unsigned short RC_Data)
-{  
-	short value;
-	if(RC_Data>(Init_Mid_RC_value-100)&&RC_Data<(Init_Mid_RC_value+100)){
-		value=0;
+void DR16_Unlink_Check(void)
+{
+	rc_data_count++;
+	if(rc_data_count>100){//100*20ms
+		rc_data_count = 100;
+		rc_data_flag = 0;
 	}
-	else{
-		value=Init_Mid_RC_value-RC_Data;
-	}
-	return value*1.5;
 }
-volatile short left_horizontal = 0,left_vertical = 0,right_horizontal = 0,right_vertical = 0;
+
 volatile unsigned short left_Switch = 0,left_Wheel = 0,right_Switch = 0,right_Wheel = 0,last_right_Wheel=0;
 unsigned char Rev = 0,revnum = 0,headflag = 0,tailflag = 0;
 void USART2_IRQHandler(void)            //串口2中断服务程序
@@ -132,18 +126,6 @@ void USART2_IRQHandler(void)            //串口2中断服务程序
 			Channel_3 = (uint16_t)((sbus_rx_buffer[4] >> 1) | (sbus_rx_buffer[5] << 7)) & 0x07ff; //!< Channel 3
 			left_Switch =sbus_rx_buffer[9]& 0x0f; 
 			right_Switch =(sbus_rx_buffer[6]& 0x0f)+1; 
-//			if(Init_Mid_RC_flag==1){
-//				 Init_Mid_RC_value=Channel_0;
-//			}
-//			else{
-//				left_Wheel = sbus_rx_buffer[10]& 0x0f;
-//				right_Wheel = (sbus_rx_buffer[8]& 0x0f)+1; 
-//				
-//				right_horizontal=-RC_Data_pro(Channel_0);
-//				right_vertical=RC_Data_pro(Channel_1);
-//				left_vertical=RC_Data_pro(Channel_2);
-//				left_horizontal=RC_Data_pro(Channel_3);
-//			}
 			
 			headflag = 0;
 			tailflag = 0;
