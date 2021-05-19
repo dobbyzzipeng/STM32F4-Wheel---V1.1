@@ -41,3 +41,5 @@
 .\obj\comunication.o: ..\..\BaseDrive\usart.h
 .\obj\comunication.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\comunication.o: ..\..\BaseDrive\bms.h
+.\obj\comunication.o: ..\..\BaseDrive\crc8.h
+.\obj\comunication.o: ..\..\BaseDrive\can2.h

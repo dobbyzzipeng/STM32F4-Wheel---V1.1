@@ -9,6 +9,7 @@
 ".\obj\sys.o"
 ".\obj\pwm.o"
 ".\obj\dr16.o"
+".\obj\crc8.o"
 ".\obj\led.o"
 ".\obj\usart.o"
 ".\obj\bsp_stmflash.o"

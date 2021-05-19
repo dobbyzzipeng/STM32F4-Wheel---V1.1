@@ -73,39 +73,6 @@ void CAN1_Configuration(uint16_t canid)
 	can_filter.CAN_FilterFIFOAssignment = 0;
 	can_filter.CAN_FilterActivation=ENABLE;
 	CAN_FilterInit(&can_filter);
-	
-//	can_filter.CAN_FilterNumber = 1;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+1)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
-//	
-//	can_filter.CAN_FilterNumber = 2;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+2)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
-//	
-//	can_filter.CAN_FilterNumber = 3;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+3)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
 //	
 //	can_filter.CAN_FilterNumber = 4;
 //	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
@@ -184,7 +151,6 @@ void CAN1_TX_IRQHandler(void)
                           CAN1_RX0_IRQHandler
 描述：CAN1的接收中断函数
 *************************************************************************/
-
 void CAN1_RX0_IRQHandler(void)
 {
     CanRxMsg rx_message;
@@ -192,15 +158,7 @@ void CAN1_RX0_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
         CAN_Receive(CAN1, CAN_FIFO0, &rx_message);
-		
-//		uint32_t GET_TOTAL_SOC_id = PROPOTY<<24|GET_TOTAL_SOC<<16|PC_ADDR<<8|BMS_ADDR;
-//		
-//		if(rx_message.ExtId == GET_TOTAL_SOC_id)
-//		{
-//			Battery_Msg.Voltage=((((uint16_t)rx_message.Data[0])<<8)|rx_message.Data[1])/10.0f;
-//			Battery_Msg.Current=((((uint16_t)rx_message.Data[4])<<8)|rx_message.Data[5])/10.0f-3000;
-//			Battery_Msg.Soc=((((uint16_t)rx_message.Data[6])<<8)|rx_message.Data[7])/10.0f;
-//		}
+
 	}
 }
 /*************************************************************************

@@ -130,9 +130,13 @@ void USART2_IRQHandler(void)            //串口2中断服务程序
 			headflag = 0;
 			tailflag = 0;
 			revnum =0;//attention!!!
-
-			rc_data_count = 0;
-			rc_data_flag = 1;
+			if(sbus_rx_buffer[22]==0X0C){
+				rc_data_flag = 0;
+			}
+			else{
+				rc_data_count = 0;
+				rc_data_flag = 1;
+			}
 			LED2_TOGGLE();
 			#if DEBUG_PC
 			u1_printf("Ch0:%d\tCh1:%d\tCh2:%d\tCh3:%d\tp1:%d\tf2:%d\r\n",Channel_0,Channel_1,Channel_2,Channel_3,Switch_left,Switch_right);

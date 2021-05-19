@@ -443,6 +443,11 @@
               <FilePath>..\..\BaseDrive\dr16.c</FilePath>
             </File>
             <File>
+              <FileName>crc8.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\BaseDrive\crc8.c</FilePath>
+            </File>
+            <File>
               <FileName>led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\BaseDrive\led.c</FilePath>

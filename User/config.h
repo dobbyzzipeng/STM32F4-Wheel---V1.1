@@ -36,5 +36,14 @@ typedef enum{
 	CV_CTR = 4,
 }E_WORK_MODE;
 
+typedef enum{
+	NONE = 0,
+	ONE,//UD_DOWN,
+	TWO,//,
+	THREE,//CATCH_OFF,
+	FOUR,//CATCH_ON,
+	FIVE,//PUSH_FROM,
+	SIX,//PUSH_BACK
+}E_PICKPLANE;
 #define	myabs(x)	((x>0)?(x):(-(x))) 
 #endif

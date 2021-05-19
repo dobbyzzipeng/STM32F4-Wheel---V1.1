@@ -157,7 +157,7 @@ void usart3_init(unsigned long int baudrate)
 	#endif
 }
 
-extern void NX_Dta_prase(uint8_t buf[]);
+extern void NX_Data_prase(uint8_t buf[]);
 
 uint8_t USART3_RX_BUF[USART3_MAX_RECV_LEN] = {0};
 uint8_t usart3_dma_tx_flag = 0;
@@ -203,7 +203,7 @@ void USART3_IRQHandler(void)//串口3中断服务程序
 	}
 	if (USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)//空闲中断,
 	{
-		NX_Dta_prase(USART3_RX_BUF);
+		NX_Data_prase(USART3_RX_BUF);
 //		u1_printf("%x %x %x \r\n",USART3_RX_BUF[0],USART3_RX_BUF[1],USART3_RX_BUF[2]);
 		usart3_dmarx_len = USART3_DMA_RX_LEN(DMA1_Stream1,USART3_MAX_RECV_LEN);//获取数据量
 		DMA_Cmd(DMA1_Stream1,DISABLE);//DMA失能

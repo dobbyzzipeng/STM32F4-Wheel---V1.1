@@ -114,6 +114,16 @@ void CAN2_Configuration(uint16_t canid)
 	can_filter.CAN_FilterActivation=ENABLE;
     CAN_FilterInit(&can_filter);
 	
+	can_filter.CAN_FilterNumber = 19;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (0X201)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0x0000;
+	can_filter.CAN_FilterMaskIdLow = 0x0000;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+    CAN_FilterInit(&can_filter);
 	
     CAN_ITConfig(CAN2,CAN_IT_FMP0,ENABLE);
 	CAN_ITConfig(CAN2,CAN_IT_FMP1,ENABLE);
@@ -132,7 +142,7 @@ void CAN2_TX_IRQHandler(void) //CAN TX
 /*************************************************************************
                           CAN2_RX0_IRQHandler
 *************************************************************************/
-
+T_EJECT Eject = {0};
 void CAN2_RX0_IRQHandler(void)
 {
     CanRxMsg rx_message;  
@@ -162,6 +172,36 @@ void CAN2_RX0_IRQHandler(void)
 			T_hmcf.flag1_8 = rx_message.Data[1];
 			T_hmcf.flag9_16 = rx_message.Data[2];
 			T_hmcf.flag = rx_message.Data[1]<<8|rx_message.Data[2];
+		}
+		
+		if(rx_message.StdId==0X201){
+			Eject.puspul0 = rx_message.Data[0];
+			if(Eject.puspul0==1){
+				Eject.puspul0 = 2;
+			}
+			else if(Eject.puspul0==2){
+				Eject.puspul0 = 1;
+			}
+			Eject.puspul1 = rx_message.Data[1];
+			Eject.catch0 = rx_message.Data[2];
+			if(Eject.catch0==1){
+				Eject.catch0 = 2;
+			}
+			else if(Eject.catch0==2){
+				Eject.catch0 = 1;
+			}
+			Eject.catch1 = rx_message.Data[3];
+		}
+		else if(rx_message.StdId==0X501){
+			Eject.updown0 = rx_message.Data[0];
+//			Eject.updown1 = (rx_message.Data[1]==1)? 2:rx_message.Data[1];
+//			Eject.updown1 = (rx_message.Data[1]==2)? 1:rx_message.Data[1];
+			if(rx_message.Data[1]==1){
+				Eject.updown1 = 2;
+			}
+			else if(rx_message.Data[1]==2){
+				Eject.updown1=1;
+			}
 		}
 	}
 }

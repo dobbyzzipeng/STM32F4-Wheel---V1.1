@@ -10,9 +10,9 @@ typedef struct{
 	float agv_spx;
 	float agv_spy;
 	float agv_spw;
-	float pick_spx;
-	float pick_spy;
-	float pick_spw;
+	float pick_spcatch;
+	float pick_sppp;
+	float pick_spupdown;
 }T_CV;
 extern T_CV CV;
 
@@ -25,6 +25,8 @@ typedef struct
 extern T_CMD AGV_CMD;
 
 void Data_Upload(void);
-void NX_Dta_prase(uint8_t buf[]);
+void DownLoad_prase(uint8_t buf[]);
+void NX_Data_prase(uint8_t buf[]);
+void NX_Data_Return(void);
 #endif
 
