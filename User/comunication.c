@@ -32,11 +32,6 @@ void Data_Upload(void)
 	Rbuf[cnt++] = udata.buf[2];
 	Rbuf[cnt++] = udata.buf[3];
 	
-//	Rbuf[cnt++]	= g_firegas_falg;
-//	Rbuf[cnt++]	= g_lamp_state;
-//	Rbuf[cnt++]	= g_elevator_state;
-//	Rbuf[cnt++]	= g_sys_state;
-	
 	Rbuf[cnt++] = 0X08;
 	Rbuf[cnt++] = 0X19;
 	Rbuf[2] = cnt;
@@ -101,7 +96,7 @@ void NX_Data_Return(void)
 		Rbuf[cnt++] = 0X08;
 		Rbuf[cnt++] = 0X19;
 		Rbuf[2] = cnt;
-		Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);
+		Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);//º∆À„–£—È
 		send_data_dma_u1(Rbuf,cnt);
 	}
 }

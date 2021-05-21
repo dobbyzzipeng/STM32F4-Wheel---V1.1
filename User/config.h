@@ -16,6 +16,7 @@
 #include "stdio.h"
 #include "stdint.h"
 #include "comunication.h"
+#include "control.h"
 
 #define USE_IAP 0
 #define Version 1
@@ -26,24 +27,37 @@
 //const char Firmware_Ver[] __attribute__((at(VERINFO_ADDR_BASE + 0x20)))  = "Firmware: 1.0.0";
 //const char Compiler_Date[] __attribute__((at(VERINFO_ADDR_BASE + 0x40))) = "Date: "__DATE__;
 //const char Compiler_Time[] __attribute__((at(VERINFO_ADDR_BASE + 0x60))) = "Time: "__TIME__;
+#define	myabs(x)	((x>0)?(x):(-(x)))
 
+//typedef enum{
+//	STANDBY = 0,
+//	REMOTE_CTR = 1,
+//	GO_HOME = 2,
+////	PICK_MODE = 3,
+//	CV_CTR = 4,
+//}E_WORK_MODE;
 
-typedef enum{
-	STANDBY = 0,
-	REMOTE_CTR = 1,
-	GO_HOME = 2,
-//	PICK_MODE = 3,
-	CV_CTR = 4,
-}E_WORK_MODE;
+//typedef enum{
+//	NONE = 0,
+//	ONE,
+//	TWO,
+//	THREE,
+//	FOUR,
+//	FIVE,
+//	SIX,
+//	DONE,//OK
+//}E_PICKPLANE;
 
-typedef enum{
-	NONE = 0,
-	ONE,//UD_DOWN,
-	TWO,//,
-	THREE,//CATCH_OFF,
-	FOUR,//CATCH_ON,
-	FIVE,//PUSH_FROM,
-	SIX,//PUSH_BACK
-}E_PICKPLANE;
-#define	myabs(x)	((x>0)?(x):(-(x))) 
+//typedef enum{
+//	CHARGE = 0,
+//	PICK_PLANE_OUT,
+//	RELEASE_PLANE_OUT,
+//	GOHOME_WITHOUT_PLANE,
+//	CHARGE_WITHOUT_PLANE,
+//	GET_OUT_FIND_PLANE,
+//	CVRTK_FIND_PLANE,
+//	PICK_PLANE_IN,
+//	RELEASE_PLANE_IN,
+//	TASK_OK_CHARGE,
+//}E_AGVTASK;
 #endif

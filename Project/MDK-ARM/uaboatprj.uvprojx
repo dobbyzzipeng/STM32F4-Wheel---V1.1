@@ -402,6 +402,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\comunication.c</FilePath>
             </File>
+            <File>
+              <FileName>control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\control.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -603,9 +608,6 @@
               <FilePath>..\..\Libraries\CMSIS\Include\core_cm4_simd.h</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>LOG</GroupName>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>

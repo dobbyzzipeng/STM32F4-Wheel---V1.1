@@ -51,3 +51,4 @@
 .\obj\main.o: ..\..\BaseDrive\hmcsensor.h
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\main.o: ..\..\User\comunication.h
+.\obj\main.o: ..\..\User\control.h

@@ -43,3 +43,56 @@ void Stop_All_Bldcmotor(void)
 	CAMotor0_Sp = 0;CAMotor1_Sp = 0;
 }
 
+void Catch_Motor_Open(void)
+{
+	CAMotor0_Sp = 200;//打开
+	CAMotor1_Sp = -200;
+}
+
+void Catch_Motor_Close(void)
+{
+	CAMotor0_Sp = -200;//收紧
+	CAMotor1_Sp = 200;
+}
+
+void Catch_Motor_Stop(void)
+{
+	CAMotor0_Sp = 0;
+	CAMotor1_Sp = 0;
+}
+
+void PP_Motor_Push(void)
+{
+	PPMotor0_Sp = -200;//推
+	PPMotor1_Sp = 200;
+}
+
+void PP_Motor_Pull(void)
+{
+	PPMotor0_Sp = 200;//拉
+	PPMotor1_Sp = -200;
+}
+
+void PP_Motor_Stop(void)
+{
+	PPMotor0_Sp = 0;//拉
+	PPMotor1_Sp = 0;
+}
+
+void UD_Motor_Up(void)
+{
+	UDMotor0_Sp = 400;
+	UDMotor1_Sp = 400;
+}
+
+void UD_Motor_Down(void)
+{
+	UDMotor0_Sp = -400;
+	UDMotor1_Sp = -400;
+}
+
+void UD_Motor_Stop(void)
+{
+	UDMotor0_Sp = 0;
+	UDMotor1_Sp = 0;
+}

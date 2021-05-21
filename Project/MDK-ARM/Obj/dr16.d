@@ -51,3 +51,4 @@
 .\obj\dr16.o: ..\..\BaseDrive\hmcsensor.h
 .\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\dr16.o: ..\..\User\comunication.h
+.\obj\dr16.o: ..\..\User\control.h
