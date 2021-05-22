@@ -35,19 +35,23 @@ void Data_Upload(void)
 	Rbuf[cnt++] = 0X08;
 	Rbuf[cnt++] = 0X19;
 	Rbuf[2] = cnt;
+	Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);//º∆À„–£—È
 	send_data_dma_u1(Rbuf,cnt);
 }
 
-T_CMD AGV_CMD = {0};
+T_CMD AGV_CMD = {1,0,0,0,0};
 void DownLoad_prase(uint8_t buf[])
 {
-	if(buf[0]==0XF1&buf[1]==0X02){
-		AGV_CMD.agv_charge = buf[3];
-		AGV_CMD.agv_start = buf[4];
-		AGV_CMD.agv_back = buf[5];
+	uint8_t len,crc;
+	len = buf[2];
+	if(len<2) return;
+	crc = buf[len-2];
+	if(buf[0]==0XF1&buf[1]==0X02/*&& CRC8_Table_Check(buf,len-2,crc)*/){
+		AGV_CMD.agv_cmd = buf[3];
+		AGV_CMD.agv_pause = buf[4];
+		AGV_CMD.agv_cancel = buf[5];
 	}
 }
-
 
 T_CV CV = {0};
 void NX_Data_prase(uint8_t buf[])

@@ -194,8 +194,6 @@ void CAN2_RX0_IRQHandler(void)
 		}
 		else if(rx_message.StdId==0X501){
 			Eject.updown0 = rx_message.Data[0];
-//			Eject.updown1 = (rx_message.Data[1]==1)? 2:rx_message.Data[1];
-//			Eject.updown1 = (rx_message.Data[1]==2)? 1:rx_message.Data[1];
 			if(rx_message.Data[1]==1){
 				Eject.updown1 = 2;
 			}

@@ -200,11 +200,11 @@ void debug(void)
 	}
 }
 
-uint8_t g_agv_task_state = CHARGE;
 int main(void)
 {
 	bsp_init();
 	Enable_All_Motor_Modbus();
+	Auto_Release_Plane(INIT);
 	delay_ms(100);
 	while(1)
 	{
@@ -220,27 +220,74 @@ int main(void)
 				case REMOTE_CTR:
 					if(right_Switch==right_Switch_UP){
 						chassic_control_task(Channel_0,Channel_1,Channel_3);
-						Auto_Pick_Plane();
+//						Auto_Pick_Plane(FIND);//手动模式下调试自动
 					}
 					else if(right_Switch==right_Switch_DOWN){
 						Pick_Plane_Ctr_Task(Channel_0,Channel_1,Channel_2);
 						Stop_All_Chassicmotor();
 					}
 					else if(right_Switch==right_Switch_MID){
-						Auto_GoHome_Task();
+						Auto_FollowLine_Task(OUT,WITHPLANE);
 					}
 				break;
-				case GO_HOME:
-					Auto_GoHome_Task();
-					Auto_Release_Plane();
-//					Auto_Pick_Plane();
-					//RTK
+				case AUTO_CTR:
+					if(AGV_CMD.agv_cmd!=0 && AGV_CMD.last_agv_cmd==0&&g_agv_task_state==TASK_OK_CHARGE){
+						g_agv_task_state = PICK_PLANE_OUT;
+						AGV_CMD.last_agv_cmd = AGV_CMD.agv_cmd;
+					}
+					switch(g_agv_task_state){
+						case TASK_OK_CHARGE:
+							delay_ms(100);
+							Follow_Line_Clear();
+							u1_printf("task ok,plane in home,agv is charging now...\r\n");
+						break;
+						case PICK_PLANE_OUT:
+							Auto_FollowLine_Task(OUT,WITHPLANE);
+							Auto_Pick_Plane(FIND,OUT);
+							Auto_Release_Plane(OUT);
+						break;
+						case CLOSE_EJECT:
+							Auto_Pick_Plane(CLOSE,IN);
+						break;
+						case GOHOME_WITHOUT_PLANE:
+							Auto_FollowLine_Task(IN,NOPLANE);//black line or until charge flag
+						break;
+						case CHARGE_WITHOUT_PLANE:
+							delay_ms(100);
+							u1_printf("task ok,plane out home,agv is charging now...\r\n");
+//							g_agv_task_state = GET_OUT_FIND_PLANE;
+						break;
+						case GET_OUT_FIND_PLANE:
+							Auto_FollowLine_Task(OUT,NOPLANE);
+							Auto_Pick_Plane(FIND,IN);
+							if(g_auto_pick_state==DONE){
+								g_agv_task_state = PICK_PLANE_IN;
+							}
+						break;
+//						case CVRTK_FIND_PLANE:
+//							Auto_Pick_Plane(FIND);
+//							g_agv_task_state = PICK_PLANE_IN;	
+//						break;
+						case PICK_PLANE_IN:
+							Auto_FollowLine_Task(IN,WITHPLANE);
+							Auto_Release_Plane(IN);
+						break;
+						case RELEASE_PLANE_IN:
+							g_agv_task_state = TASK_OK_CHARGE;	
+						break;
+					}
 				break;
-				case CV_CTR:
-					Plane_Check_Task();
-					chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
-					Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
-				break;
+//				case GO_HOME:
+//					Auto_FollowLine_Task(IN);
+//					Auto_Release_Plane();
+////					Auto_Pick_Plane();
+//					//RTK
+//				break;
+//				case CV_CTR:
+//					Plane_Check_Task();
+//					chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
+//					Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
+//				break;
 			}
 			Plane_Check_Task();
 			RGB_Ctr_Task();

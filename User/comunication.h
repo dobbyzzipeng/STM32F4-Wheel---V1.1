@@ -16,11 +16,20 @@ typedef struct{
 }T_CV;
 extern T_CV CV;
 
+typedef enum{
+	NOTASK=0,
+	RUN,
+	PAUSE,
+	CANCEL,
+}E_AUTO_MODE;//上位机控制指令表
+
 typedef struct
 {
+	uint8_t agv_cmd;
+	uint8_t last_agv_cmd;
 	uint8_t agv_charge;
-	uint8_t agv_start;
-	uint8_t agv_back;
+	uint8_t agv_pause;
+	uint8_t agv_cancel;
 }T_CMD;
 extern T_CMD AGV_CMD;
 
