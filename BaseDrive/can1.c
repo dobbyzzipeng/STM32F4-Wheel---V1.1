@@ -184,7 +184,7 @@ void CAN1_RX1_IRQHandler(void)
 void CAN1_TX_PACKET(unsigned int CAN_ID,unsigned char cantxbuf[],unsigned char len)
 {
     CanTxMsg tx_message;
-    uint8_t i = 0,cnt = 0;
+    uint8_t i = 0;
 	
     tx_message.IDE = CAN_ID_STD;    //标准帧
     tx_message.RTR = CAN_RTR_DATA;  //数据帧

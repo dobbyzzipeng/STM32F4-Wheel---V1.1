@@ -12,8 +12,8 @@ typedef enum{
 	STANDBY = 0,
 	REMOTE_CTR = 1,
 	AUTO_CTR = 2,
-//	CV_CTR = 3,
-	TASK_CANCEL = 5,
+	CV_CTR = 3,
+	TASK_CANCEL = 4,
 }E_WORK_MODE;//AGVÊÜ¿Ø×´Ì¬
 
 typedef enum{
@@ -30,7 +30,7 @@ typedef enum{
 typedef enum{
 	TASK_OK_CHARGE = 0,
 	PICK_PLANE_OUT,
-	CLOSE_EJECT,
+	GOBACK_FOR_SPACE,
 	GOHOME_WITHOUT_PLANE,
 	CHARGE_WITHOUT_PLANE,
 	GET_OUT_FIND_PLANE,

@@ -216,7 +216,7 @@ void CAN2_RX1_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP1);
         CAN_Receive(CAN2, CAN_FIFO1, &rx_message);
-		u1_printf("get1\r\n");
+//		u1_printf("get1\r\n");
 		if(rx_message.StdId == 0X06)//后  右16，左1
 		{
 			T_hmcb.flag1_8 = rx_message.Data[1];
@@ -272,20 +272,20 @@ void CAN2_TX_EXTID(uint32_t CAN_ID,uint8_t cantxbuf[],uint8_t len)
     tx_message.DLC = len;          //帧长度
     tx_message.ExtId = CAN_ID;      //帧ID为传入参数的CAN_ID
     
-		for(i=0;i<len;i++)
-		{
-			tx_message.Data[i] = cantxbuf[i];
-		}
+	for(i=0;i<len;i++)
+	{
+		tx_message.Data[i] = cantxbuf[i];
+	}
 
-		while(CAN_Transmit(CAN2,&tx_message)==CAN_TxStatus_NoMailBox)
+	while(CAN_Transmit(CAN2,&tx_message)==CAN_TxStatus_NoMailBox)
+	{
+		cnt++;
+		if(cnt>5)
 		{
-			cnt++;
-			if(cnt>5)
-			{
-				cnt = 0;
-				break;
-			}
+			cnt = 0;
+			break;
 		}
+	}
 }
 
 

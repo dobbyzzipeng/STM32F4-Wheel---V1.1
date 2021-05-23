@@ -14,7 +14,7 @@
 struct __FILE 
 {
 	int handle; 
-}; 
+};
 
 FILE __stdout;       
 //定义_sys_exit()以避免使用半主机模式    
@@ -35,8 +35,9 @@ int fputc(int ch, FILE *f)
 #define USE_USART3_TX_DMA 1
 #define USE_USART3_RX_DMA 1
 #define USE_USART3_RX_IDLE 1
-//串口发送缓存区 	
+//串口发送缓存区
 __align(8) uint8_t USART3_TX_BUF[USART3_MAX_SEND_LEN] = {0};
+__align(8) uint8_t USART3_RX_BUF[USART3_MAX_RECV_LEN] = {0};
 void usart3_init(unsigned long int baudrate)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -158,15 +159,8 @@ void usart3_init(unsigned long int baudrate)
 }
 
 extern void NX_Data_prase(uint8_t buf[]);
-
-uint8_t USART3_RX_BUF[USART3_MAX_RECV_LEN] = {0};
 uint8_t usart3_dma_tx_flag = 0;
-volatile uint8_t usart3_rx_flag = 0;
-volatile uint8_t usart3_sof_flag = 0,usart3_fun_flag = 0;
-uint16_t usart3_rx_cnt = 0;
-volatile uint8_t usart3_rx_len = 0;
 uint16_t usart3_dmarx_len = 0;
-T_USART_REV U3_rev = {0};
 void USART3_IRQHandler(void)//串口3中断服务程序
 {
 	uint8_t Res = 0;
@@ -174,31 +168,6 @@ void USART3_IRQHandler(void)//串口3中断服务程序
 	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) 
 	{
 		Res = USART_ReceiveData(USART3);	//读取接收到的数据
-		if(U3_rev.sof1_flag == 0)
-		{
-			if(Res==SERVER_FRAME_SOF)//SOF
-			{
-			   U3_rev.sof1_flag = 1;
-			   U3_rev.rx_cnt = 0;
-			}
-		}
-		if(U3_rev.sof1_flag == 1)
-		{
-			USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-			U3_rev.rx_cnt++;
-			if(U3_rev.rx_cnt==3)
-			{
-				U3_rev.len = Res;
-			}
-			if(U3_rev.rx_cnt >= U3_rev.len && U3_rev.rx_cnt >3)
-			{
-				if(Res==SERVER_FRAME_EOF)//EOF
-				{
-					
-				}
-				U3_rev.sof1_flag=0;
-			}
-		}
 		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
 	}
 	if (USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)//空闲中断,
@@ -282,16 +251,11 @@ void DMA1_Stream3_IRQHandler(void)//USART3 TX DMA
 }
 
 /**************************UART4 TX RX DMA Config !!********************************/
-//串口发送缓存区
-__align(8) uint8_t USART4_TX_BUF[USART4_MAX_SEND_LEN] = {0};	  
-//串口接收缓存区
-uint8_t USART4_RX_BUF[USART4_MAX_RECV_LEN] = {0};
-uint16_t USART4_RX_STA = 0;
-
+__align(8) uint8_t USART4_TX_BUF[USART4_MAX_SEND_LEN] = {0};
+__align(8) uint8_t USART4_RX_BUF[USART4_MAX_RECV_LEN] = {0};
 #define USE_USART4_TX_DMA 1
 #define USE_USART4_RX_DMA 1
 #define USE_USART4_RX_IDLE 1//使能空闲中断
-
 void usart4_init(unsigned long int baudrate)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -407,46 +371,17 @@ void usart4_init(unsigned long int baudrate)
 		NVIC_Init(&nvic);
 //	}
 	#endif
-//	TIM7_Init(1000-1,8400-1);		//100ms中断
-//	USART4_RX_STA=0;		//清零
-//	TIM_Cmd(TIM7, DISABLE); //关闭定时器7
 }
 
 uint8_t usart4_dma_len = 0;
 uint8_t usart4_dma_tx_flag = 0;
-T_USART_REV U4_rev = {0};
+//T_USART_REV U4_rev = {0};
 void UART4_IRQHandler(void)//串口4中断服务程序
 {
 	uint8_t res = 0,clear = 0;
 	if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET) 
 	{
 		res = USART_ReceiveData(UART4);	//读取接收到的数据
-		if(U4_rev.sof1_flag==0){
-			if(res==0x55){
-				U4_rev.sof1_flag = 1;
-				U4_rev.rx_cnt = 0;
-				USART4_RX_BUF[U4_rev.rx_cnt] = res;
-			}
-		}
-		 if(U4_rev.sof1_flag==1&&U4_rev.sof2_flag==0)
-		{
-			if(res==0x53)
-			{
-				U4_rev.sof2_flag = 1;
-				U4_rev.rx_cnt = 1;
-				USART4_RX_BUF[U4_rev.rx_cnt] = res;
-			}
-			else{
-				U4_rev.sof1_flag = 0;
-				U4_rev.sof2_flag = 0;
-			}
-		}
-		if(U4_rev.sof1_flag==1 && U4_rev.sof2_flag==1)
-		{
-			USART4_RX_BUF[U4_rev.rx_cnt] = res;
-			U4_rev.rx_cnt++;
-
-		}
 		USART_ClearITPendingBit(UART4, USART_IT_RXNE);
 	}
 	if(USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)
@@ -518,18 +453,14 @@ void DMA1_Stream2_IRQHandler(void)//UART4 RX DMA IRQ
 	{
 		DMA_ClearFlag(DMA1_Stream2, DMA_FLAG_TCIF2);
 		DMA_ClearITPendingBit(DMA1_Stream2, DMA_FLAG_TCIF2);
-
-//		JY901S_prase(USART4_RX_BUF);
 	}
 }
 
 #define USE_USART5_TX_DMA 1
 #define USE_USART5_RX_DMA 1
 #define USE_USART5_RX_IDLE 1//使能空闲中断
-//接收缓存区
 uint8_t USART5_RX_BUF[USART5_MAX_RECV_LEN] = {0};
 uint8_t USART5_TX_BUF[USART5_MAX_SEND_LEN] = {0};
-//bound:波特率	  
 void usart5_init(unsigned long int baudrate)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -645,8 +576,7 @@ void usart5_init(unsigned long int baudrate)
 	#endif
 }
 
-T_USART_REV U5_rev;
-//接收到的数据长度
+//T_USART_REV U5_rev;
 uint8_t usart5_dma_tx_flag = 0,usart5_dma_tx_len = 0;
 void UART5_IRQHandler(void)
 {
@@ -718,18 +648,9 @@ void send_data_dma_u5(uint8_t data[100],uint8_t num)
 	USART5_DMA_Send(USART5_TX_BUF,num);
 }
 
-/******************USART6 TX RX DMA Config !!*****************************/
-//串口发送缓存区 	
-__align(8) uint8_t USART6_TX_BUF[USART6_MAX_SEND_LEN] = {0}; 	//发送缓冲,最大USART3_MAX_SEND_LEN字节  	  
-//串口接收缓存区 	
-__align(8) uint8_t USART6_RX_BUF[USART6_MAX_RECV_LEN] = {0}; 				//接收缓冲,最大USART3_MAX_RECV_LEN个字节.
-
-//接收状态
-//bit15，	接收完成标志
-//bit14，	接收到0x0d
-//bit13~0，	接收到的有效字节数目
-   //接收状态标记	
-uint16_t USART6_RX_STA=0; 
+/******************USART6 TX RX DMA Config !!*****************************/	
+__align(8) uint8_t USART6_TX_BUF[USART6_MAX_SEND_LEN] = {0};	  	
+__align(8) uint8_t USART6_RX_BUF[USART6_MAX_RECV_LEN] = {0};
 #define USE_USART6_TX_DMA 1
 #define USE_USART6_RX_DMA 1
 #define USE_USART6_RX_IDLE 1
@@ -863,23 +784,13 @@ void reset2isp(void)  //产生软件复位!!
 }
 
 uint16_t usart6_dma_tx_len = 0;
-volatile uint16_t usart6_sof_flag = 0;
-uint64_t usart6_rx_cnt = 0;
-uint16_t usart6_len = 0;
 uint8_t usart6_dma_tx_flag = 0;
-volatile uint8_t usart6_overtime_cnt = 0;
-volatile uint8_t boot_jump_flag = 0;
-
-uint64_t Cabin_cnt = 0;
-uint16_t total_num=0;
-u8 Res_data_Set_flag=0;
 void USART6_IRQHandler(void)
 {
 	uint8_t Res = 0,clear = 0;
 	if (USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)//空闲中断
 	{
 		usart6_dma_tx_len = USART6_DMA_RX_LEN(DMA2_Stream1,USART6_MAX_RECV_LEN);
-		send_data_dma_u1(USART6_RX_BUF,usart6_dma_tx_len);
 		DMA_Cmd(DMA2_Stream1,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA2_Stream1));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功
 		DMA_SetCurrDataCounter(DMA2_Stream1,USART6_MAX_RECV_LEN);//重新设置数据传输量
@@ -889,7 +800,6 @@ void USART6_IRQHandler(void)
 	}
 	if(USART_GetITStatus(USART6, USART_IT_RXNE) != RESET)
 	{
-		
 		USART_ClearITPendingBit(USART6, USART_IT_RXNE);
 	}
 }
@@ -959,11 +869,9 @@ void server_485_init(void)
 	usart6_init(115200);
 
 	GPIO_InitTypeDef GPIO_InitStructure;
-
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
-
 	GPIO_StructInit(&GPIO_InitStructure);
-
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
+	
 	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_8;
 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;
@@ -972,9 +880,6 @@ void server_485_init(void)
 	GPIO_Init(GPIOC,&GPIO_InitStructure);
 	SERVER_485_RX();//默认接收模式
 }
-
-
-
 
 
 

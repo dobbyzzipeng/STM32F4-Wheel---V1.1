@@ -26,8 +26,6 @@ typedef struct{
 }Battery;
 extern Battery Battery_Msg;
 
-
-
 void Bms_Get_Soc(void);
 #endif
 

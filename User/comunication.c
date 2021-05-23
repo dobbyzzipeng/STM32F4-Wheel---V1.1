@@ -101,6 +101,7 @@ void NX_Data_Return(void)
 		Rbuf[cnt++] = 0X19;
 		Rbuf[2] = cnt;
 		Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);//º∆À„–£—È
-		send_data_dma_u1(Rbuf,cnt);
+//		send_data_dma_u1(Rbuf,cnt);
+		send_data_dma_u4(Rbuf,cnt);
 	}
 }

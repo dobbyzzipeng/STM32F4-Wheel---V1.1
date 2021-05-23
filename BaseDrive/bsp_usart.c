@@ -17,7 +17,6 @@
 
 static uint8_t UsartDmaTxFlag = 0;//1:正在发送   0:发送完成
 uint8_t USART1_RX_BUF[USART1_REC_LEN] = {0};/* 接收缓冲区 */
-uint16_t USART1_RX_STA = 0;
 uint16_t usart1_dma_tx_len = 0;
 __align(8) uint8_t USART1_TX_BUF[UART1_TX_SIZE] = {0};
 /*

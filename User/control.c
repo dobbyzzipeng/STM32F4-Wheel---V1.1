@@ -39,11 +39,11 @@ void Auto_Release_Plane(uint8_t agvdir)
 			case FOUR:
 				g_release_flag = DONE;
 				if(agvdir==OUT){
-					g_agv_task_state = CLOSE_EJECT;//first release,next close eject
+					g_agv_task_state = GOHOME_WITHOUT_PLANE;//first release,next goback for space
 				}
-				else if(agvdir==IN){
-					g_agv_task_state = RELEASE_PLANE_IN;
-				}
+//				else if(agvdir==IN){
+//					g_agv_task_state = RELEASE_PLANE_IN;
+//				}
 			break;
 		}
 	}
@@ -57,7 +57,7 @@ void Auto_Release_Plane(uint8_t agvdir)
 		PP_Motor_Stop();
 		UD_Motor_Stop();
 		Catch_Motor_Stop();
-		u1_printf("pickplane is init ok...\r\n");
+		u1_printf("pickplane is open ok...\r\n");
 	}
 }
 
@@ -129,7 +129,6 @@ void Auto_Pick_Plane(uint8_t flag,uint8_t dir)
 		UD_Motor_Stop();
 		PP_Motor_Stop();
 		Catch_Motor_Stop();
-		g_agv_task_state = GOHOME_WITHOUT_PLANE;
 		g_auto_pick_state = NONE;//清空状态机标志
 		u1_printf("pick machine is close...\r\n");
 	}
@@ -200,7 +199,7 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
 	static uint16_t runcnt = 0;
 	int8_t turn_flag = 0;
 	runcnt++;
-	if(runcnt>60){
+	if(runcnt>60){//不可修改
 		runcnt = 0;
 		
 		if(g_release_flag!=NONE && g_release_flag!=DONE){//还没有放完飞机
@@ -209,55 +208,86 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
 		else if(g_auto_pick_state!=NONE && g_auto_pick_state!=DONE){//还没有抬起飞机
 			speed = 0;omg = 0;turn_flag = 0;
 		}
-		else if(T_hmcb.flag>60000){//遇到横线
+		else if((T_hmcb.flag&0xE187)==0XE187)
+		{//遇到横线
 			if(plane==WITHPLANE)
 			{
 				if(dir==IN)
 				{
 					if(in_black_line_flag==0){
-						in_black_line_flag = 1;
-						g_release_flag = ONE;//释放无人机
-						{speed = 0;omg = 0;turn_flag = 0;}
-						u1_printf("first line stop,release plane...\r\n");
+						in_stop_cnt++;
+						if(in_stop_cnt>1){
+							in_stop_cnt = 1;
+							in_black_line_flag = 1;
+						}
+						{speed = -150;omg = 0;turn_flag = 0;}
+						u1_printf("first line,not stop still go back...\r\n");
 					}
 					else if(in_black_line_flag==1){
 						in_stop_cnt++;
-						if(in_stop_cnt>2){
-							in_stop_cnt = 2;
+						if(in_stop_cnt>3){
+							in_stop_cnt = 3;
 							in_black_line_flag = 2;
 							{speed = 0;omg = 0;turn_flag = 0;}
-							g_agv_task_state = RELEASE_PLANE_IN;//agv stop and charge
-							u1_printf("second line stop,agv change...\r\n");
+							g_release_flag = ONE;//agv stop and release plane
+							u1_printf("find second line,agv stop and release plane\r\n");
 						}
 						else{
-							speed = -150;
-							omg = 0;
-							turn_flag = 0;
+							{speed = -150;omg = 0;turn_flag = 0;}
 							u1_printf("go back,find second line...\r\n");
+						}
+					}
+					else if(in_black_line_flag==2){
+						in_stop_cnt++;
+						if(in_stop_cnt>5){
+							in_stop_cnt = 5;
+							in_black_line_flag = 3;
+							{speed = 0;omg = 0;turn_flag = 0;}
+							g_agv_task_state = RELEASE_PLANE_IN;//agv stop and charge
+							u1_printf("find third line stop,agv change...\r\n");
+						}
+						else{
+							{speed = -150;omg = 0;turn_flag = 0;}
+							u1_printf("go back,find third line...\r\n");
 						}
 					}
 				}
 				else if(dir==OUT){
 					if(out_black_line_flag==0){
-						out_black_line_flag = 1;
-						g_auto_pick_state = ONE;//夹取无人机
-						{speed = 0;omg = 0;turn_flag = 0;}
-						u1_printf("first line stop,pick plane...\r\n");
+						out_stop_cnt++;
+						if(out_stop_cnt>1){
+							out_stop_cnt = 1;
+							out_black_line_flag = 1;
+							g_auto_pick_state = ONE;//夹取无人机
+							{speed = 0;omg = 0;turn_flag = 0;}
+							u1_printf("first line stop,pick plane...\r\n");
+						}
+						else{
+							{speed = 150;omg = 0;turn_flag = 0;}
+							u1_printf("first line find...\r\n");
+						}
 					}
 					else if(out_black_line_flag==1){
 						out_stop_cnt++;
-						if(out_stop_cnt>2){
-							out_stop_cnt = 2;
+						if(out_stop_cnt>3){
+							out_stop_cnt = 3;
 							out_black_line_flag = 2;
+						}
+						{speed = 150;omg = 0;turn_flag = 0;}
+						u1_printf("second line not stop,go out...\r\n");
+					}
+					else if(out_black_line_flag==2){
+						out_stop_cnt++;
+						if(out_stop_cnt>5){
+							out_stop_cnt = 5;
+							out_black_line_flag = 3;
 							{speed = 0;omg = 0;turn_flag = 0;}
 							g_release_flag = ONE;//释放无人机
-							u1_printf("second line stop,release plane...\r\n");
+							u1_printf("third line stop,release plane...\r\n");
 						}
 						else{
-							speed = 150;
-							omg = 0;
-							turn_flag = 0;
-							u1_printf("go out,find second line...\r\n");
+							{speed = 150;omg = 0;turn_flag = 0;}
+							u1_printf("go out,find third line...\r\n");
 						}
 					}
 				}
@@ -270,28 +300,40 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
 						if(in_stop_cnt1>1){
 							in_stop_cnt1 = 1;
 							in_black_line_flag1 = 1;
+							{speed = 0;omg = 0;turn_flag = 0;}
+							g_auto_pick_state = ONE;//CLOSE PICK MACHINE
+							u1_printf("first line,agv stop and close pick...\r\n");
 						}
-						u1_printf("first line,not stop,agv is still go back...\r\n");
-						speed = -150;
-						omg = 0;
-						turn_flag = 0;
+						else{
+							u1_printf("first line find...\r\n");
+							{speed = -150;omg = 0;turn_flag = 0;}
+						}
 					}
 					else if(in_black_line_flag1==1){
 						in_stop_cnt1++;
 						if(in_stop_cnt1>3){
 							in_stop_cnt1 = 3;
 							in_black_line_flag1 = 2;
-							speed = 0;
-							omg = 0;
-							turn_flag = 0;
-							g_agv_task_state = CHARGE_WITHOUT_PLANE;//切换到充电状态
-							u1_printf("second line,agv stop and charge,plane is outside...\r\n");
+							{speed = -150;omg = 0;turn_flag = 0;}
+							u1_printf("second line,agv still go back...\r\n");
 						}
 						else{
-							speed = -150;
-							omg = 0;
-							turn_flag = 0;
+							{speed = -150;omg = 0;turn_flag = 0;}
 							u1_printf("go back,find second line...\r\n");
+						}
+					}
+					else if(in_black_line_flag1==2){
+						in_stop_cnt1++;
+						if(in_stop_cnt1>5){
+							in_stop_cnt1 = 5;
+							in_black_line_flag1 = 3;
+							{speed = 0;omg = 0;turn_flag = 0;}
+							g_agv_task_state = CHARGE_WITHOUT_PLANE;//切换到充电状态
+							u1_printf("third line,agv stop and charge,plane is outside...\r\n");
+						}
+						else{
+							{speed = -150;omg = 0;turn_flag = 0;}
+							u1_printf("go back,find third line...\r\n");
 						}
 					}
 				}
@@ -303,42 +345,56 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
 							out_black_line_flag1 = 1;
 						}
 						u1_printf("first line,agv is still go out...\r\n");
-						speed = 150;
-						omg = 0;
-						turn_flag = 0;
+						{speed = 150;omg = 0;turn_flag = 0;}
 					}
 					else if(out_black_line_flag1==1){
 						out_stop_cnt1++;
 						if(out_stop_cnt1>3){
 							out_stop_cnt1 = 3;
 							out_black_line_flag1 = 2;
-							//machine
-							u1_printf("find second line,ready to pick plane...\r\n");
-							speed = 0;
-							omg = 0;
-							turn_flag = 0;
+							g_release_flag = ONE;//open pick
+							u1_printf("find second line,ready to open pick...\r\n");
+							{speed = 0;omg = 0;turn_flag = 0;}
 						}
 						else{
 							u1_printf("go out,find second line...\r\n");
-							speed = 150;
-							omg = 0;
-							turn_flag = 0;
+							{speed = 150;omg = 0;turn_flag = 0;}
+						}
+					}
+					else if(out_black_line_flag1==2){
+						out_stop_cnt1++;
+						if(out_stop_cnt1>5){
+							out_stop_cnt1 = 5;
+							out_black_line_flag1 = 3;
+							//g_agv_task_state = CVRTK_FIND_PLANE;
+							u1_printf("find third line,ready to pick plane...\r\n");
+							{speed = 0;omg = 0;turn_flag = 0;}
+						}
+						else{
+							u1_printf("go out,find third line...\r\n");
+							{speed = 150;omg = 0;turn_flag = 0;}
 						}
 					}
 				}
 			}
 		}
-		else if(T_hmcb.flag>2032 && T_hmcf.flag<=2016 && T_hmcf.flag>0){
+		else if((T_hmcb.flag>=1920 && T_hmcf.flag>=1920)/*||(T_hmcf.flag<800 && T_hmcb.flag>=1920)*/){
 			speed = 70;
 			omg = 45;
 			turn_flag = 1;//turn riht
-u1_printf("turn right hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
+			u1_printf("turn right hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
 		}
-		else if(T_hmcb.flag<1984&&T_hmcb.flag>0&&T_hmcf.flag>=1984){
-			speed = 70;
-			omg = 45;
-			turn_flag = -1;//turn left
-u1_printf("turn left hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
+		else if((T_hmcb.flag<=960&&T_hmcb.flag>0&&T_hmcf.flag<=960 && T_hmcf.flag>0)/*||(T_hmcb.flag<800 && T_hmcf.flag>=1920)*/){
+			{speed = 70;omg = 45;turn_flag = -1;}
+			u1_printf("turn left hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
+		}
+		else if(/*(T_hmcf.flag>=1984)||*/(T_hmcb.flag>0&&T_hmcb.flag<800&&T_hmcf.flag>=1920)){
+			{speed = 70;omg = 90;turn_flag = 0;}
+			u1_printf("run right hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
+		}
+		else if(/*(T_hmcf.flag<960&&T_hmcf.flag>0)||*/(T_hmcf.flag>0&&T_hmcf.flag<800&&T_hmcb.flag>=1920)){
+			{speed = 70;omg = -90;turn_flag = 0;}
+			u1_printf("run left hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
 		}
 		else if(T_hmcf.flag==0||T_hmcb.flag==0){
 			{speed = 0;omg = 0;turn_flag = 0;}
@@ -346,13 +402,13 @@ u1_printf("turn left hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
 		else{
 			if(dir==OUT){
 				speed = 150;
+			u1_printf("go out hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
 			}
 			else if(dir==IN){
-				speed = -150;	
+				speed = -150;
+			u1_printf("go back hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
 			}
-			omg = 0;
-			turn_flag = 0;	
-u1_printf("go back hmcf:%d hmcb:%d\r\n",T_hmcf.flag,T_hmcb.flag);
+			{omg = 0;turn_flag = 0;}
 		}
 		if(turn_flag == 1){//turn riht
 			motor1_speed = speed;

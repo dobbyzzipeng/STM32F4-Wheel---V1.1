@@ -14,31 +14,14 @@
 
 extern uint8_t  USART4_RX_BUF[USART4_MAX_RECV_LEN];
 extern uint8_t  USART4_TX_BUF[USART4_MAX_SEND_LEN];
-extern uint16_t USART4_RX_STA;   	//接收数据状态
 
 extern uint8_t  USART3_RX_BUF[USART3_MAX_RECV_LEN];
 extern uint8_t  USART3_TX_BUF[USART3_MAX_SEND_LEN];
-extern uint16_t usart3_rx_num;
-extern uint8_t  usart3_rx_data_flag;
 
 #define USART6_MAX_SEND_LEN 1024
 #define USART6_MAX_RECV_LEN 1024
 extern __align(8) uint8_t USART6_TX_BUF[USART6_MAX_SEND_LEN];//发送缓冲,最大USART3_MAX_SEND_LEN字节  	  	
 extern __align(8) uint8_t USART6_RX_BUF[USART6_MAX_RECV_LEN];//接收缓冲,最大USART3_MAX_RECV_LEN个字节.
-extern uint16_t   usart6_rx_flag,usart6_len;
-
-//接收状态
-//bit15，	接收完成标志
-//bit14，	接收到0x0d
-//bit13~0，	接收到的有效字节数目
-//接收状态标记	
-extern uint16_t USART6_RX_STA; 
-extern volatile uint8_t boot_jump_flag;
-
-#define SERVER_FRAME_SOF 0X7f
-#define SERVER_FRAME_EOF 0X6e
-#define MAIN_data 0X01
-#define CADIN_data 0X02
 
 void usart6_init(unsigned long int baudrate);
 void usart3_init(unsigned long int baudrate);
@@ -46,7 +29,6 @@ void usart4_init(unsigned long int baudrate);
 void USART3_DMA_Send(uint8_t *pbuffer, uint32_t size);
 void send_data_dma_u3(uint8_t data[100],uint8_t num);
 uint16_t USART3_DMA_RX_LEN(DMA_Stream_TypeDef* DMAy_Streamx,uint16_t BufSize);
-void usart6_dma_tx(void);
 void USART6_DMA_Send(uint8_t *pbuffer, uint32_t size);
 void send_data_dma_u6(uint8_t data[100],uint8_t num);
 void send_data_dma_u4(uint8_t data[100],uint8_t num);
@@ -79,5 +61,4 @@ void usart5_init(unsigned long int baudrate);
 void send_data_dma_u5(uint8_t data[100],uint8_t num);
 uint16_t USART5_DMA_RX_LEN(DMA_Stream_TypeDef* DMAy_Streamx,uint16_t BufSize);
 
-//----------------------- Extern variable ----------------------//
 #endif // __usart_h__
