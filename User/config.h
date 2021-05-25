@@ -3,6 +3,7 @@
 #include "sys.h"
 #include "bsp_delay.h"
 #include "bsp_usart.h"
+#include "usart.h"
 #include "can1.h"
 #include "can2.h"
 #include "pwm.h"
@@ -17,7 +18,8 @@
 #include "stdint.h"
 #include "comunication.h"
 #include "control.h"
-#include "usart.h"
+#include "gps.h"
+#include "rtk.h"
 
 #define USE_IAP 0
 #define Version 1

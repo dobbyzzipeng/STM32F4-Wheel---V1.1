@@ -205,6 +205,7 @@ void debug(void)
 
 int main(void)
 {
+	double dis = 0;
 	bsp_init();
 	Enable_All_Motor_Modbus();
 //	Auto_Release_Plane(INIT);
@@ -216,9 +217,11 @@ int main(void)
 			switch(g_agv_work_mode)
 			{
 				case STANDBY:
+					dis = gps_get_distance(118.47810568,30.516160653,118.478099582,30.516160595);
 					Stop_All_Chassicmotor();
 					Stop_All_Bldcmotor();
-					u1_printf("standby\r\n");
+					delay_ms(100);
+					u1_printf("standby,dis is:%f\r\n",dis);
 				break;
 				case REMOTE_CTR:
 					if(right_Switch==right_Switch_UP){
@@ -232,6 +235,15 @@ int main(void)
 					else if(right_Switch==right_Switch_MID){
 						Auto_FollowLine_Task(OUT,WITHPLANE);
 					}
+					if(left_Wheel>100){
+					  //3051.6160569,N,11847.8117588
+//						dis = gps_get_distance(118.7968904,30.8602454,118.7968626466,30.860267615);
+						dis = rtk_dis_analysis(118.47813424,30.51614724,118.478117588,30.516160569);//0.579
+						double ang = gps_get_angle(118.7968904,30.8602454,118.7968626466,30.860267615);
+						delay_ms(100);
+						u1_printf("standby,dis is:%lfm,ang:%lf\r\n",dis,ang);
+					}
+
 				break;
 				case AUTO_CTR:
 					if(AGV_CMD.agv_cmd!=0 && AGV_CMD.last_agv_cmd==0&&g_agv_task_state==TASK_OK_CHARGE){
@@ -293,7 +305,7 @@ int main(void)
 			DR16_Unlink_Check();
 //			NX_Data_Return();
 //			Data_Upload();
-			debug();
+//			debug();
 			Task_timer_flag = 0;
 		}
 	}

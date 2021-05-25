@@ -39,6 +39,8 @@
 .\obj\dr16.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
 .\obj\dr16.o: ..\..\BaseDrive\bsp_delay.h
 .\obj\dr16.o: ..\..\BaseDrive\bsp_usart.h
+.\obj\dr16.o: ..\..\BaseDrive\usart.h
+.\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\dr16.o: ..\..\BaseDrive\can1.h
 .\obj\dr16.o: ..\..\BaseDrive\can2.h
 .\obj\dr16.o: ..\..\BaseDrive\pwm.h
@@ -49,7 +51,7 @@
 .\obj\dr16.o: ..\..\BaseDrive\PickPlane.h
 .\obj\dr16.o: ..\..\BaseDrive\bms.h
 .\obj\dr16.o: ..\..\BaseDrive\hmcsensor.h
-.\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\dr16.o: ..\..\User\comunication.h
 .\obj\dr16.o: ..\..\User\control.h
-.\obj\dr16.o: ..\..\BaseDrive\usart.h
+.\obj\dr16.o: ..\..\BaseDrive\gps.h
+.\obj\dr16.o: ..\..\BaseDrive\rtk.h

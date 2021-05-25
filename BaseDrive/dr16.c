@@ -126,6 +126,7 @@ void USART2_IRQHandler(void)            //串口2中断服务程序
 			Channel_3 = (uint16_t)((sbus_rx_buffer[4] >> 1) | (sbus_rx_buffer[5] << 7)) & 0x07ff; //!< Channel 3
 			left_Switch =sbus_rx_buffer[9]& 0x0f; 
 			right_Switch =(sbus_rx_buffer[6]& 0x0f)+1; 
+			left_Wheel = sbus_rx_buffer[10];
 			
 			headflag = 0;
 			tailflag = 0;
