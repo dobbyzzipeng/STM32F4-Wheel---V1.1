@@ -217,16 +217,15 @@ int main(void)
 			switch(g_agv_work_mode)
 			{
 				case STANDBY:
-					dis = gps_get_distance(118.47810568,30.516160653,118.478099582,30.516160595);
 					Stop_All_Chassicmotor();
 					Stop_All_Bldcmotor();
 					delay_ms(100);
-					u1_printf("standby,dis is:%f\r\n",dis);
+					u1_printf("standby...\r\n");
 				break;
 				case REMOTE_CTR:
 					if(right_Switch==right_Switch_UP){
+						Auto_FollowLine_Task(OUT,WITHPLANE);
 						chassic_control_task(Channel_0,Channel_1,Channel_3);
-//						Auto_Pick_Plane(FIND);//手动模式下调试自动
 					}
 					else if(right_Switch==right_Switch_DOWN){
 						Pick_Plane_Ctr_Task(Channel_0,Channel_1,Channel_2);
@@ -238,12 +237,11 @@ int main(void)
 					if(left_Wheel>100){
 					  //3051.6160569,N,11847.8117588
 //						dis = gps_get_distance(118.7968904,30.8602454,118.7968626466,30.860267615);
-						dis = rtk_dis_analysis(118.47813424,30.51614724,118.478117588,30.516160569);//0.579
+						dis = rtk_dis_analysis(118.478160210,30.516139289,118.478163486,30.516143996);//0.579
 						double ang = gps_get_angle(118.7968904,30.8602454,118.7968626466,30.860267615);
 						delay_ms(100);
 						u1_printf("standby,dis is:%lfm,ang:%lf\r\n",dis,ang);
 					}
-
 				break;
 				case AUTO_CTR:
 					if(AGV_CMD.agv_cmd!=0 && AGV_CMD.last_agv_cmd==0&&g_agv_task_state==TASK_OK_CHARGE){

@@ -163,147 +163,127 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>step,0x0A</ItemText>
+          <ItemText>Channel_0,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Channel_0,0x0A</ItemText>
+          <ItemText>Channel_1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Channel_1,0x0A</ItemText>
+          <ItemText>Channel_2,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Channel_2,0x0A</ItemText>
+          <ItemText>Channel_3,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Channel_3,0x0A</ItemText>
+          <ItemText>left_Switch</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sbus_rx_buffer</ItemText>
+          <ItemText>right_Switch</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rc_data_flag</ItemText>
+          <ItemText>Battery_Msg</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>left_Switch</ItemText>
+          <ItemText>rc_data_count</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>right_Switch</ItemText>
+          <ItemText>rc_data_flag</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Battery_Msg</ItemText>
+          <ItemText>UDMotor0_Sp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>delaycnt,0x0A</ItemText>
+          <ItemText>UDMotor1_Sp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>T_hmcf</ItemText>
+          <ItemText>PPMotor0_Sp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>T_hmcb</ItemText>
+          <ItemText>PPMotor1_Sp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rc_data_count</ItemText>
+          <ItemText>CAMotor0_Sp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rc_data_flag</ItemText>
+          <ItemText>CAMotor1_Sp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>UDMotor0_Sp,0x0A</ItemText>
+          <ItemText>CV</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>UDMotor1_Sp,0x0A</ItemText>
+          <ItemText>Eject</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PPMotor0_Sp,0x0A</ItemText>
+          <ItemText>T_Plane</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PPMotor1_Sp,0x0A</ItemText>
+          <ItemText>g_auto_pick_state</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CAMotor0_Sp,0x0A</ItemText>
+          <ItemText>AGV_CMD</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CAMotor1_Sp,0x0A</ItemText>
+          <ItemText>g_agv_work_mode</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CV</ItemText>
+          <ItemText>Linef,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Eject</ItemText>
+          <ItemText>Lineb,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>T_Plane</ItemText>
+          <ItemText>T_hmcf</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_auto_pick_state</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>AGV_CMD</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>g_agv_work_mode</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Linef,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Lineb,0x0A</ItemText>
+          <ItemText>T_hmcb</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
