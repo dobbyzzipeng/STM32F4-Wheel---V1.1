@@ -98,12 +98,12 @@ int main(void)
 						case PICK_PLANE_OUT:
 							Auto_FollowLine_Task(OUT,WITHPLANE);
 							Auto_Pick_Plane(FIND,OUT);
-							Auto_Release_Plane(OUT);
+							Auto_Release_Plane(OUT);//g_release_flag = DONE;
 						break;
 						case GOHOME_WITHOUT_PLANE:
 							Auto_FollowLine_Task(IN,NOPLANE);//black line or until charge flag
 							if(g_auto_pick_state!=NONE&&g_auto_pick_state!=DONE){
-								Auto_Pick_Plane(CLOSE,IN);
+								Auto_Pick_Plane(CLOSE,IN);//g_auto_pick_state = NONE;//清空状态机标志
 							}
 						break;
 						case CHARGE_WITHOUT_PLANE:
@@ -113,11 +113,11 @@ int main(void)
 						break;
 						case GET_OUT_FIND_PLANE:
 							Auto_FollowLine_Task(OUT,NOPLANE);
-							if(g_release_flag!=NONE){
-								Auto_Release_Plane(INIT);
+							if(g_release_flag!=NONE&&g_release_flag!=DONE){
+								Auto_Release_Plane(INIT);//g_release_flag==DONE
 							}
 							if(g_release_flag==DONE){
-								Auto_Pick_Plane(FIND,IN);
+								Auto_Pick_Plane(FIND,IN);//g_auto_pick_state = DONE;
 							}
 							if(g_auto_pick_state==DONE){
 								g_agv_task_state = PICK_PLANE_IN;
@@ -131,7 +131,7 @@ int main(void)
 //						break;
 						case PICK_PLANE_IN:
 							Auto_FollowLine_Task(IN,WITHPLANE);
-							Auto_Release_Plane(IN);
+							Auto_Release_Plane(IN);//g_release_flag = DONE;
 						break;
 						case RELEASE_PLANE_IN:
 							g_agv_task_state = TASK_OK_CHARGE;	
