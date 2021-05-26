@@ -7,6 +7,7 @@
 #define RAD_TO_DU 57.32f
 #define RATIO	50
 #define _90_ANGLE	204800
+#define	myabs(x)	((x>0)?(x):(-(x)))
 
 typedef enum{
 	STANDBY = 0,
@@ -75,6 +76,10 @@ void AGV_Work_Mode_Choose(void);
 void RGB_Ctr_Task(void);
 void Plane_Check_Task(void);
 void Auto_FollowLine_Task(uint8_t dir,uint8_t plane);
+void FollowLine_process(uint8_t dir);
 void Follow_Line_Clear(void);
 int Limit(int datain,int max);
+void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
+void chassic_control_task(int16_t x,int16_t y,int16_t w);
+
 #endif

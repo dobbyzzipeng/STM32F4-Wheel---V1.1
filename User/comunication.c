@@ -5,7 +5,7 @@
 #include "crc8.h"
 #include "can2.h"
 
-void Data_Upload(void)
+void AGV_Data_Upload(void)
 {
 	uint8_t cnt=0;
 	uint8_t Rbuf[128] = {0};

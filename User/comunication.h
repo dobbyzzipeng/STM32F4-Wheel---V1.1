@@ -33,7 +33,7 @@ typedef struct
 }T_CMD;
 extern T_CMD AGV_CMD;
 
-void Data_Upload(void);
+void AGV_Data_Upload(void);
 void DownLoad_prase(uint8_t buf[]);
 void NX_Data_prase(uint8_t buf[]);
 void NX_Data_Return(void);

@@ -69,11 +69,12 @@ void Line_Analysis(uint16_t flag,T_LINE *L)
 	}
 	if(f_mark2!=0&&b_mark2!=0){
 		L->mid = 8;
-		L->twol = 1;
+		L->twol = 1;//探测开叉，不连续
 	}
 	else{
 		L->twol = 0;
 	}
+	L->last_wlineflag = L->wlineflag;
 	if(L->num>=12){
 		L->mid = 8;
 		L->wlineflag = 1;

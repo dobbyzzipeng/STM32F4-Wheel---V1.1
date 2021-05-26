@@ -24,168 +24,6 @@ void bsp_init(void)
 	u1_printf("sys init finish!\r\n");
 }
 
-const int32_t step = 16384;//14Î»±àÂëÆ÷	204800
-static int16_t delaycnt = 0;
-float womg = 0;
-static float last_womg = 0;
-void chassic_control_task(int16_t x,int16_t y,int16_t w)
-{
-	int16_t speed = 0;
-	int16_t ch1 = 0,ch0 = 0,ch3 = 0;
-	int32_t omgea1 = 0,omgea2 = 0,omgea3 = 0,omgea4 = 0;
-	
-		ch1 = y-1000;	ch0 = x-1000;
-		ch3 = w-1000;
-
-		if(myabs(ch0)>DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
-			last_womg = womg;
-			if(ch0 > DEAD_ZONE && ch1 < -DEAD_ZONE){
-				womg = -45;
-				speed = -(myabs(ch0)+myabs(ch1))*0.6f;
-			}
-			else if(ch0 < -DEAD_ZONE && ch1 < -DEAD_ZONE){
-				womg = 45;
-				speed = -(myabs(ch0)+myabs(ch1))*0.6f;
-			}
-			else if(ch0 < -DEAD_ZONE && ch1 > DEAD_ZONE){
-				womg = -45;
-				speed = (myabs(ch0)+myabs(ch1))*0.6f;
-			}
-			else if(ch0 > DEAD_ZONE && ch1 > DEAD_ZONE){
-				womg = 45;
-				speed = (myabs(ch0)+myabs(ch1))*0.6f;
-			}
-		}
-		else if(myabs(ch0)>DEAD_ZONE && myabs(ch1)<DEAD_ZONE){
-			last_womg = womg;
-			if(ch0>DEAD_ZONE){
-				womg = 90;
-				speed = (ch0-DEAD_ZONE);
-			}
-			else if(ch0<-DEAD_ZONE){
-				womg = -90;
-				speed = -(ch0+DEAD_ZONE);
-			}
-		}
-		else if(myabs(ch0)<DEAD_ZONE && myabs(ch1)>DEAD_ZONE){
-			last_womg = womg;
-			womg = 0;
-			if(ch1>DEAD_ZONE){
-				speed = ch1-DEAD_ZONE;
-			}
-			else{
-				speed = ch1+DEAD_ZONE;
-			}
-		}
-		
-		if(myabs(ch3)>DEAD_ZONE){
-			
-			if(ch3>DEAD_ZONE){
-				speed = ch3-DEAD_ZONE;
-			}
-			else{
-				speed = ch3+DEAD_ZONE;
-			}
-			last_womg = womg;
-			womg = 45;
-			if(myabs(last_womg-womg)>20.0f){
-				delaycnt = 25;
-			}
-			delaycnt--;
-			if(delaycnt<=0){
-				delaycnt = 0;
-				motor1_speed = speed*3;
-				motor2_speed = speed*3;
-				motor3_speed = speed*3;
-				motor4_speed = speed*3;
-				omgea1 = -womg*LSB;
-				omgea2 =  womg*LSB;
-				omgea3 = -womg*LSB;
-				omgea4 =  womg*LSB;
-			}
-		}
-		else if(myabs(ch0)<DEAD_ZONE && myabs(ch1)<DEAD_ZONE){
-			womg = 0;
-			speed = 0;
-			motor1_speed = -speed*5;
-			motor2_speed = -speed*5;
-			motor3_speed = speed*5;
-			motor4_speed = speed*5;
-			omgea1 = womg*LSB;
-			omgea2 = womg*LSB;
-			omgea3 = womg*LSB;
-			omgea4 = womg*LSB;
-		}
-		else{
-			if(myabs(last_womg-womg)>60.0f){
-				delaycnt = 32;
-			}
-			else if(myabs(last_womg-womg)>30.0f){
-				delaycnt = 20;
-			}
-			delaycnt--;
-			if(delaycnt<=0){
-				delaycnt = 0;
-				motor1_speed = -speed*6;
-				motor2_speed = -speed*6;
-				motor3_speed = speed*6;
-				motor4_speed = speed*6;
-			}
-			omgea1 = womg*LSB;
-			omgea2 = womg*LSB;
-			omgea3 = womg*LSB;
-			omgea4 = womg*LSB;
-		}
-		
-		omgset_pos1 = Limit(omgea1,_90_ANGLE);
-		omgset_pos2 = Limit(omgea2,_90_ANGLE);
-		omgset_pos3 = Limit(omgea3,_90_ANGLE);
-		omgset_pos4 = Limit(omgea4,_90_ANGLE);
-}
-
-void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w)
-{
-	int16_t s_ch0 = 0,s_ch1 = 0,s_ch2 = 0;
-	s_ch2 = w-1000,s_ch1 = y-1000; s_ch0 = x-1000;
-	if(s_ch0>DEAD_ZONE)
-	{
-		Catch_Motor_Open();
-	}
-	else if(s_ch0<-DEAD_ZONE)
-	{
-		Catch_Motor_Close();
-	}
-	else 
-	{
-		Catch_Motor_Stop();
-	}
-	
-	if(s_ch1>DEAD_ZONE)
-	{
-		PP_Motor_Push();
-	}
-	else if(s_ch1<-DEAD_ZONE)
-	{
-		PP_Motor_Pull();
-	}
-	else 
-	{
-		PP_Motor_Stop();
-	}
-	
-	if(s_ch2>DEAD_ZONE)
-	{
-		UD_Motor_Up();
-	}
-	else if(s_ch2<-DEAD_ZONE)
-	{
-		UD_Motor_Down();
-	}
-	else 
-	{
-		UD_Motor_Stop();
-	}
-}
 
 
 void debug(void)
@@ -208,7 +46,7 @@ int main(void)
 	double dis = 0;
 	bsp_init();
 	Enable_All_Motor_Modbus();
-//	Auto_Release_Plane(INIT);
+	Auto_Release_Plane(INIT);
 	delay_ms(100);
 	while(1)
 	{
@@ -224,8 +62,8 @@ int main(void)
 				break;
 				case REMOTE_CTR:
 					if(right_Switch==right_Switch_UP){
-						Auto_FollowLine_Task(OUT,WITHPLANE);
 						chassic_control_task(Channel_0,Channel_1,Channel_3);
+						Stop_All_Bldcmotor();
 					}
 					else if(right_Switch==right_Switch_DOWN){
 						Pick_Plane_Ctr_Task(Channel_0,Channel_1,Channel_2);
@@ -240,7 +78,10 @@ int main(void)
 						dis = rtk_dis_analysis(118.478160210,30.516139289,118.478163486,30.516143996);//0.579
 						double ang = gps_get_angle(118.7968904,30.8602454,118.7968626466,30.860267615);
 						delay_ms(100);
-						u1_printf("standby,dis is:%lfm,ang:%lf\r\n",dis,ang);
+						u1_printf("dis is:%lfm,ang:%lf\r\n",dis,ang);
+						if(g_agv_task_state==CHARGE_WITHOUT_PLANE){
+							g_agv_task_state = GET_OUT_FIND_PLANE;//ÊÖ¶¯µ÷ÊÔÇÐ»»×´Ì¬
+						}
 					}
 				break;
 				case AUTO_CTR:
@@ -272,16 +113,20 @@ int main(void)
 						break;
 						case GET_OUT_FIND_PLANE:
 							Auto_FollowLine_Task(OUT,NOPLANE);
-							if(g_release_flag!=NONE && g_release_flag!=DONE){
+							if(g_release_flag!=NONE){
 								Auto_Release_Plane(INIT);
 							}
-							Auto_Pick_Plane(FIND,IN);
+							if(g_release_flag==DONE){
+								Auto_Pick_Plane(FIND,IN);
+							}
 							if(g_auto_pick_state==DONE){
 								g_agv_task_state = PICK_PLANE_IN;
 							}
 						break;
-//						case CVRTK_FIND_PLANE:
+//						case CVRTK_FIND_PLANE://ÊÓ¾õ RTKËÑË÷ÁúÓã
 //							Auto_Pick_Plane(FIND);
+//							chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
+//							Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
 //							g_agv_task_state = PICK_PLANE_IN;	
 //						break;
 						case PICK_PLANE_IN:
@@ -302,7 +147,7 @@ int main(void)
 			RGB_Ctr_Task();
 			DR16_Unlink_Check();
 //			NX_Data_Return();
-//			Data_Upload();
+//			AGV_Data_Upload();
 //			debug();
 			Task_timer_flag = 0;
 		}
