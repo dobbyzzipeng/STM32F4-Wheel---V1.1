@@ -54,7 +54,7 @@ typedef enum{
 typedef enum{
 	CLOSE=0,
 	FIND,
-}E_PICK;
+}E_PICK;//夹具状态
 
 typedef struct{
 	uint8_t g_plane_flag1;
@@ -64,9 +64,39 @@ typedef struct{
 }T_PLANE;
 extern T_PLANE T_Plane;//检测飞机触碰开关
 
+typedef enum{
+	BLACK = 0,
+	RED = 1,
+	GREEN = 2,
+	BLUE = 3,
+	WHITE = 4,
+	YELLOW = 5,
+	POURPLE = 6,
+	PINK = 7,
+	ORANGE = 8,
+	WARM = 9,
+}E_RGBCOLOR_LIST;//RGB颜色表
+
+typedef enum{
+	NOFLASH = 0,
+	_1HZ = 10,
+	_2HZ = 20,
+	_5HZ = 50,
+	_10HZ = 100,
+	_15HZ = 150,
+	_20HZ = 200,
+}E_FLASH_HZ;//RGB flash hz
+
+typedef enum{
+	_BALCK = 0,
+	_BREATH = 0X01,
+	_FLASH = 0X10,
+	_ON = 0X11,
+}E_RGB_MODE;//RGB MODE
+
 extern uint8_t g_agv_work_mode;
 extern uint8_t g_rgb_cmd;
-extern uint8_t g_auto_pick_state;
+extern uint8_t g_pick_state;
 extern uint8_t g_release_flag;
 extern uint8_t g_agv_task_state;
 
@@ -78,7 +108,7 @@ void Plane_Check_Task(void);
 void Auto_FollowLine_Task(uint8_t dir,uint8_t plane);
 void FollowLine_process(uint8_t dir);
 void Follow_Line_Clear(void);
-int Limit(int datain,int max);
+int Limit(int data,int max);
 void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
 void chassic_control_task(int16_t x,int16_t y,int16_t w);
 

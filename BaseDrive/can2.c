@@ -212,7 +212,7 @@ void CAN2_RX1_IRQHandler(void)
 {
     CanRxMsg rx_message;  
 
-    if (CAN_GetITStatus(CAN2,CAN_IT_FMP1)!= RESET) 
+    if(CAN_GetITStatus(CAN2,CAN_IT_FMP1)!= RESET) 
 	{
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP1);
         CAN_Receive(CAN2, CAN_FIFO1, &rx_message);

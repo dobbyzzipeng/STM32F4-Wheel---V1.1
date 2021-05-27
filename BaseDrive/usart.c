@@ -172,7 +172,6 @@ void USART3_IRQHandler(void)//串口3中断服务程序
 	}
 	if (USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)//空闲中断,
 	{
-		NX_Data_prase(USART3_RX_BUF);
 //		u1_printf("%x %x %x \r\n",USART3_RX_BUF[0],USART3_RX_BUF[1],USART3_RX_BUF[2]);
 		usart3_dmarx_len = USART3_DMA_RX_LEN(DMA1_Stream1,USART3_MAX_RECV_LEN);//获取数据量
 		DMA_Cmd(DMA1_Stream1,DISABLE);//DMA失能
@@ -386,7 +385,7 @@ void UART4_IRQHandler(void)//串口4中断服务程序
 	}
 	if(USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)
 	{
-		
+		NX_Data_prase(USART3_RX_BUF);
 		usart4_dma_len = USART4_DMA_RX_LEN(DMA1_Stream2,USART4_MAX_RECV_LEN);//获取数据传输量
 		DMA_Cmd(DMA1_Stream2,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA1_Stream2));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功

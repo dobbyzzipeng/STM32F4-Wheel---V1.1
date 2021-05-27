@@ -422,7 +422,7 @@ uint8_t gps_data_analysis(void)
 }
 
 /*********************************************************************/
-#define PI 3.1415926f
+#define PI 3.1415926535897932f
 #define EARTH_RADIUS 6378.137f 
 
 double radian(double d)

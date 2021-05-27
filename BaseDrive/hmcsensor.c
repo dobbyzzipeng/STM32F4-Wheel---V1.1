@@ -64,9 +64,6 @@ void Line_Analysis(uint16_t flag,T_LINE *L)
 	}
 	L->mid = (b_mark1-f_mark1)/2+f_mark1;//find mid
 	L->num = (b_mark1-f_mark1+1);
-	if(L->tag==8&&L->num>=6&&L->num<14){
-		L->mid = 8;
-	}
 	if(f_mark2!=0&&b_mark2!=0){
 		L->mid = 8;
 		L->twol = 1;//探测开叉，不连续
@@ -75,9 +72,9 @@ void Line_Analysis(uint16_t flag,T_LINE *L)
 		L->twol = 0;
 	}
 	L->last_wlineflag = L->wlineflag;
-	if(L->num>=12){
+	if(L->num>=12||L->num==0){
 		L->mid = 8;
-		L->wlineflag = 1;
+		L->wlineflag = 1;//遇到黑线
 	}
 	else{
 		L->wlineflag = 0;

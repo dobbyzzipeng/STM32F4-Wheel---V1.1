@@ -15,6 +15,9 @@ void bsp_init(void)
 	Exti_Gpio_Init();
 	bsp_InitUart(115200);//usart1 115200bps for debug
 	RC_Init();
+	usart3_init(115200);
+	usart4_init(115200);
+//	server_485_init();
 	delay_ms(1000);
 	CAN1_Configuration(0X01);
 	delay_ms(200);
@@ -44,6 +47,7 @@ void debug(void)
 int main(void)
 {
 	double dis = 0;
+	float x,y=0;
 	bsp_init();
 	Enable_All_Motor_Modbus();
 	Auto_Release_Plane(INIT);
@@ -73,12 +77,23 @@ int main(void)
 						Auto_FollowLine_Task(OUT,WITHPLANE);
 					}
 					if(left_Wheel>100){
-					  //3051.6160569,N,11847.8117588
-//						dis = gps_get_distance(118.7968904,30.8602454,118.7968626466,30.860267615);
-						dis = rtk_dis_analysis(118.478160210,30.516139289,118.478163486,30.516143996);//0.579
-						double ang = gps_get_angle(118.7968904,30.8602454,118.7968626466,30.860267615);
+						
+						RTK_TO_XY(118.796949668,30.8602148816,118.796928933,30.86024976166,&x,&y,&dis);
+//						dis = gps_get_distance(118.796949668,30.8602148816,118.796947666,30.86024978);
+						u1_printf("x1:%.3f\t y1:%.3f dis1:%.3f\r\n",x,y,dis);
 						delay_ms(100);
-						u1_printf("dis is:%lfm,ang:%lf\r\n",dis,ang);
+						RTK_TO_XY(118.796928933,30.860240936279297,118.796947666,30.86024978,&x,&y,&dis);
+						u1_printf("x2:%.3f\t y2:%.3f dis2:%.3f\r\n",x,y,dis);
+						delay_ms(100);
+//						RTK_TO_XY(118.79693603515625,30.860231399536133,118.79693603515625,30.86022186279297,&x,&y);
+//						u1_printf("x2:%.3f\t y2:%.3f\r\n",x,y);
+//						delay_ms(100);
+//						RTK_TO_XY(118.7969360351562,30.860240936279297,118.79693603515625,30.86022186279297,&x,&y);
+//						u1_printf("x3:%.3f\t y3:%.3f\r\n",x,y);
+//						dis = rtk_dis_analysis(11847.8169801,3051.6128929,11847.8169806,3051.6149868);//0.579
+//						double ang = gps_get_angle(118.7968904,30.8602454,118.7968626466,30.860267615);
+//						delay_ms(100);
+//						u1_printf("dis is:%lfm\r\n",dis);
 						if(g_agv_task_state==CHARGE_WITHOUT_PLANE){
 							g_agv_task_state = GET_OUT_FIND_PLANE;//手动调试切换状态
 						}
@@ -102,8 +117,8 @@ int main(void)
 						break;
 						case GOHOME_WITHOUT_PLANE:
 							Auto_FollowLine_Task(IN,NOPLANE);//black line or until charge flag
-							if(g_auto_pick_state!=NONE&&g_auto_pick_state!=DONE){
-								Auto_Pick_Plane(CLOSE,IN);//g_auto_pick_state = NONE;//清空状态机标志
+							if(g_pick_state!=NONE&&g_pick_state!=DONE){
+								Auto_Pick_Plane(CLOSE,IN);//g_pick_state = NONE;//清空状态机标志
 							}
 						break;
 						case CHARGE_WITHOUT_PLANE:
@@ -117,9 +132,9 @@ int main(void)
 								Auto_Release_Plane(INIT);//g_release_flag==DONE
 							}
 							if(g_release_flag==DONE){
-								Auto_Pick_Plane(FIND,IN);//g_auto_pick_state = DONE;
+								Auto_Pick_Plane(FIND,IN);//g_pick_state = DONE;
 							}
-							if(g_auto_pick_state==DONE){
+							if(g_pick_state==DONE){
 								g_agv_task_state = PICK_PLANE_IN;
 							}
 						break;

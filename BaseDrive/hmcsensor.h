@@ -10,13 +10,13 @@ typedef struct{
 extern T_HMC T_hmcf,T_hmcb;
 
 typedef struct{
-	uint8_t tag;
-	uint8_t mid;
-	int8_t err;
-	uint8_t wlineflag;
+	uint8_t tag;//对准中间
+	uint8_t mid;//实际线对准位置
+	int8_t err;//偏差
+	uint8_t wlineflag;//横黑线标志
 	uint8_t last_wlineflag;
-	uint8_t num;
-	uint8_t twol;
+	uint8_t num;//探测到磁导轨的个数
+	uint8_t twol;//分叉标志
 	uint8_t reserve;
 }T_LINE;
 extern T_LINE Linef,Lineb;

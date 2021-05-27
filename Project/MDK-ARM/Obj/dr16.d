@@ -55,3 +55,5 @@
 .\obj\dr16.o: ..\..\User\control.h
 .\obj\dr16.o: ..\..\BaseDrive\gps.h
 .\obj\dr16.o: ..\..\BaseDrive\rtk.h
+.\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
