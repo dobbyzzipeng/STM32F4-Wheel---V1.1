@@ -82,10 +82,10 @@ double rtk_dis_analysis(double lon1,double lat1,double lon2,double lat2)
     return len;
 }
 
-void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,float *x,float *y,double *dis)
+void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,double *x,double *y,double *dis)
 {
-	double ang = 0;
 	#if 0
+	double ang = 0;
 	*dis = gps_get_distance(lon0,lat0,lonx,laty);
 	ang = gps_get_angle(lon0,lat0,lonx,laty);
 	*x = dis*cos(ang);
@@ -97,4 +97,14 @@ void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,float *x,float *y
 	#endif
 //	u1_printf("x:%.3f\t,y:%.3f\r\n",*x,*y);
 }
+
+void DM_TO_DD(double lon1,double lat1,double *lon2,double *lat2)
+{
+	unsigned long long temp;
+	temp = lon1 * 10000000;
+    *lon2 = DmToDd(temp);
+	temp = lat1 * 10000000;
+    *lat2 = DmToDd(temp);
+}
+
 

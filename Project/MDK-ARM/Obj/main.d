@@ -57,3 +57,4 @@
 .\obj\main.o: ..\..\BaseDrive\rtk.h
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\obj\main.o: ..\..\User\postion.h

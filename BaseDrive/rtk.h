@@ -7,6 +7,7 @@
 void llh2ecef(const double *pos, double *r);
 double DmToDd(unsigned long long data);
 double rtk_dis_analysis(double lon1,double lat1,double lon2,double lat2);
-void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,float *x,float *y,double *dis);
+void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,double *x,double *y,double *dis);
+void DM_TO_DD(double lon1,double lat1,double *lon2,double *lat2);
 
 #endif

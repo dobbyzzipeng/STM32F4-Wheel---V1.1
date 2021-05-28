@@ -7,6 +7,9 @@
 #include "can2.h"
 #include "comunication.h"
 #include "hmcsensor.h"
+#include "postion.h"
+#include "rtk.h"
+#include "gps.h"
 
 uint8_t g_release_flag = NONE;
 void Auto_Release_Plane(uint8_t agvdir)
@@ -60,7 +63,7 @@ void Auto_Release_Plane(uint8_t agvdir)
 }
 
 uint8_t g_pick_state = NONE;
-uint8_t g_dragonfish_flag = 0;//搜索龙鱼标志
+uint8_t g_dragonfish_flag = 0;//搜索龙鱼标志 0默认搜索到,1没有搜索到
 void Auto_Pick_Plane(uint8_t flag,uint8_t dir)
 {
 	static uint16_t catime = 0,catflag = 0;
@@ -68,7 +71,7 @@ void Auto_Pick_Plane(uint8_t flag,uint8_t dir)
 		if(T_Plane.g_plane_flag1==1&&T_Plane.g_plane_flag2==1\
 	&&T_Plane.last_plane_flag1==0&&T_Plane.last_plane_flag2==0){
 			g_pick_state = ONE;
-			g_dragonfish_flag = 0;
+			g_dragonfish_flag = 0;//搜索到龙鱼
 			T_Plane.last_plane_flag1=1;
 			T_Plane.last_plane_flag2=1;
 			u1_printf("find plane is ok...\r\n");
@@ -526,6 +529,18 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
 			omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
 		}
 	}
+}
+
+void Auto_CVRTK_FindPlane(void)
+{
+	double disx_err = 0,disy_err = 0,ang_err = 0;
+	pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
+	disx_err = Pos.drg_x - Pos.agv_x;
+	disy_err = Pos.drg_y - Pos.agv_y;
+	ang_err  = Pos.drg_ang - Pos.agv_ang;
+	
+//	chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
+//	Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
 }
 
 int Limit(int data,int max)

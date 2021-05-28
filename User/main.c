@@ -46,8 +46,6 @@ void debug(void)
 
 int main(void)
 {
-	double dis = 0;
-	float x,y=0;
 	bsp_init();
 	Enable_All_Motor_Modbus();
 	Auto_Release_Plane(INIT);
@@ -76,8 +74,9 @@ int main(void)
 					else if(right_Switch==right_Switch_MID){
 						Auto_FollowLine_Task(OUT,WITHPLANE);
 					}
-					if(left_Wheel>100){
-						
+					if(left_Wheel>100){//ÊÖ¶¯µ÷ÊÔ
+						double dis = 0;
+						double x = 0,y=0;
 						RTK_TO_XY(118.796949668,30.8602148816,118.796928933,30.86024976166,&x,&y,&dis);
 //						dis = gps_get_distance(118.796949668,30.8602148816,118.796947666,30.86024978);
 						u1_printf("x1:%.3f\t y1:%.3f dis1:%.3f\r\n",x,y,dis);
@@ -85,15 +84,6 @@ int main(void)
 						RTK_TO_XY(118.796928933,30.860240936279297,118.796947666,30.86024978,&x,&y,&dis);
 						u1_printf("x2:%.3f\t y2:%.3f dis2:%.3f\r\n",x,y,dis);
 						delay_ms(100);
-//						RTK_TO_XY(118.79693603515625,30.860231399536133,118.79693603515625,30.86022186279297,&x,&y);
-//						u1_printf("x2:%.3f\t y2:%.3f\r\n",x,y);
-//						delay_ms(100);
-//						RTK_TO_XY(118.7969360351562,30.860240936279297,118.79693603515625,30.86022186279297,&x,&y);
-//						u1_printf("x3:%.3f\t y3:%.3f\r\n",x,y);
-//						dis = rtk_dis_analysis(11847.8169801,3051.6128929,11847.8169806,3051.6149868);//0.579
-//						double ang = gps_get_angle(118.7968904,30.8602454,118.7968626466,30.860267615);
-//						delay_ms(100);
-//						u1_printf("dis is:%lfm\r\n",dis);
 						if(g_agv_task_state==CHARGE_WITHOUT_PLANE){
 							g_agv_task_state = GET_OUT_FIND_PLANE;//ÊÖ¶¯µ÷ÊÔÇÐ»»×´Ì¬
 						}
@@ -138,12 +128,11 @@ int main(void)
 								g_agv_task_state = PICK_PLANE_IN;
 							}
 						break;
-//						case CVRTK_FIND_PLANE://ÊÓ¾õ RTKËÑË÷ÁúÓã
-//							Auto_Pick_Plane(FIND);
-//							chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
-//							Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
-//							g_agv_task_state = PICK_PLANE_IN;	
-//						break;
+						case CVRTK_FIND_PLANE://ÊÓ¾õ RTKËÑË÷ÁúÓã
+							Auto_Pick_Plane(FIND,IN);
+						Auto_CVRTK_FindPlane();
+							g_agv_task_state = PICK_PLANE_IN;	
+						break;
 						case PICK_PLANE_IN:
 							Auto_FollowLine_Task(IN,WITHPLANE);
 							Auto_Release_Plane(IN);//g_release_flag = DONE;

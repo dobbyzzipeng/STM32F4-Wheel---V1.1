@@ -45,3 +45,9 @@
 .\obj\control.o: ..\..\BaseDrive\can2.h
 .\obj\control.o: ..\..\User\comunication.h
 .\obj\control.o: ..\..\BaseDrive\hmcsensor.h
+.\obj\control.o: ..\..\User\postion.h
+.\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\control.o: ..\..\BaseDrive\rtk.h
+.\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\obj\control.o: ..\..\BaseDrive\gps.h

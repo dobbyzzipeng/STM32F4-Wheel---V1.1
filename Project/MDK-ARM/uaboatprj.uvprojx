@@ -407,6 +407,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\control.c</FilePath>
             </File>
+            <File>
+              <FileName>postion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\postion.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

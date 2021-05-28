@@ -6,7 +6,7 @@
 #define USART4_MAX_RECV_LEN		128//最大接收缓存字节数
 #define USART4_MAX_SEND_LEN		128//最大发送缓存字节数
 
-#define USART3_MAX_RECV_LEN		512//最大接收缓存字节数
+#define USART3_MAX_RECV_LEN		256//最大接收缓存字节数
 #define USART3_MAX_SEND_LEN		128//最大发送缓存字节数
 
 #define USART5_MAX_RECV_LEN		128//最大接收缓存字节数

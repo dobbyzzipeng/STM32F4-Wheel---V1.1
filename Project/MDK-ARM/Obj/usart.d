@@ -44,3 +44,4 @@
 .\obj\usart.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
 .\obj\usart.o: ..\..\BaseDrive\bsp_usart.h
 .\obj\usart.o: ..\..\BaseDrive\sys.h
+.\obj\usart.o: ..\..\BaseDrive\gps.h

@@ -20,10 +20,9 @@
 #include "control.h"
 #include "gps.h"
 #include "rtk.h"
+#include "postion.h"
 
 #define USE_IAP 0
-#define Version 1
-
 //------------------------------------------------------------------------------
 #define VERINFO_ADDR_BASE  (0x8009F00) // 版本信息在FLASH中的存放地址
 //const char Hardware_Ver[] __attribute__((at(VERINFO_ADDR_BASE + 0x00)))  = "Hardware: 1.0.0";

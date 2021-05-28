@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include "usart.h"
 #include "bsp_usart.h"
+#include "gps.h"
 //////////////////////////////////////////////////////////////////
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
 #if 1
@@ -34,7 +35,7 @@ int fputc(int ch, FILE *f)
 /********************USART3 CONFIG****************************/
 #define USE_USART3_TX_DMA 1
 #define USE_USART3_RX_DMA 1
-#define USE_USART3_RX_IDLE 1
+#define USE_USART3_RX_IDLE 0
 //串口发送缓存区
 __align(8) uint8_t USART3_TX_BUF[USART3_MAX_SEND_LEN] = {0};
 __align(8) uint8_t USART3_RX_BUF[USART3_MAX_RECV_LEN] = {0};
@@ -158,7 +159,6 @@ void usart3_init(unsigned long int baudrate)
 	#endif
 }
 
-extern void NX_Data_prase(uint8_t buf[]);
 uint8_t usart3_dma_tx_flag = 0;
 uint16_t usart3_dmarx_len = 0;
 void USART3_IRQHandler(void)//串口3中断服务程序
@@ -172,7 +172,7 @@ void USART3_IRQHandler(void)//串口3中断服务程序
 	}
 	if (USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)//空闲中断,
 	{
-//		u1_printf("%x %x %x \r\n",USART3_RX_BUF[0],USART3_RX_BUF[1],USART3_RX_BUF[2]);
+//		gps_data_prase(USART3_RX_BUF);
 		usart3_dmarx_len = USART3_DMA_RX_LEN(DMA1_Stream1,USART3_MAX_RECV_LEN);//获取数据量
 		DMA_Cmd(DMA1_Stream1,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA1_Stream1));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功
@@ -224,6 +224,7 @@ void DMA1_Stream1_IRQHandler(void)//USART3 RX DMA
 {
 	if(DMA_GetITStatus(DMA1_Stream1, DMA_IT_TCIF1))
 	{
+		gps_data_prase(USART3_RX_BUF);
 		DMA_ClearITPendingBit(DMA1_Stream1, DMA_IT_TCIF1);
 	}
 }
@@ -371,7 +372,7 @@ void usart4_init(unsigned long int baudrate)
 //	}
 	#endif
 }
-
+extern void NX_Data_prase(uint8_t buf[]);
 uint8_t usart4_dma_len = 0;
 uint8_t usart4_dma_tx_flag = 0;
 //T_USART_REV U4_rev = {0};
@@ -789,6 +790,7 @@ void USART6_IRQHandler(void)
 	uint8_t Res = 0,clear = 0;
 	if (USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)//空闲中断
 	{
+		//drgrtk
 		usart6_dma_tx_len = USART6_DMA_RX_LEN(DMA2_Stream1,USART6_MAX_RECV_LEN);
 		DMA_Cmd(DMA2_Stream1,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA2_Stream1));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功

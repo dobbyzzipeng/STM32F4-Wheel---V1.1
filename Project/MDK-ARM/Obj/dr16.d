@@ -57,3 +57,4 @@
 .\obj\dr16.o: ..\..\BaseDrive\rtk.h
 .\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\obj\dr16.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\obj\dr16.o: ..\..\User\postion.h

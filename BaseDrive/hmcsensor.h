@@ -21,5 +21,6 @@ typedef struct{
 }T_LINE;
 extern T_LINE Linef,Lineb;
 void Line_Analysis(uint16_t flag,T_LINE *L);
+void DM_TO_DD(double lon1,double lat1,double *lon2,double *lat2);
 #endif
 

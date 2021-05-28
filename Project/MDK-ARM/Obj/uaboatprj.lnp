@@ -3,6 +3,7 @@
 ".\obj\stm32f4xx_it.o"
 ".\obj\comunication.o"
 ".\obj\control.o"
+".\obj\postion.o"
 ".\obj\bsp_usart.o"
 ".\obj\bsp_delay.o"
 ".\obj\can1.o"

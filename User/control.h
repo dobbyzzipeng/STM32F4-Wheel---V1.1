@@ -108,6 +108,7 @@ void Plane_Check_Task(void);
 void Auto_FollowLine_Task(uint8_t dir,uint8_t plane);
 void FollowLine_process(uint8_t dir);
 void Follow_Line_Clear(void);
+void Auto_CVRTK_FindPlane(void);
 int Limit(int data,int max);
 void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
 void chassic_control_task(int16_t x,int16_t y,int16_t w);
