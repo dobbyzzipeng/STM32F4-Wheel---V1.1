@@ -112,5 +112,6 @@ void Auto_CVRTK_FindPlane(void);
 int Limit(int data,int max);
 void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
 void chassic_control_task(int16_t x,int16_t y,int16_t w);
-
+void Chassic_Motor_Ctr(int16_t sp,float w,int8_t flag);
+uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t flag);
 #endif

@@ -10,6 +10,7 @@
 #include "postion.h"
 #include "rtk.h"
 #include "gps.h"
+#include <math.h>
 
 uint8_t g_release_flag = NONE;
 void Auto_Release_Plane(uint8_t agvdir)
@@ -497,50 +498,128 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
 				}
 			}
 		}
-
-		if(turn_flag == 1){//turn riht
-			motor1_speed = speed;
-			motor2_speed = speed;
-			motor3_speed = speed;
-			motor4_speed = speed;
-			omgset_pos1 = -Limit(omg*LSB,_90_ANGLE);
-			omgset_pos2 = Limit(omg*LSB,_90_ANGLE);
-			omgset_pos3 = -Limit(omg*LSB,_90_ANGLE);
-			omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
-		}
-		else if(turn_flag == -1){//turn left
-			motor1_speed = -speed;
-			motor2_speed = -speed;
-			motor3_speed = -speed;
-			motor4_speed = -speed;
-			omgset_pos1 = -Limit(omg*LSB,_90_ANGLE);
-			omgset_pos2 = Limit(omg*LSB,_90_ANGLE);
-			omgset_pos3 = -Limit(omg*LSB,_90_ANGLE);
-			omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
-		}
-		else{
-			motor1_speed = -speed;
-			motor2_speed = -speed;
-			motor3_speed = speed;
-			motor4_speed = speed;
-			omgset_pos1 = Limit(omg*LSB,_90_ANGLE);
-			omgset_pos2 = Limit(omg*LSB,_90_ANGLE);
-			omgset_pos3 = Limit(omg*LSB,_90_ANGLE);
-			omgset_pos4 = Limit(omg*LSB,_90_ANGLE);
-		}
+		Chassic_Motor_Ctr(speed,omg,turn_flag);
 	}
 }
 
+void Chassic_Motor_Ctr(int16_t sp,float w,int8_t flag)
+{
+	if(flag != 0){//turn riht or turn left
+		motor1_speed = flag*sp;
+		motor2_speed = flag*sp;
+		motor3_speed = flag*sp;
+		motor4_speed = flag*sp;
+		omgset_pos1 = -Limit(w*LSB,_90_ANGLE);
+		omgset_pos2 = Limit(w*LSB,_90_ANGLE);
+		omgset_pos3 = -Limit(w*LSB,_90_ANGLE);
+		omgset_pos4 = Limit(w*LSB,_90_ANGLE);
+	}
+	else{//left right front back
+		motor1_speed = -sp;
+		motor2_speed = -sp;
+		motor3_speed = sp;
+		motor4_speed = sp;
+		omgset_pos1 = Limit(w*LSB,_90_ANGLE);
+		omgset_pos2 = Limit(w*LSB,_90_ANGLE);
+		omgset_pos3 = Limit(w*LSB,_90_ANGLE);
+		omgset_pos4 = Limit(w*LSB,_90_ANGLE);
+	}
+}
+
+#define OMG_ERR	3.0f//½Ç¶ÈËÀÇø ¡ã
+#define DIS_ERR	5.0f//¾àÀëÆ«²î cm
+const float p_gain = 2,d_gain = 10;
+uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t flag)
+{
+	uint8_t res = 0;
+	int8_t turn = 0;
+	if(flag!=0){//×ÔÐý
+		if(myabs(omgerr) - OMG_ERR > 0.001f){
+			if(omgerr - OMG_ERR > 0.001f){
+				turn = 1;
+			}
+			else if(omgerr - OMG_ERR < -0.001f){
+				turn = -1;
+			}
+			Chassic_Motor_Ctr(myabs(omgerr*p_gain),45.0f,turn);
+			u1_printf("agv is controled by w pid,werr:%.2f...\r\n",omgerr);
+			res = 0;
+		}
+		else{
+			res = 1;
+		}
+	}
+	else{
+		if(myabs(diserr) - DIS_ERR > 0.001f){
+			if(diserr - DIS_ERR > 0.001f){
+				Chassic_Motor_Ctr(myabs(diserr*p_gain),90.0f,0);
+				u1_printf("agv is controled by dis pid,diserr:%.2f...\r\n",diserr);
+			}
+			else if(diserr - DIS_ERR < -0.001f){
+				Chassic_Motor_Ctr(myabs(diserr*p_gain),-90.0f,0);
+				u1_printf("agv is controled by dis pid,diserr:%.2f...\r\n",diserr);
+			}
+			res = 0;
+		}
+		else{
+			res = 1;
+		}
+	}
+	return res;
+}
+
+const float agv_drg_dis = 1.2f;//m AGV¾àÀëÁúÓã
+uint8_t g_cvrtk_findplane_state = NONE,g_cvrtk_findplane_flag = 0;
 void Auto_CVRTK_FindPlane(void)
 {
-	double disx_err = 0,disy_err = 0,ang_err = 0;
-	pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
-	disx_err = Pos.drg_x - Pos.agv_x;
-	disy_err = Pos.drg_y - Pos.agv_y;
-	ang_err  = Pos.drg_ang - Pos.agv_ang;
-	
+	double disx_err = 0,disy_err = 0,angw_err = 0;
+	double dis_err = 0,w_err = 0,/*ang_err = 0,*/x3 = 0,y3 = 0;
+	if(g_cvrtk_findplane_flag==0){
+		g_cvrtk_findplane_flag = 1;
+	}
+	if(g_cvrtk_findplane_flag!=0){
+		pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
+		disx_err = Pos.drg_x - Pos.agv_x;
+		disy_err = Pos.drg_y - Pos.agv_y;
+		angw_err  = Pos.drg_ang - Pos.agv_ang;
+		
+		w_err = drgrtk.ang-270.0f;
+		x3 = Pos.drg_x + agv_drg_dis*cos(w_err);
+		x3 = Pos.drg_y - agv_drg_dis*sin(w_err);
+		dis_err = sqrt(pow((x3-Pos.agv_x),2)+pow((y3-Pos.agv_y),2))*100.0f;//cm
+
+		switch(g_cvrtk_findplane_state){
+			case ONE:
+				if(Chassic_Pid_Ctr(0,angw_err,1)){
+					u1_printf("agv is arrived at drgon fish's head...\r\n");
+					g_cvrtk_findplane_state = TWO;
+				}
+			break;
+			case TWO:
+				if(Chassic_Pid_Ctr(dis_err,0,0)){
+					u1_printf("agv is arrived at drgon fish's front...\r\n");
+					g_cvrtk_findplane_state = THREE;
+				}	
+			break;
+			case THREE:
+				if(g_dragonfish_flag!=0){//»¹Ã»ÕÒµ½ÁúÓã
+					Chassic_Motor_Ctr(SPEED,0,0);
+					u1_printf("agv go ahead,try to pick drgon fish...\r\n");
+				}
+				else{
+					Chassic_Motor_Ctr(0,0,0);//ÕÒµ½ÁúÓã£¬Í£Ö¹AGV
+					u1_printf("drgon fish is find,agv stop and pick...\r\n");
+					g_cvrtk_findplane_state = FOUR;
+				}
+			break;
+			case FOUR:
+				
+			g_cvrtk_findplane_state = DONE;
+			break;
+		}
 //	chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
 //	Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
+	}
 }
 
 int Limit(int data,int max)
@@ -610,7 +689,6 @@ void chassic_control_task(int16_t x,int16_t y,int16_t w)//x left and right,y:fro
 	}
 	
 	if(myabs(ch3)>DEAD_ZONE){
-		
 		if(ch3>DEAD_ZONE){
 			speed = ch3-DEAD_ZONE;
 		}

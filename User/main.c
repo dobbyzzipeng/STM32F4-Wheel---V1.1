@@ -121,17 +121,26 @@ int main(void)
 							if(g_release_flag!=NONE&&g_release_flag!=DONE){
 								Auto_Release_Plane(INIT);//g_release_flag==DONE
 							}
+							#if 0
 							if(g_release_flag==DONE){
 								Auto_Pick_Plane(FIND,IN);//g_pick_state = DONE;
 							}
 							if(g_pick_state==DONE){
 								g_agv_task_state = PICK_PLANE_IN;
 							}
+							#else
+							if(g_release_flag==DONE){
+								g_agv_task_state = CVRTK_FIND_PLANE;
+							}
+							#endif
 						break;
 						case CVRTK_FIND_PLANE://ÊÓ¾õ RTKËÑË÷ÁúÓã
-							Auto_Pick_Plane(FIND,IN);
-						Auto_CVRTK_FindPlane();
-							g_agv_task_state = PICK_PLANE_IN;	
+							Auto_CVRTK_FindPlane();
+							Auto_Pick_Plane(FIND,IN);//g_pick_state=DONE
+							if(g_pick_state==DONE){
+								//find black line and go back
+								g_agv_task_state = PICK_PLANE_IN;
+							}
 						break;
 						case PICK_PLANE_IN:
 							Auto_FollowLine_Task(IN,WITHPLANE);

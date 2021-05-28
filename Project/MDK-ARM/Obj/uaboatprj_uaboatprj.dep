@@ -1,5 +1,5 @@
 Dependencies for Project 'uaboatprj', Target 'uaboatprj': (DO NOT MODIFY !)
-F (..\..\User\main.c)(0x60B0BE5F)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\..\User -I ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\..\include -I ..\..\BaseDrive -I ..\..\BaseDrive\GPS -I ..\..\BaseDrive\control -I ..\..\BaseDrive\RS485 -I ..\..\Math\inc -I ..\..\USMART -I ..\..\User-I.\RTE\_uaboatprj-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__TARGET_FPU_VFP="1" --C99-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
+F (..\..\User\main.c)(0x60B0FEBC)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\..\User -I ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\..\include -I ..\..\BaseDrive -I ..\..\BaseDrive\GPS -I ..\..\BaseDrive\control -I ..\..\BaseDrive\RS485 -I ..\..\Math\inc -I ..\..\USMART -I ..\..\User-I.\RTE\_uaboatprj-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__TARGET_FPU_VFP="1" --C99-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
 I (..\..\User\config.h)(0x60B0AB9C)
 I (..\..\BaseDrive\sys.h)(0x5E2458F4)
 I (..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h)(0x5916A5EA)
@@ -52,7 +52,7 @@ I (..\..\BaseDrive\PickPlane.h)(0x60A71C27)
 I (..\..\BaseDrive\bms.h)(0x60A9D4A1)
 I (..\..\BaseDrive\hmcsensor.h)(0x60B04DD0)
 I (..\..\User\comunication.h)(0x60ADFFCB)
-I (..\..\User\control.h)(0x60B0BDF4)
+I (..\..\User\control.h)(0x60B0F0C3)
 I (..\..\BaseDrive\gps.h)(0x60B0B99C)
 I (..\..\BaseDrive\rtk.h)(0x60B0B085)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
@@ -144,8 +144,8 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
 I (..\..\BaseDrive\bms.h)(0x60A9D4A1)
 I (..\..\BaseDrive\crc8.h)(0x5CAEBA6E)
 I (..\..\BaseDrive\can2.h)(0x60A36372)
-F (..\..\User\control.c)(0x60B0C968)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\..\User -I ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\..\include -I ..\..\BaseDrive -I ..\..\BaseDrive\GPS -I ..\..\BaseDrive\control -I ..\..\BaseDrive\RS485 -I ..\..\Math\inc -I ..\..\USMART -I ..\..\User-I.\RTE\_uaboatprj-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__TARGET_FPU_VFP="1" --C99-o .\obj\control.o --omf_browse .\obj\control.crf --depend .\obj\control.d)
-I (..\..\User\control.h)(0x60B0BDF4)
+F (..\..\User\control.c)(0x60B0FAA3)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\..\User -I ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\..\include -I ..\..\BaseDrive -I ..\..\BaseDrive\GPS -I ..\..\BaseDrive\control -I ..\..\BaseDrive\RS485 -I ..\..\Math\inc -I ..\..\USMART -I ..\..\User-I.\RTE\_uaboatprj-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__TARGET_FPU_VFP="1" --C99-o .\obj\control.o --omf_browse .\obj\control.crf --depend .\obj\control.d)
+I (..\..\User\control.h)(0x60B0F0C3)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D005FF5)
 I (..\..\BaseDrive\ZL5SERVO.h)(0x60814BD4)
 I (..\..\BaseDrive\PickPlane.h)(0x60A71C27)
@@ -196,6 +196,7 @@ I (..\..\BaseDrive\rtk.h)(0x60B0B085)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (..\..\BaseDrive\gps.h)(0x60B0B99C)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 F (..\..\User\postion.c)(0x60B0B7D9)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include -I ..\..\User -I ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc -I ..\..\include -I ..\..\BaseDrive -I ..\..\BaseDrive\GPS -I ..\..\BaseDrive\control -I ..\..\BaseDrive\RS485 -I ..\..\Math\inc -I ..\..\USMART -I ..\..\User-I.\RTE\_uaboatprj-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\Include-D__UVISION_VERSION="526" -D_RTE_ -DSTM32F407xx -DSTM32F4XX -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__TARGET_FPU_VFP="1" --C99-o .\obj\postion.o --omf_browse .\obj\postion.crf --depend .\obj\postion.d)
 I (..\..\User\postion.h)(0x60B0B691)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
@@ -500,7 +501,7 @@ I (..\..\BaseDrive\PickPlane.h)(0x60A71C27)
 I (..\..\BaseDrive\bms.h)(0x60A9D4A1)
 I (..\..\BaseDrive\hmcsensor.h)(0x60B04DD0)
 I (..\..\User\comunication.h)(0x60ADFFCB)
-I (..\..\User\control.h)(0x60B0BDF4)
+I (..\..\User\control.h)(0x60B0F0C3)
 I (..\..\BaseDrive\gps.h)(0x60B0B99C)
 I (..\..\BaseDrive\rtk.h)(0x60B0B085)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
