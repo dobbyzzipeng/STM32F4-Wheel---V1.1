@@ -8,7 +8,7 @@ void Line_Analysis(uint16_t flag,T_LINE *L)
 	uint8_t i = 0,pbuf[17] = {0};
 	uint8_t f_mark1= 0,b_mark1 = 0;
 	uint8_t f_mark2= 0,b_mark2 = 0;
-	uint8_t flag1 = 0,flag2 = 0;
+	uint8_t flag1 = 0;
 	
 	for(i=1;i<17;i++)
 	{

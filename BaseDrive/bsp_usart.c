@@ -169,7 +169,6 @@ void USART1_IRQHandler(void)
 	if(USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
 	{
 		DownLoad_prase(USART1_RX_BUF);
-		NX_Data_prase(USART1_RX_BUF);
 		
 		usart1_dma_tx_len = USART1_DMA_RX_LEN(DMA2_Stream2,USART1_REC_LEN);
 		DMA_Cmd(DMA2_Stream2,DISABLE);//DMAÊ§ÄÜ

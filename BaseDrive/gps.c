@@ -1,6 +1,6 @@
 #include "gps.h" 
 #include "bsp_delay.h"				   
-//#include "usart.h"		   
+#include "usart.h"		   
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -60,7 +60,7 @@ int NMEA_Str2num(uint8_t *buf,uint8_t*dx)
 	{  
 		ires+=NMEA_Pow(10,ilen-1-i)*(buf[i]-'0');
 	}
-	if(flen>5)flen=5;	//最多取5位小数
+	if(flen>7)flen=7;	//最多取5位小数
 	*dx=flen;	 		//小数点位数
 	for(i=0;i<flen;i++)	//得到小数部分数据
 	{  
@@ -68,6 +68,77 @@ int NMEA_Str2num(uint8_t *buf,uint8_t*dx)
 	} 
 	res=ires*NMEA_Pow(10,flen)+fres;
 	if(mask&0X02)res=-res;		   
+	return res;
+}
+
+
+double parse_str_to_num(uint8_t buf[],uint8_t len)
+{
+	uint8_t i = 0,res = 0,mark = 0;
+	double weishu[8] = {0},xiaoshu[16] = {0};
+	double val = 0;
+	
+	for(i=0;i<len;i++)
+	{
+		if(buf[i]=='.'){
+			mark = i;
+		}
+	}
+	for(i=0;i<len;i++){
+		if(buf[i]>=0X30&&buf[i]<=0X39){
+			res = ascii_to_num(buf[i]);
+			if(i<mark){
+				weishu[mark-i] = res;
+			}
+			else if(i>mark){
+				xiaoshu[i-mark] = res;
+			}
+		}
+	}
+	val = weishu[5]*10000+weishu[4]*1000+ weishu[3]*100+weishu[2]*10+ weishu[1]\
+	+xiaoshu[1]*0.1f+xiaoshu[2]*0.01f+xiaoshu[3]*0.001f+xiaoshu[4]*0.0001f+xiaoshu[5]*0.00001f+\
+	+xiaoshu[6]*0.000001f+xiaoshu[7]*0.0000001f+xiaoshu[8]*0.00000001f+xiaoshu[9]*0.000000001f;
+	return val;
+}
+
+uint8_t ascii_to_num(uint8_t ascii)
+{
+	uint8_t res = 0;
+	switch(ascii)
+	{
+		case 0X30:
+		res = 0;
+		break;
+		case 0X31:
+		res = 1;
+		break;
+		case 0X32:
+		res = 2;
+		break;
+		case 0X33:
+		res = 3;
+		break;
+		case 0X34:
+		res = 4;
+		break;
+		case 0X35:
+		res = 5;
+		break;
+		case 0X36:
+		res = 6;
+		break;
+		case 0X37:
+		res = 7;
+		break;
+		case 0X38:
+		res = 8;
+		break;
+		case 0X39:
+		res = 9;
+		break;
+		default:
+			return 0;
+	}
 	return res;
 }
 
@@ -94,23 +165,23 @@ void NMEA_GNRMC_Analysis(nmea_msg *gpsx,uint8_t *buf)
 		gpsx->utc.year=2000+temp%100;	 	 
 	} 
 }
+
+extern void DM_TO_DD(double lon1,double lat1,double *lon2,double *lat2);;
 //分析GPGGA信息
 //gpsx:nmea信息结构体
 //buf:接收到的GPS/北斗数据缓冲区首地址
+static double lat = 0,lon = 0;
 void NMEA_GPGGA_Analysis(nmea_msg *gpsx,uint8_t *buf)
 {
 	uint8_t *p1,dx;			 
 	uint8_t posx;     
-	uint32_t temp;	   
-	float rs;
+	uint32_t temp;
+	
 	p1=(uint8_t*)strstr((const char *)buf,"$GPGGA");	
 	posx=NMEA_Comma_Pos(p1,2);	//得到纬度
 	if(posx!=0XFF)
 	{
-		temp=NMEA_Str2num(p1+posx,&dx);
-		gpsx->latitude=temp/NMEA_Pow(10,dx+2);	//得到°
-		rs=temp%NMEA_Pow(10,dx+2);				//得到'	
-		gpsx->latitude=gpsx->latitude*NMEA_Pow(10,7)+(rs*NMEA_Pow(10,7-dx))/60;//转换为°
+		lat = parse_str_to_num(p1+posx,12);
 	}
 	posx=NMEA_Comma_Pos(p1,3);
 	if(posx!=0XFF)
@@ -120,17 +191,15 @@ void NMEA_GPGGA_Analysis(nmea_msg *gpsx,uint8_t *buf)
  	posx=NMEA_Comma_Pos(p1,4);	//得到经度
 	if(posx!=0XFF)
 	{
-		temp=NMEA_Str2num(p1+posx,&dx);
-		gpsx->longitude=temp/NMEA_Pow(10,dx+2);	//得到°
-		rs=temp%NMEA_Pow(10,dx+2);				//得到'	
-		gpsx->longitude=gpsx->longitude*NMEA_Pow(10,7)+(rs*NMEA_Pow(10,7-dx))/60;//转换为° 
+		lon = parse_str_to_num(p1+posx,13);
 	}
+	DM_TO_DD(lon,lat,&lon,&lat);
 	posx=NMEA_Comma_Pos(p1,5);								
 	if(posx!=0XFF)gpsx->ewhemi=*(p1+posx);//东经还是西经
 	posx=NMEA_Comma_Pos(p1,6);
 	if(posx!=0XFF)
 	{
-		temp = *(p1+posx);
+		temp = NMEA_Str2num(p1+posx,&dx);
 		if(temp==4)
 		{
 			gpsx->fixmode = 4;//唯一解
@@ -179,23 +248,31 @@ RTK agvrtk = {0},drgrtk = {0};
 //显示GPS定位信息 
 void Gps_Msg_Prf(void)
 {
-	double get_lon_atk = gpsx.longitude/10000000.0f;
-	double get_lat_atk = gpsx.latitude/10000000.0f;
-//	if(get_lon_atk>90&&get_lon_atk<150&&get_lat_atk>5&&get_lat_atk<70){     //过滤到中国区域
-		agvrtk.lon=get_lon_atk;
-		agvrtk.lat=get_lat_atk;
-//	}
-//	agvrtk.gps_speed = gpsx.speed/3600.0f;//m/s
-//	agvrtk.gps_num = gpsx.svnum%100;
+	if(lon>90&&lon<150&&lat>5&&lat<60){
+		agvrtk.lon = lon;
+		agvrtk.lat = lat;
+	}
+	if(gpsx.ang>0&&gpsx.ang<36000){
+		agvrtk.ang = gpsx.ang/100.0;
+		agvrtk.good_ok = 1;
+	}
+	else{
+		agvrtk.ang=0;
+		agvrtk.good_ok = 0;//not good
+	}
 	agvrtk.hour=gpsx.utc.hour+8;
 	agvrtk.min=gpsx.utc.min;
 	agvrtk.sec=gpsx.utc.sec;
 	agvrtk.month=gpsx.utc.month;
 	agvrtk.date=gpsx.utc.date;
 	agvrtk.year=gpsx.utc.year;
-	agvrtk.ang=gpsx.ang/100.0f;
 	agvrtk.datamode=gpsx.fixmode;
-//	u1_printf("fixmode:%d\t lng:%lf\t lat:%lf\t gps_num:%d\t hour:%d\t min:%d\t sec:%d\r\n",
+
+	drgrtk.ang = 297.0f;
+	drgrtk.lon = 118.7969016;
+	drgrtk.lat = 30.8602637;
+	drgrtk.good_ok = 1;
+//	u5_printf("fixmode:%d\t lng:%lf\t lat:%lf\t gps_num:%d\t hour:%d\t min:%d\t sec:%d\r\n",
 //	rtk.fixmode,rtk.lon_atk,rtk.lat_atk,rtk.gps_num,rtk.hour,rtk.min,rtk.sec);
 }
 
@@ -237,10 +314,10 @@ double gps_get_distance(double lon1, double lat1, double lon2,double lat2)
 {
 	double a, b, R;
 	R = 6378137; // 地球半径（米）
-	lat1 = lat1 * REGTORAG;
-	lat2 = lat2 * REGTORAG;
+	lat1 = lat1 * D2R;
+	lat2 = lat2 * D2R;
 	a = lat1 - lat2;
-	b = (lon1 - lon2) * REGTORAG;
+	b = (lon1 - lon2) * D2R;
 	double d;
 	double sa2, sb2;
 	sa2 = sin(a / 2.0);

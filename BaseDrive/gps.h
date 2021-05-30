@@ -2,11 +2,10 @@
 #define __GPS_H	 
 #include "sys.h"
 
-#define USE_M8N_MODULE 2
-#define USE_M6N_MODULE 3
-#define USE_ATK_MODULE 1
-#define USE_GPS_TYPE   USE_ATK_MODULE
-//GPS NMEA-0183协议重要参数结构体定义 
+#define FE_WGS84    (1.0/298.257223563)
+#define RE_WGS84    6378137.0
+#define MYPI          3.1415926535897932  /* pi */
+#define D2R         (MYPI/180.0)//GPS NMEA-0183协议重要参数结构体定义 
 //卫星信息
 __packed typedef struct  
 {										    
@@ -72,7 +71,7 @@ __packed typedef struct
 }nmea_msg;
 extern nmea_msg gpsx; 	
 //RTK信息
-__packed typedef struct  
+typedef struct  
 {
 	uint8_t hour; 	//小时
 	uint8_t min; 	//分钟
@@ -86,6 +85,9 @@ __packed typedef struct
 	float gps_speed;
 	uint8_t gps_num;
 	uint8_t datamode;//定位状态 4唯一定位，5多解定位，1,0 无效
+	uint8_t good_ok;
+	uint8_t res0;
+	uint8_t res1;
 }RTK; 
 
 extern RTK agvrtk,drgrtk;
@@ -96,9 +98,10 @@ void NMEA_GPRMC_Analysis(nmea_msg *gpsx,uint8_t *buf);
 void NMEA_GPGGA_Analysis(nmea_msg *gpsx,uint8_t *buf);
 void NMEA_GPTRA_Analysis(nmea_msg *gpsx,uint8_t *buf);
 
+uint8_t ascii_to_num(uint8_t ascii);
 uint8_t gps_data_prase(uint8_t buf[1024]);
+double parse_str_to_num(uint8_t buf[],uint8_t len);
 void Gps_Msg_Prf(void);
-uint8_t gps_data_analysis(void);
 double gps_get_distance(double lon1, double lat1, double lon2,double lat2);
 double gps_get_angle(double lng1,double lat1, double lng2, double lat2) ;
 #endif

@@ -140,7 +140,7 @@ void USART2_IRQHandler(void)            //串口2中断服务程序
 			}
 			LED2_TOGGLE();
 			#if DEBUG_PC
-			u1_printf("Ch0:%d\tCh1:%d\tCh2:%d\tCh3:%d\tp1:%d\tf2:%d\r\n",Channel_0,Channel_1,Channel_2,Channel_3,Switch_left,Switch_right);
+			u5_printf("Ch0:%d\tCh1:%d\tCh2:%d\tCh3:%d\tp1:%d\tf2:%d\r\n",Channel_0,Channel_1,Channel_2,Channel_3,Switch_left,Switch_right);
 			#endif
 		}
 	}

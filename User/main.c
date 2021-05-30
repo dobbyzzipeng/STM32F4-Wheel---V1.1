@@ -13,18 +13,23 @@ void bsp_init(void)
 	LED_GPIO_Config();
 	Relay_Init();
 	Exti_Gpio_Init();
-	bsp_InitUart(115200);//usart1 115200bps for debug
+	bsp_InitUart(115200);// for server
+	delay_ms(100);
 	RC_Init();
+	delay_ms(100);
 	usart3_init(115200);
+	delay_ms(100);
 	usart4_init(115200);
-//	server_485_init();
+	delay_ms(100);
+	usart5_init(115200);//debug
+	server_485_init();
 	delay_ms(1000);
 	CAN1_Configuration(0X01);
 	delay_ms(200);
 	CAN2_Configuration(0X501);
 	delay_ms(100);
 	TIM5_Init(2000-1,84-1);//2ms  SYS TIMER
-	u1_printf("sys init finish!\r\n");
+	u5_printf("sys init finish!\r\n");
 }
 
 
@@ -35,9 +40,9 @@ void debug(void)
 	dbgcnt++;
 	if(dbgcnt>20){
 		if(right_Switch==right_Switch_UP&&rc_data_flag!=0){
-			u1_printf("mode:%d hmcf:%d hmcb:%d\r\n",g_agv_work_mode,T_hmcf.flag,T_hmcb.flag);
-//		u1_printf("mode:%d cvx:%.2f cvy:%.2f cvw:%.2f\r\n",g_agv_work_mode,CV.agv_spx,CV.agv_spy,CV.agv_spw);
-//		u1_printf("ch0:%d ch1:%d ch3:%d sp:%d omg:%d bat:%.2f cur:%.2f soc:%.2f\r\n",\
+			u5_printf("mode:%d hmcf:%d hmcb:%d\r\n",g_agv_work_mode,T_hmcf.flag,T_hmcb.flag);
+//		u5_printf("mode:%d cvx:%.2f cvy:%.2f cvw:%.2f\r\n",g_agv_work_mode,CV.agv_spx,CV.agv_spy,CV.agv_spw);
+//		u5_printf("ch0:%d ch1:%d ch3:%d sp:%d omg:%d bat:%.2f cur:%.2f soc:%.2f\r\n",\
 //Channel_0,Channel_1,Channel_3,motor1_speed,omgset_pos1,Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
 		dbgcnt = 0;
 		}
@@ -46,6 +51,7 @@ void debug(void)
 
 int main(void)
 {
+	static uint8_t decnt = 0;
 	bsp_init();
 	Enable_All_Motor_Modbus();
 	Auto_Release_Plane(INIT);
@@ -60,7 +66,7 @@ int main(void)
 					Stop_All_Chassicmotor();
 					Stop_All_Bldcmotor();
 					delay_ms(100);
-					u1_printf("standby...\r\n");
+					u5_printf("standby...\r\n");
 				break;
 				case REMOTE_CTR:
 					if(right_Switch==right_Switch_UP){
@@ -75,19 +81,20 @@ int main(void)
 						Auto_FollowLine_Task(OUT,WITHPLANE);
 					}
 					if(left_Wheel>100){//手动调试
-						double dis = 0;
-						double x = 0,y=0;
-						RTK_TO_XY(118.796949668,30.8602148816,118.796928933,30.86024976166,&x,&y,&dis);
-//						dis = gps_get_distance(118.796949668,30.8602148816,118.796947666,30.86024978);
-						u1_printf("x1:%.3f\t y1:%.3f dis1:%.3f\r\n",x,y,dis);
-						delay_ms(100);
-						RTK_TO_XY(118.796928933,30.860240936279297,118.796947666,30.86024978,&x,&y,&dis);
-						u1_printf("x2:%.3f\t y2:%.3f dis2:%.3f\r\n",x,y,dis);
-						delay_ms(100);
 						if(g_agv_task_state==CHARGE_WITHOUT_PLANE){
-							g_agv_task_state = GET_OUT_FIND_PLANE;//手动调试切换状态
+//							g_agv_task_state = GET_OUT_FIND_PLANE;//手动调试切换状态
+							g_agv_task_state = CVRTK_FIND_PLANE;
 						}
+						g_agv_task_state = CVRTK_FIND_PLANE;
+						g_cvrtk_findplane_state = ONE;
 					}
+					else{
+							decnt++;
+							if(decnt>20){
+					u5_printf("agv_lon:%lf,agv_lat:%lf,agv_ang:%lf mode:%d\r\n",agvrtk.lon*100,agvrtk.lat*100,agvrtk.ang,agvrtk.datamode);
+								decnt=0;
+							}
+						}
 				break;
 				case AUTO_CTR:
 					if(AGV_CMD.agv_cmd!=0 && AGV_CMD.last_agv_cmd==0&&g_agv_task_state==TASK_OK_CHARGE){
@@ -96,9 +103,13 @@ int main(void)
 					}
 					switch(g_agv_task_state){
 						case TASK_OK_CHARGE:
-							delay_ms(100);
-							Follow_Line_Clear();
-							u1_printf("task ok,plane in home,agv is charging now...\r\n");
+							decnt++;
+							if(decnt>20){
+								decnt = 0;
+								Follow_Line_Clear();
+								Auto_CVRTK_FindState_Clear();
+							u5_printf("task ok,plane in home,agv is charging now...\r\n");
+							}
 						break;
 						case PICK_PLANE_OUT:
 							Auto_FollowLine_Task(OUT,WITHPLANE);
@@ -112,9 +123,12 @@ int main(void)
 							}
 						break;
 						case CHARGE_WITHOUT_PLANE:
-							delay_ms(100);
-							u1_printf("task ok,plane out home,agv is charging now...\r\n");
-//							g_agv_task_state = GET_OUT_FIND_PLANE;
+							decnt++;
+							if(decnt>20){
+								decnt = 0;
+								u5_printf("task ok,plane out home,agv is charging now...\r\n");
+//								g_agv_task_state = GET_OUT_FIND_PLANE;
+							}
 						break;
 						case GET_OUT_FIND_PLANE:
 							Auto_FollowLine_Task(OUT,NOPLANE);
@@ -139,6 +153,13 @@ int main(void)
 							Auto_Pick_Plane(FIND,IN);//g_pick_state=DONE
 							if(g_pick_state==DONE){
 								//find black line and go back
+								g_find_blackline_state = ONE;
+								g_agv_task_state = FIIND_BLACK_LINE;
+							}
+						break;
+						case FIIND_BLACK_LINE:
+							Auto_Find_BlackLine();
+							if(g_find_blackline_state==DONE){
 								g_agv_task_state = PICK_PLANE_IN;
 							}
 						break;
@@ -156,11 +177,9 @@ int main(void)
 					Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
 				break;
 			}
-			Plane_Check_Task();
-			RGB_Ctr_Task();
 			DR16_Unlink_Check();
-//			NX_Data_Return();
-//			AGV_Data_Upload();
+			NX_Data_Return();
+			AGV_Data_Upload();
 //			debug();
 			Task_timer_flag = 0;
 		}

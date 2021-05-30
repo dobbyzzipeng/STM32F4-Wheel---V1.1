@@ -161,6 +161,7 @@ void usart3_init(unsigned long int baudrate)
 
 uint8_t usart3_dma_tx_flag = 0;
 uint16_t usart3_dmarx_len = 0;
+T_USART_REV U3_rev = {0};
 void USART3_IRQHandler(void)//串口3中断服务程序
 {
 	uint8_t Res = 0;
@@ -169,10 +170,49 @@ void USART3_IRQHandler(void)//串口3中断服务程序
 	{
 		Res = USART_ReceiveData(USART3);	//读取接收到的数据
 		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+		if(Res=='$'&& U3_rev.sof1_flag !=1){
+			U3_rev.sof1_flag = 1;
+			U3_rev.rx_cnt = 0;
+			USART3_RX_BUF[U3_rev.rx_cnt] = Res;
+			U3_rev.rx_cnt++;
+		}
+		else if(U3_rev.sof1_flag==1){
+			if(Res=='G'&& U3_rev.sof2_flag!=1){
+				U3_rev.sof2_flag = 1;
+				USART3_RX_BUF[U3_rev.rx_cnt] = Res;
+				U3_rev.rx_cnt++;
+			}
+			else if(U3_rev.sof2_flag==1){
+				if(Res=='P'&& U3_rev.sof3_flag!=1){
+					U3_rev.sof3_flag = 1;
+					USART3_RX_BUF[U3_rev.rx_cnt] = Res;
+					U3_rev.rx_cnt++;
+				}
+				else if(U3_rev.sof3_flag==1){
+					if(Res=='G'&& U3_rev.sof4_flag!=1){
+						U3_rev.sof4_flag = 1;
+						USART3_RX_BUF[U3_rev.rx_cnt] = Res;
+						U3_rev.rx_cnt++;
+					}
+					else if(Res=='G'&& U3_rev.sof5_flag!=1){
+						U3_rev.sof5_flag = 1;
+						USART3_RX_BUF[U3_rev.rx_cnt] = Res;
+						U3_rev.rx_cnt++;
+					}
+					else if(Res=='A'&& U3_rev.sof6_flag!=1){
+						U3_rev.sof6_flag = 1;
+						USART3_RX_BUF[U3_rev.rx_cnt] = Res;
+						U3_rev.rx_cnt++;
+					}
+				}
+			}
+		}
 	}
+	
+	
 	if (USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)//空闲中断,
 	{
-//		gps_data_prase(USART3_RX_BUF);
+		gps_data_prase(USART3_RX_BUF);
 		usart3_dmarx_len = USART3_DMA_RX_LEN(DMA1_Stream1,USART3_MAX_RECV_LEN);//获取数据量
 		DMA_Cmd(DMA1_Stream1,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA1_Stream1));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功
@@ -647,7 +687,17 @@ void send_data_dma_u5(uint8_t data[100],uint8_t num)
 	}
 	USART5_DMA_Send(USART5_TX_BUF,num);
 }
-
+/**
+ * [u5_printf printf 函数]
+ */
+void u5_printf(char* fmt,...)
+{
+	va_list ap;
+	va_start(ap,fmt);
+	vsprintf((char*)USART5_TX_BUF,fmt,ap);
+	va_end(ap);
+	USART5_DMA_Send(USART5_TX_BUF, strlen((const char*)USART5_TX_BUF));
+}
 /******************USART6 TX RX DMA Config !!*****************************/	
 __align(8) uint8_t USART6_TX_BUF[USART6_MAX_SEND_LEN] = {0};	  	
 __align(8) uint8_t USART6_RX_BUF[USART6_MAX_RECV_LEN] = {0};

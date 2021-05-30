@@ -10,7 +10,7 @@
 #define USART3_MAX_SEND_LEN		128//最大发送缓存字节数
 
 #define USART5_MAX_RECV_LEN		128//最大接收缓存字节数
-#define USART5_MAX_SEND_LEN		128//最大发送缓存字节数
+#define USART5_MAX_SEND_LEN		256//最大发送缓存字节数
 
 extern uint8_t  USART4_RX_BUF[USART4_MAX_RECV_LEN];
 extern uint8_t  USART4_TX_BUF[USART4_MAX_SEND_LEN];
@@ -42,6 +42,11 @@ uint16_t USART6_DMA_RX_LEN(DMA_Stream_TypeDef* DMAy_Streamx,uint16_t BufSize);
 typedef struct{
 	uint8_t sof1_flag;
 	uint8_t sof2_flag;
+	uint8_t sof3_flag;
+	uint8_t sof4_flag;
+	
+	uint8_t sof5_flag;
+	uint8_t sof6_flag;
 	uint8_t fun;
 	uint8_t	crc;
 	
@@ -59,6 +64,7 @@ void reset2isp(void);
 void server_485_init(void);
 void usart5_init(unsigned long int baudrate);
 void send_data_dma_u5(uint8_t data[100],uint8_t num);
+void u5_printf(char* fmt,...);
 uint16_t USART5_DMA_RX_LEN(DMA_Stream_TypeDef* DMAy_Streamx,uint16_t BufSize);
 
 #endif // __usart_h__

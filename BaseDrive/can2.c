@@ -159,7 +159,7 @@ void CAN2_RX0_IRQHandler(void)
 			Battery_Msg.Voltage=((((uint16_t)rx_message.Data[0])<<8)|rx_message.Data[1])/10.0f;
 			Battery_Msg.Current=((((uint16_t)rx_message.Data[4])<<8)|rx_message.Data[5])/10.0f-3000;
 			Battery_Msg.Soc=((((uint16_t)rx_message.Data[6])<<8)|rx_message.Data[7])/10.0f;
-			//u1_printf("Voltage:%f\t Current:%f\t Soc:%f\r\n",Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
+			//u5_printf("Voltage:%f\t Current:%f\t Soc:%f\r\n",Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
 		}
 		else if(rx_message.StdId == 0X06)//ºó  ÓÒ16£¬×ó1
 		{
@@ -216,7 +216,7 @@ void CAN2_RX1_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP1);
         CAN_Receive(CAN2, CAN_FIFO1, &rx_message);
-//		u1_printf("get1\r\n");
+//		u5_printf("get1\r\n");
 		if(rx_message.StdId == 0X06)//ºó  ÓÒ16£¬×ó1
 		{
 			T_hmcb.flag1_8 = rx_message.Data[1];

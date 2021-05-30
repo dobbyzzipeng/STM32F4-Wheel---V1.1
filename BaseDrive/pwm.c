@@ -116,6 +116,7 @@ void TIM5_Init(uint16_t arr,uint16_t psc)
 //}
 }
 
+extern void RGB_Ctr_Task(void);
 uint16_t speed = 8000;
 volatile uint8_t g_cantxquene_index = 0;
 void TIM5_IRQHandler(void)
@@ -181,6 +182,7 @@ void TIM5_IRQHandler(void)
 				break;
 			case 14:
 				Set_Driver_Pos(0x08,omgset_pos4);
+				RGB_Ctr_Task();
 				break;
 			case 15:
 				Set_Driver_Pos_Speed(0x08,speed);
@@ -194,7 +196,6 @@ void TIM5_IRQHandler(void)
 		TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }
 } 
-
 /*
 	以PWM作为定时器时钟，进行计数，控制脉冲个数
 */

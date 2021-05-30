@@ -3,10 +3,15 @@
 #include "gps.h"
 #include "bsp_usart.h"
 
-#define FE_WGS84    (1.0/298.257223563)
-#define RE_WGS84    6378137.0
-#define MYPI          3.1415926535897932  /* pi */
-#define D2R         (MYPI/180.0)
+#define AGV_A_LAT (30.860265206)//A靠近机巢，B远离机巢	A->B X正方向，垂直方向，Y
+#define AGV_A_LNG (118.7968452767)
+#define AGV_B_LAT (30.86026527000)
+#define AGV_B_LNG (118.7968839445)
+
+#define DRG_A_LAT (0.0)
+#define DRG_A_LNG (0.0)
+#define DRG_B_LAT (0.0)
+#define DRG_B_LNG (0.0)
 
 void llh2ecef(const double *pos, double *r)
 {
@@ -31,7 +36,7 @@ double DmToDd(unsigned long long data)
 
 	return result;
 }
-
+//输入度分，NEMA0183刚解析完的数据
 double rtk_dis_analysis(double lon1,double lat1,double lon2,double lat2)
 {
 	double h1,h2;
@@ -41,14 +46,6 @@ double rtk_dis_analysis(double lon1,double lat1,double lon2,double lat2)
     double ecef1[3]={0};
     double ecef2[3]={0};
     double len=0;
-//     printf("*******输入两点经纬度坐标计算距离*******\r\n");
-//    printf("请输坐标1：纬度，经度，高度\r\n");
-//    scanf("%lf,%lf,%lf",&lon1,&lat1,&h1);
-//    printf("输入的坐标1：纬度=%lf 经度=%lf 高度=%lf\n",lon1,lat1,h1);
-
-//    printf("请输坐标2：纬度，经度，高度\r\n");
-//    scanf("%lf,%lf,%lf",&lon2,&lat2,&h2);
-//    printf("输入的坐标2：纬度=%lf 经度=%lf 高度=%lf\n",lon2,lat2,h2);
 
     //dm转dd
     temp = lon1 * 10000000;
@@ -77,7 +74,7 @@ double rtk_dis_analysis(double lon1,double lat1,double lon2,double lat2)
 
     len = sqrt(pow(ecef2[0] - ecef1[0],2) + pow(ecef2[1] - ecef1[1],2) + pow(ecef2[2] - ecef1[2],2));
     len = sqrt(pow(ecef2[0] - ecef1[0],2) + pow(ecef2[1] - ecef1[1],2));
-//    u1_printf("dis is:%fm",len);
+//    u5_printf("dis is:%fm",len);
 
     return len;
 }
@@ -91,11 +88,79 @@ void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,double *x,double 
 	*x = dis*cos(ang);
 	*y = dis*sin(ang);
 	#else
-	*x = gps_get_distance(lon0,lat0,lonx,lat0);
-	*y = gps_get_distance(lon0,lat0,lon0,laty);
+	*y = gps_get_distance(lon0,lat0,lonx,lat0);
+	*x = gps_get_distance(lon0,lat0,lon0,laty);
 	*dis = gps_get_distance(lon0,lat0,lonx,laty);
 	#endif
-//	u1_printf("x:%.3f\t,y:%.3f\r\n",*x,*y);
+//	u5_printf("x:%.3f\t,y:%.3f\r\n",*x,*y);
+}
+
+void get_agv_pos(double *x,double *y, double lon,double lat)
+{
+	double x_norm = 0.0, y_norm = 0.0, y_sign = 0.0;
+	double L = 0.0, l0 = 0.0, l1 = 0.0;
+	double p = 0.0, S = 0.0;
+	double x_ap = 0.0, y_ap = 0.0, x_ab = 0.0, y_ab = 0.0;
+	
+    L  = gps_get_distance(AGV_A_LNG,AGV_A_LAT,AGV_B_LNG,AGV_B_LAT);
+    l0 = gps_get_distance(AGV_A_LNG,AGV_A_LAT,lon,lat);
+    l1 = gps_get_distance(lon,lat,AGV_B_LNG,AGV_B_LAT);
+	
+    p = (L + l0 + l1) / 2.0;
+    S = sqrt(p * (p - L) * (p - l0) * (p - l1));
+    y_norm = 2.0 * S / L;
+	
+	x_ap = lon - AGV_A_LNG;
+	y_ap = lat - AGV_A_LAT;
+	x_ab = AGV_B_LNG - AGV_A_LNG;
+	y_ab = AGV_B_LAT - AGV_A_LAT;
+	
+    y_sign = x_ap * y_ab - x_ab * y_ap;
+	
+	if (y_sign > 0.0)
+	{
+		*y = y_norm;
+	}
+	else
+	{
+		*y = -1.0 * y_norm;
+	}
+	
+	x_norm = sqrt(l0 * l0 - y_norm * y_norm);
+}
+
+void get_drg_pos(double *x,double *y, double lon,double lat)
+{
+	double x_norm = 0.0, y_norm = 0.0, y_sign = 0.0;
+	double L = 0.0, l0 = 0.0, l1 = 0.0;
+	double p = 0.0, S = 0.0;
+	double x_ap = 0.0, y_ap = 0.0, x_ab = 0.0, y_ab = 0.0;
+	
+    L  = gps_get_distance(DRG_A_LNG,DRG_A_LAT,DRG_B_LNG,DRG_B_LAT);
+    l0 = gps_get_distance(DRG_A_LNG,DRG_A_LAT,lon,lat);
+    l1 = gps_get_distance(lon,lat,DRG_B_LNG,DRG_B_LAT);
+	
+    p = (L + l0 + l1) / 2.0;
+    S = sqrt(p * (p - L) * (p - l0) * (p - l1));
+    y_norm = 2.0 * S / L;
+	
+	x_ap = lon - AGV_A_LNG;
+	y_ap = lat - AGV_A_LAT;
+	x_ab = AGV_B_LNG - AGV_A_LNG;
+	y_ab = AGV_B_LAT - AGV_A_LAT;
+	
+    y_sign = x_ap * y_ab - x_ab * y_ap;
+	
+	if (y_sign > 0.0)
+	{
+		*y = y_norm;
+	}
+	else
+	{
+		*y = -1.0 * y_norm;
+	}
+	
+	x_norm = sqrt(l0 * l0 - y_norm * y_norm);
 }
 
 void DM_TO_DD(double lon1,double lat1,double *lon2,double *lat2)

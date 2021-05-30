@@ -7,36 +7,42 @@
 
 void AGV_Data_Upload(void)
 {
+	static uint8_t runc = 0;
 	uint8_t cnt=0;
 	uint8_t Rbuf[128] = {0};
 	U_Data udata = {0};
 	
-	Rbuf[cnt++] = 0XF1;
-	Rbuf[cnt++] = 0X01;
-	cnt++;
-	udata.fdata = Battery_Msg.Voltage;
-	Rbuf[cnt++] = udata.buf[0];
-	Rbuf[cnt++] = udata.buf[1];
-	Rbuf[cnt++] = udata.buf[2];
-	Rbuf[cnt++] = udata.buf[3];
+	runc++;
+	if(runc>10){
+		runc = 0;
+		Rbuf[cnt++] = 0XF1;
+		Rbuf[cnt++] = 0X01;
+		cnt++;
+		udata.fdata = Battery_Msg.Voltage;
+		Rbuf[cnt++] = udata.buf[0];
+		Rbuf[cnt++] = udata.buf[1];
+		Rbuf[cnt++] = udata.buf[2];
+		Rbuf[cnt++] = udata.buf[3];
 
-	udata.fdata = Battery_Msg.Current;
-	Rbuf[cnt++] = udata.buf[0];
-	Rbuf[cnt++] = udata.buf[1];
-	Rbuf[cnt++] = udata.buf[2];
-	Rbuf[cnt++] = udata.buf[3];
+		udata.fdata = Battery_Msg.Current;
+		Rbuf[cnt++] = udata.buf[0];
+		Rbuf[cnt++] = udata.buf[1];
+		Rbuf[cnt++] = udata.buf[2];
+		Rbuf[cnt++] = udata.buf[3];
 
-	udata.fdata = Battery_Msg.Soc;
-	Rbuf[cnt++] = udata.buf[0];
-	Rbuf[cnt++] = udata.buf[1];
-	Rbuf[cnt++] = udata.buf[2];
-	Rbuf[cnt++] = udata.buf[3];
-	
-	Rbuf[cnt++] = 0X08;
-	Rbuf[cnt++] = 0X19;
-	Rbuf[2] = cnt;
-	Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);//计算校验
-	send_data_dma_u1(Rbuf,cnt);
+		udata.fdata = Battery_Msg.Soc;
+		Rbuf[cnt++] = udata.buf[0];
+		Rbuf[cnt++] = udata.buf[1];
+		Rbuf[cnt++] = udata.buf[2];
+		Rbuf[cnt++] = udata.buf[3];
+
+		Rbuf[cnt++] = 0X08;
+		Rbuf[cnt++] = 0X19;
+		Rbuf[2] = cnt;
+		Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);//计算校验
+		
+		send_data_dma_u1(Rbuf,cnt);
+	}
 }
 
 T_CMD AGV_CMD = {1,0,0,0,0};
@@ -101,7 +107,6 @@ void NX_Data_Return(void)
 		Rbuf[cnt++] = 0X19;
 		Rbuf[2] = cnt;
 		Rbuf[cnt-2] = CRC8_Table(Rbuf,cnt-2);//计算校验
-//		send_data_dma_u1(Rbuf,cnt);
 		send_data_dma_u4(Rbuf,cnt);
 	}
 }

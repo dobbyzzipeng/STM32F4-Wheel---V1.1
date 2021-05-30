@@ -3,8 +3,7 @@
 .\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\obj\control.o: ..\..\BaseDrive\ZL5SERVO.h
 .\obj\control.o: ..\..\BaseDrive\PickPlane.h
-.\obj\control.o: ..\..\BaseDrive\bsp_usart.h
-.\obj\control.o: ..\..\BaseDrive\sys.h
+.\obj\control.o: ..\..\BaseDrive\usart.h
 .\obj\control.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 .\obj\control.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include\core_cm4.h
 .\obj\control.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include\cmsis_version.h
@@ -40,15 +39,16 @@
 .\obj\control.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h
 .\obj\control.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_wwdg.h
 .\obj\control.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
+.\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\control.o: ..\..\BaseDrive\led.h
 .\obj\control.o: ..\..\BaseDrive\can1.h
 .\obj\control.o: ..\..\BaseDrive\can2.h
 .\obj\control.o: ..\..\User\comunication.h
 .\obj\control.o: ..\..\BaseDrive\hmcsensor.h
 .\obj\control.o: ..\..\User\postion.h
-.\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\control.o: ..\..\BaseDrive\rtk.h
 .\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\obj\control.o: ..\..\BaseDrive\gps.h
+.\obj\control.o: ..\..\BaseDrive\sys.h
 .\obj\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

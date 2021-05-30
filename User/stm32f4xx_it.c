@@ -70,7 +70,7 @@ void HardFault_Handler(void)
   /* Go to infinite loop when Hard Fault exception occurs */
   while (1)
   {
-	  u1_printf("hardfault...\r\n");
+//	  u5_printf("hardfault...\r\n");
 	  delay_ms(100);
   }
 }

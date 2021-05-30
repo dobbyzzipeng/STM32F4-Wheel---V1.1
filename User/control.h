@@ -30,14 +30,15 @@ typedef enum{
 
 typedef enum{
 	TASK_OK_CHARGE = 0,
-	PICK_PLANE_OUT,
-	GOBACK_FOR_SPACE,
-	GOHOME_WITHOUT_PLANE,
-	CHARGE_WITHOUT_PLANE,
-	GET_OUT_FIND_PLANE,
-	CVRTK_FIND_PLANE,
-	PICK_PLANE_IN,
-	RELEASE_PLANE_IN,
+	PICK_PLANE_OUT,//1
+	GOBACK_FOR_SPACE,//2
+	GOHOME_WITHOUT_PLANE,//3
+	CHARGE_WITHOUT_PLANE,//4
+	GET_OUT_FIND_PLANE,//5
+	CVRTK_FIND_PLANE,//6
+	FIIND_BLACK_LINE,//7
+	PICK_PLANE_IN,//8
+	RELEASE_PLANE_IN,//9
 }E_AGVTASK;//AGV自动任务顺序
 
 typedef enum{
@@ -94,11 +95,19 @@ typedef enum{
 	_ON = 0X11,
 }E_RGB_MODE;//RGB MODE
 
+enum{
+	FB = 0,
+	TURN = 1,
+	LR = 2,
+};
+
 extern uint8_t g_agv_work_mode;
 extern uint8_t g_rgb_cmd;
 extern uint8_t g_pick_state;
 extern uint8_t g_release_flag;
 extern uint8_t g_agv_task_state;
+extern uint8_t g_find_blackline_state;
+extern uint8_t g_cvrtk_findplane_state;
 
 void Auto_Release_Plane(uint8_t agvdir);
 void Auto_Pick_Plane(uint8_t flag,uint8_t dir);
@@ -109,6 +118,8 @@ void Auto_FollowLine_Task(uint8_t dir,uint8_t plane);
 void FollowLine_process(uint8_t dir);
 void Follow_Line_Clear(void);
 void Auto_CVRTK_FindPlane(void);
+void Auto_CVRTK_FindState_Clear(void);
+void Auto_Find_BlackLine(void);
 int Limit(int data,int max);
 void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
 void chassic_control_task(int16_t x,int16_t y,int16_t w);
