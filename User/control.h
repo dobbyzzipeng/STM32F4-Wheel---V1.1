@@ -25,6 +25,8 @@ typedef enum{
 	FOUR,
 	FIVE,
 	SIX,
+	SEVEN,
+	EIGHT,
 	DONE,//OK
 }E_PICKPLANE;//¸´ÔÓ¶¯×÷Ë³Ðò
 
@@ -101,6 +103,20 @@ enum{
 	LR = 2,
 };
 
+enum{
+	SONG = 0,
+	LIMIT = 1,
+};
+
+enum{
+	STOP = 0,
+	GO,
+	TURN_LEFT,
+	TURN_RIGHT,
+	RUN_LEFT,
+	RUN_RIGHT,
+};
+
 extern uint8_t g_agv_work_mode;
 extern uint8_t g_rgb_cmd;
 extern uint8_t g_pick_state;
@@ -115,14 +131,15 @@ void AGV_Work_Mode_Choose(void);
 void RGB_Ctr_Task(void);
 void Plane_Check_Task(void);
 void Auto_FollowLine_Task(uint8_t dir,uint8_t plane);
-void FollowLine_process(uint8_t dir);
+void FollowLine_process(uint8_t dir,uint8_t lrlimit);
 void Follow_Line_Clear(void);
 void Auto_CVRTK_FindPlane(void);
 void Auto_CVRTK_FindState_Clear(void);
 void Auto_Find_BlackLine(void);
+void Auto_Find_BlackLine_State_Clear(void);
 int Limit(int data,int max);
 void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
 void chassic_control_task(int16_t x,int16_t y,int16_t w);
 void Chassic_Motor_Ctr(int16_t sp,float w,int8_t flag);
-uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t flag);
+uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t turn);
 #endif

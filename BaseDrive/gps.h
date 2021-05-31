@@ -86,6 +86,7 @@ typedef struct
 	uint8_t gps_num;
 	uint8_t datamode;//定位状态 4唯一定位，5多解定位，1,0 无效
 	uint8_t good_ok;
+
 	uint8_t res0;
 	uint8_t res1;
 }RTK; 
@@ -99,8 +100,9 @@ void NMEA_GPGGA_Analysis(nmea_msg *gpsx,uint8_t *buf);
 void NMEA_GPTRA_Analysis(nmea_msg *gpsx,uint8_t *buf);
 
 uint8_t ascii_to_num(uint8_t ascii);
-uint8_t gps_data_prase(uint8_t buf[1024]);
 double parse_str_to_num(uint8_t buf[],uint8_t len);
+uint8_t gps_data_prase(uint8_t *buf);
+uint8_t drgrtk_prase(uint8_t *buf,uint8_t len);
 void Gps_Msg_Prf(void);
 double gps_get_distance(double lon1, double lat1, double lon2,double lat2);
 double gps_get_angle(double lng1,double lat1, double lng2, double lat2) ;

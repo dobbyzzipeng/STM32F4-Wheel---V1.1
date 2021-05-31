@@ -721,11 +721,15 @@ void usart6_init(unsigned long int baudrate)
 
 	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_6;
 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽复用输出
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_100MHz;
 	GPIO_Init(GPIOC,&GPIO_InitStructure);
 
 	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;
+		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽复用输出
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_100MHz;
 	GPIO_Init(GPIOC,&GPIO_InitStructure);
 
@@ -840,8 +844,9 @@ void USART6_IRQHandler(void)
 	uint8_t Res = 0,clear = 0;
 	if (USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)//空闲中断
 	{
-		//drgrtk
 		usart6_dma_tx_len = USART6_DMA_RX_LEN(DMA2_Stream1,USART6_MAX_RECV_LEN);
+		//drgrtk
+//		drgrtk_prase(USART6_RX_BUF,128);
 		DMA_Cmd(DMA2_Stream1,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA2_Stream1));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功
 		DMA_SetCurrDataCounter(DMA2_Stream1,USART6_MAX_RECV_LEN);//重新设置数据传输量
@@ -910,7 +915,7 @@ void send_data_dma_u6(uint8_t data[1000],uint8_t num)
 		USART6_TX_BUF[x] = data[x];
 	}
 	USART6_DMA_Send(USART6_TX_BUF,num);
-//	delay_ms(4);//必要延时，不可删掉
+//	delay_ms(1);//必要延时，不可删掉
 	SERVER_485_RX();//切换为接收模式
 }
 

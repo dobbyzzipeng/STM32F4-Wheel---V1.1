@@ -3,15 +3,15 @@
 #include "gps.h"
 #include "bsp_usart.h"
 
-#define AGV_A_LAT (30.860265206)//A靠近机巢，B远离机巢	A->B X正方向，垂直方向，Y
-#define AGV_A_LNG (118.7968452767)
-#define AGV_B_LAT (30.86026527000)
-#define AGV_B_LNG (118.7968839445)
+#define AGV_A_LAT (30.86026345)//A靠近机巢，B远离机巢	A->B X正方向，垂直方向，Y
+#define AGV_A_LNG (118.796844724)
+#define AGV_B_LAT (30.860263628)
+#define AGV_B_LNG (118.796883434)
 
-#define DRG_A_LAT (0.0)
-#define DRG_A_LNG (0.0)
-#define DRG_B_LAT (0.0)
-#define DRG_B_LNG (0.0)
+#define DRG_A_LAT (30.8602121)
+#define DRG_A_LNG (118.7968584)
+#define DRG_B_LAT (30.8602121)
+#define DRG_B_LNG (118.7968974)
 
 void llh2ecef(const double *pos, double *r)
 {
@@ -97,7 +97,7 @@ void RTK_TO_XY(double lon0,double lat0,double lonx,double laty,double *x,double 
 
 void get_agv_pos(double *x,double *y, double lon,double lat)
 {
-	double x_norm = 0.0, y_norm = 0.0, y_sign = 0.0;
+	double x_norm = 0.0, x_sign = 0.0, y_norm = 0.0, y_sign = 0.0;
 	double L = 0.0, l0 = 0.0, l1 = 0.0;
 	double p = 0.0, S = 0.0;
 	double x_ap = 0.0, y_ap = 0.0, x_ab = 0.0, y_ab = 0.0;
@@ -119,19 +119,29 @@ void get_agv_pos(double *x,double *y, double lon,double lat)
 	
 	if (y_sign > 0.0)
 	{
-		*y = y_norm;
+		*y = -1.0 *y_norm;
 	}
 	else
 	{
-		*y = -1.0 * y_norm;
+		*y = y_norm;
 	}
 	
 	x_norm = sqrt(l0 * l0 - y_norm * y_norm);
+	x_sign = x_ap * x_ab + y_ab * y_ap;
+	
+	if (x_sign > 0.0)
+	{
+		*x = x_norm;
+	}
+	else
+	{
+		*x = -1.0f * x_norm;
+	}
 }
 
 void get_drg_pos(double *x,double *y, double lon,double lat)
 {
-	double x_norm = 0.0, y_norm = 0.0, y_sign = 0.0;
+	double x_norm = 0.0, x_sign = 0.0, y_norm = 0.0, y_sign = 0.0;
 	double L = 0.0, l0 = 0.0, l1 = 0.0;
 	double p = 0.0, S = 0.0;
 	double x_ap = 0.0, y_ap = 0.0, x_ab = 0.0, y_ab = 0.0;
@@ -144,23 +154,33 @@ void get_drg_pos(double *x,double *y, double lon,double lat)
     S = sqrt(p * (p - L) * (p - l0) * (p - l1));
     y_norm = 2.0 * S / L;
 	
-	x_ap = lon - AGV_A_LNG;
-	y_ap = lat - AGV_A_LAT;
-	x_ab = AGV_B_LNG - AGV_A_LNG;
-	y_ab = AGV_B_LAT - AGV_A_LAT;
+	x_ap = lon - DRG_A_LNG;
+	y_ap = lat - DRG_A_LAT;
+	x_ab = DRG_B_LNG - DRG_A_LNG;
+	y_ab = DRG_B_LAT - DRG_A_LAT;
 	
     y_sign = x_ap * y_ab - x_ab * y_ap;
 	
 	if (y_sign > 0.0)
 	{
-		*y = y_norm;
+		*y = -1.0 * y_norm;
 	}
 	else
 	{
-		*y = -1.0 * y_norm;
+		*y = y_norm;
 	}
 	
 	x_norm = sqrt(l0 * l0 - y_norm * y_norm);
+	x_sign = x_ap * x_ab + y_ab * y_ap;
+	
+	if (x_sign > 0.0)
+	{
+		*x = x_norm;
+	}
+	else
+	{
+		*x = -1.0f * x_norm;
+	}
 }
 
 void DM_TO_DD(double lon1,double lat1,double *lon2,double *lat2)

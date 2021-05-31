@@ -1,8 +1,8 @@
 #include "hmcsensor.h"
 
 T_HMC T_hmcf = {0},T_hmcb = {0};
-T_LINE Linef = {8,0,0,0};
-T_LINE Lineb = {9,0,0,0};
+T_LINE Linef = {8.5f,0,0,0};
+T_LINE Lineb = {8.5f,0,0,0};
 void Line_Analysis(uint16_t flag,T_LINE *L)
 {
 	uint8_t i = 0,pbuf[17] = {0};
@@ -62,10 +62,10 @@ void Line_Analysis(uint16_t flag,T_LINE *L)
 			b_mark2 = 16;
 		}
 	}
-	L->mid = (b_mark1-f_mark1)/2+f_mark1;//find mid
+	L->mid = (b_mark1-f_mark1)/2.0f+(float)f_mark1;//find mid
 	L->num = (b_mark1-f_mark1+1);
 	if(f_mark2!=0&&b_mark2!=0){
-		L->mid = 8;
+		L->mid = 8.5f;
 		L->twol = 1;//探测开叉，不连续
 	}
 	else{
@@ -73,7 +73,7 @@ void Line_Analysis(uint16_t flag,T_LINE *L)
 	}
 	L->last_wlineflag = L->wlineflag;
 	if(L->num>=12||L->num==0){
-		L->mid = 8;
+		L->mid = 8.5f;
 		L->wlineflag = 1;//遇到黑线
 	}
 	else{

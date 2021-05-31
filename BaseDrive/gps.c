@@ -245,7 +245,112 @@ void GPS_Analysis(nmea_msg *gpsx,uint8_t *buf)
 
 nmea_msg gpsx = {0}; 											//GPS信息
 RTK agvrtk = {0},drgrtk = {0};
-//显示GPS定位信息 
+uint8_t gps_data_prase(uint8_t *buf)
+{
+	GPS_Analysis(&gpsx,buf);//分析字符串
+	Gps_Msg_Prf();
+	return 0;
+}
+//[30.8601707,118.7968119,90.00026775492921]
+uint8_t drgrtk_prase(uint8_t *buf,uint8_t len)
+{
+	static double drg_lon = 0,drg_lat = 0,drg_ang = 0;
+	uint8_t *head_ptr = NULL;
+	uint8_t counter = 0u;
+	uint8_t chars_num1 = 0u, chars_num2 = 0u, chars_num3 = 0u;
+	uint8_t remain_len = len;
+	
+//	uint8_t RBUF[128] = {0};
+//	sprintf(,"");
+//	send_data_dma_u5(buf,100);
+//	delay_ms(10);
+	// 1. find head of msg and point to 1st num
+	for(counter=0;counter < remain_len;counter++)
+	{
+		if(*(buf+counter)=='[')
+		{
+			head_ptr = buf + counter + 1; 
+			remain_len = remain_len - counter - 1;
+			break;
+		}
+		if(counter >= remain_len)
+		{
+			return 1u;
+		}
+	}
+
+	// 2. find ',' between 1st and 2nd,
+	//    get chars_num1 between '[' and ','
+	for(counter = 0; counter < len; counter++)
+	{
+		if(*(head_ptr + counter)==',')
+		{
+			remain_len = remain_len - counter - 1;
+			chars_num1 = counter;
+			break;
+		}
+		if(counter >= remain_len)
+		{
+			return 1u;
+		}
+	}
+	drg_lat = parse_str_to_num(head_ptr,chars_num1);
+	//u5_printf("lat:%lf r:%d num:%d\r\n",drg_lat,remain_len,chars_num1);
+    // 3. point to next num, next char at ','
+	head_ptr = head_ptr + chars_num1 + 1;
+	
+	// 4. find ',' between 2nd and 3rd,
+	//    get chars_num2 between ',' and ','
+	for(counter = 0; counter < len; counter++)
+	{
+		if(*(head_ptr + counter)==',')
+		{
+			remain_len = remain_len - counter - 1;
+			chars_num2 = counter;
+			break;
+		}
+		if(counter >= remain_len)
+		{
+			return 1u;
+		}
+	}
+	drg_lon = parse_str_to_num(head_ptr,chars_num2);
+	//u5_printf("lon:%lf r:%d num:%d\r\n",drg_lon,remain_len,chars_num2);
+    // 5. point to next num, next char at ','
+	head_ptr = head_ptr + chars_num1 + 1;
+	
+	// 6. find ']' at end,
+	//    get chars_num3 between ',' and ']'
+	for(counter = 0; counter < len; counter++)
+	{
+		if(*(head_ptr + counter)==']')
+		{
+			remain_len = remain_len - counter - 1;
+			chars_num3 = counter;
+			break;
+		}
+		if(counter > remain_len)
+		{
+			return 1u;
+		}
+	}
+	drg_ang = parse_str_to_num(head_ptr,chars_num3);	
+	u5_printf("lat:%f lng:%f ang:%f r:%d n1:%d n2:%d n3:%d\r\n",drg_lat, drg_lon, drg_ang, remain_len, chars_num1, chars_num2, chars_num3);
+	
+	if(drg_lon>90&&drg_lon<150&&drg_lat>5&&drg_lat<60&&drg_ang>0.001f){
+		drgrtk.ang = drg_ang;
+		drgrtk.lon = drg_lon;
+		drgrtk.lat = drg_lat;
+		drgrtk.good_ok = 1;
+	}
+	else{
+		drgrtk.good_ok = 0;
+		return 1u;
+	}
+	
+	return 0u;
+}
+
 void Gps_Msg_Prf(void)
 {
 	if(lon>90&&lon<150&&lat>5&&lat<60){
@@ -267,20 +372,13 @@ void Gps_Msg_Prf(void)
 	agvrtk.date=gpsx.utc.date;
 	agvrtk.year=gpsx.utc.year;
 	agvrtk.datamode=gpsx.fixmode;
-
-	drgrtk.ang = 297.0f;
-	drgrtk.lon = 118.7969016;
-	drgrtk.lat = 30.8602637;
+	
+	drgrtk.ang = 279.4;
+	drgrtk.lon = 118.7968784;
+	drgrtk.lat = 30.8602223;
 	drgrtk.good_ok = 1;
 //	u5_printf("fixmode:%d\t lng:%lf\t lat:%lf\t gps_num:%d\t hour:%d\t min:%d\t sec:%d\r\n",
 //	rtk.fixmode,rtk.lon_atk,rtk.lat_atk,rtk.gps_num,rtk.hour,rtk.min,rtk.sec);
-}
-
-uint8_t gps_data_prase(uint8_t buf[1024])
-{
-	GPS_Analysis(&gpsx,buf);//分析字符串
-	Gps_Msg_Prf();
-	return 0;
 }
 /*********************************************************************/
 #define PI 3.1415926535897932f
@@ -341,6 +439,4 @@ double gps_get_angle(double longtitude_start, double latitude_start, double long
 
 	return toBearing(atan2(x, y));
 }
-
-
 
