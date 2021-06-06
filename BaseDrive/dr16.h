@@ -31,8 +31,11 @@
 #define left_Switch_DOWN  12
 #define left_Switch_4G  0
 
-#define left_Wheel_UP  1
-#define left_Wheel_DOWN  9
+#define LW_UP  135u
+#define LW_DOWN  90u
+
+#define RW_UP  32u
+#define RW_DOWN  35u
 
 #define right_Switch_UP  13u
 #define right_Switch_MID  15u

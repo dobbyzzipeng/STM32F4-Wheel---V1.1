@@ -335,7 +335,7 @@ uint8_t drgrtk_prase(uint8_t *buf,uint8_t len)
 		}
 	}
 	drg_ang = parse_str_to_num(head_ptr,chars_num3);	
-	u5_printf("lat:%f lng:%f ang:%f r:%d n1:%d n2:%d n3:%d\r\n",drg_lat, drg_lon, drg_ang, remain_len, chars_num1, chars_num2, chars_num3);
+//	u5_printf("lat:%f lng:%f ang:%f r:%d n1:%d n2:%d n3:%d\r\n",drg_lat, drg_lon, drg_ang, remain_len, chars_num1, chars_num2, chars_num3);
 	
 	if(drg_lon>90&&drg_lon<150&&drg_lat>5&&drg_lat<60&&drg_ang>0.001f){
 		drgrtk.ang = drg_ang;
@@ -357,7 +357,7 @@ void Gps_Msg_Prf(void)
 		agvrtk.lon = lon;
 		agvrtk.lat = lat;
 	}
-	if(gpsx.ang>0&&gpsx.ang<36000){
+	if(gpsx.ang>0&&gpsx.ang<36000 && gpsx.fixmode==4){
 		agvrtk.ang = gpsx.ang/100.0;
 		agvrtk.good_ok = 1;
 	}
@@ -373,10 +373,11 @@ void Gps_Msg_Prf(void)
 	agvrtk.year=gpsx.utc.year;
 	agvrtk.datamode=gpsx.fixmode;
 	
-	drgrtk.ang = 279.4;
-	drgrtk.lon = 118.7968784;
-	drgrtk.lat = 30.8602223;
-	drgrtk.good_ok = 1;
+//	drgrtk.ang = 270.0;
+//	drgrtk.lon = 118.7968589;
+//	drgrtk.lat = 30.8602735;
+//	drgrtk.good_ok = 1;
+	
 //	u5_printf("fixmode:%d\t lng:%lf\t lat:%lf\t gps_num:%d\t hour:%d\t min:%d\t sec:%d\r\n",
 //	rtk.fixmode,rtk.lon_atk,rtk.lat_atk,rtk.gps_num,rtk.hour,rtk.min,rtk.sec);
 }

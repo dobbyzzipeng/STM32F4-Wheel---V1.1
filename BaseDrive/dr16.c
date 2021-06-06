@@ -76,7 +76,7 @@ void DR16_Unlink_Check(void)
 	}
 }
 
-volatile unsigned short left_Switch = 0,left_Wheel = 0,right_Switch = 0,right_Wheel = 0,last_right_Wheel=0;
+volatile unsigned short left_Switch = 0,left_Wheel = 120,right_Switch = 0,right_Wheel = 0,last_right_Wheel=0;
 unsigned char Rev = 0,revnum = 0,headflag = 0,tailflag = 0;
 void USART2_IRQHandler(void)            //串口2中断服务程序
 {
@@ -127,7 +127,7 @@ void USART2_IRQHandler(void)            //串口2中断服务程序
 			left_Switch =sbus_rx_buffer[9]& 0x0f; 
 			right_Switch =(sbus_rx_buffer[6]& 0x0f)+1; 
 			left_Wheel = sbus_rx_buffer[10];
-			
+			right_Wheel = sbus_rx_buffer[8];//up:32  down 35
 			headflag = 0;
 			tailflag = 0;
 			revnum =0;//attention!!!

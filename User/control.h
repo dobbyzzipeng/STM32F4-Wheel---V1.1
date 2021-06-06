@@ -20,6 +20,8 @@ typedef enum{
 typedef enum{
 	NONE = 0,
 	ONE,
+	ONE_1,
+	ONE_11,
 	TWO,
 	THREE,
 	FOUR,
@@ -37,16 +39,19 @@ typedef enum{
 	GOHOME_WITHOUT_PLANE,//3
 	CHARGE_WITHOUT_PLANE,//4
 	GET_OUT_FIND_PLANE,//5
-	CVRTK_FIND_PLANE,//6
-	FIIND_BLACK_LINE,//7
-	PICK_PLANE_IN,//8
-	RELEASE_PLANE_IN,//9
+	GOFRONT_FOR_SPACE,//6
+	CVRTK_FIND_PLANE,//7
+	FIIND_BLACK_LINE,//8
+	PICK_PLANE_IN,//9
+	RELEASE_PLANE_IN,//10
 }E_AGVTASK;//AGV自动任务顺序
 
 typedef enum{
 	INIT=0,
-	OUT,
-	IN,
+	OUT = 1,
+	IN = -1,
+	REBACK = 3,
+	GOFRONT = 4,
 }E_DIR;//巡线方向
 
 typedef enum{
@@ -117,6 +122,15 @@ enum{
 	RUN_RIGHT,
 };
 
+typedef enum{
+	AGV_ARM_UNKNOW,
+	AGV_ARM_OPENING,
+	AGV_ARM_CLOSING,
+	AGV_ARM_OPEN,
+	AGV_ARM_CLOSE,
+	AGV_ARM_ERR,
+} agv_arm_state_t;
+
 extern uint8_t g_agv_work_mode;
 extern uint8_t g_rgb_cmd;
 extern uint8_t g_pick_state;
@@ -124,14 +138,18 @@ extern uint8_t g_release_flag;
 extern uint8_t g_agv_task_state;
 extern uint8_t g_find_blackline_state;
 extern uint8_t g_cvrtk_findplane_state;
+extern uint8_t g_dragonfish_flag;
+extern uint8_t g_agv_arm_flag;
 
-void Auto_Release_Plane(uint8_t agvdir);
-void Auto_Pick_Plane(uint8_t flag,uint8_t dir);
+void Auto_Release_Plane(int8_t agvdir);
+void Auto_Pick_Plane(uint8_t flag,int8_t dir);
+uint8_t is_release(void);
+uint8_t is_close(void);
 void AGV_Work_Mode_Choose(void);
 void RGB_Ctr_Task(void);
 void Plane_Check_Task(void);
-void Auto_FollowLine_Task(uint8_t dir,uint8_t plane);
-void FollowLine_process(uint8_t dir,uint8_t lrlimit);
+void Auto_FollowLine_Task(int8_t dir,uint8_t plane);
+void FollowLine_process(int8_t dir,uint8_t lrlimit);
 void Follow_Line_Clear(void);
 void Auto_CVRTK_FindPlane(void);
 void Auto_CVRTK_FindState_Clear(void);
@@ -142,4 +160,5 @@ void Pick_Plane_Ctr_Task(int16_t x,int16_t y,int16_t w);
 void chassic_control_task(int16_t x,int16_t y,int16_t w);
 void Chassic_Motor_Ctr(int16_t sp,float w,int8_t flag);
 uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t turn);
+void agv_open_arm(void);
 #endif

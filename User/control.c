@@ -10,10 +10,29 @@
 #include "postion.h"
 #include "rtk.h"
 #include "gps.h"
+#include "bms.h"
 #include <math.h>
 
 uint8_t g_release_flag = NONE;
-void Auto_Release_Plane(uint8_t agvdir)
+uint8_t g_agv_arm_flag = AGV_ARM_UNKNOW;
+
+void agv_open_arm(void)
+{
+	if ((Eject.puspul0!=2||Eject.puspul1!=2)||(Eject.updown0!=1||Eject.updown1!=1)||(Eject.catch0!=1||Eject.catch1!=1))
+	{
+		PP_Motor_Pull();
+		UD_Motor_Down();
+		Catch_Motor_Open();
+		g_agv_arm_flag = AGV_ARM_OPENING;
+	}
+	else
+	{
+		g_agv_arm_flag = AGV_ARM_OPEN;
+		g_pick_state = NONE;
+	}
+}
+
+void Auto_Release_Plane(int8_t agvdir)
 {
 	if(agvdir!=INIT)
 	{
@@ -42,42 +61,71 @@ void Auto_Release_Plane(uint8_t agvdir)
 			break;
 			case FOUR:
 				g_release_flag = DONE;
+				g_pick_state = NONE;
 				if(agvdir==OUT){
-					g_agv_task_state = GOHOME_WITHOUT_PLANE;//first release,next goback for space
+					g_agv_task_state = GOBACK_FOR_SPACE;//first release,next goback for space;//first release,next goback for space
 				}
 			break;
 		}
 	}
 	else{
-		do{
+		if((Eject.puspul0!=2||Eject.puspul1!=2)||(Eject.updown0!=1||Eject.updown1!=1)||(Eject.catch0!=1||Eject.catch1!=1)){
 			PP_Motor_Pull();
 			UD_Motor_Down();
 			Catch_Motor_Open();
+			g_release_flag = ONE;
+			u5_printf("pick is opening...\r\n");
 		}
-		while((Eject.puspul0!=2||Eject.puspul1!=2)||(Eject.updown0!=1||Eject.updown1!=1)||(Eject.catch0!=1||Eject.catch1!=1));
-		PP_Motor_Stop();
-		UD_Motor_Stop();
-		Catch_Motor_Stop();
-		g_release_flag = DONE;
-		u5_printf("pickplane is open ok...\r\n");
+		else{
+			PP_Motor_Stop();
+			UD_Motor_Stop();
+			Catch_Motor_Stop();
+			u5_printf("pick is open ok...\r\n");
+			g_release_flag = DONE;
+			g_pick_state = NONE;	
+		}
 	}
 }
 
+uint8_t is_release(void)
+{
+	if((Eject.puspul0!=2||Eject.puspul1!=2)||(Eject.updown0!=1||Eject.updown1!=1)||(Eject.catch0!=1||Eject.catch1!=1))
+	{
+		return 0;
+	}
+	else{
+		return 1;
+	}
+}
+
+uint8_t is_close(void)
+{
+	if ((Eject.updown0!=2||Eject.updown1!=2)||(Eject.catch0!=2||Eject.catch1!=2))
+		{
+			return 0;
+		}
+		else{
+			return 1;
+		}
+}
 uint8_t g_pick_state = NONE;
 uint8_t g_dragonfish_flag = 1;//搜索龙鱼标志 0搜索到,1没有搜索到
-void Auto_Pick_Plane(uint8_t flag,uint8_t dir)
+void Auto_Pick_Plane(uint8_t flag,int8_t dir)
 {
 	static uint16_t catime = 0,catflag = 0;
-	if(flag==FIND){
+	if(flag==FIND)
+	{
 		if(T_Plane.g_plane_flag1==1&&T_Plane.g_plane_flag2==1\
-	&&T_Plane.last_plane_flag1==0&&T_Plane.last_plane_flag2==0){
+	       &&T_Plane.last_plane_flag1==0&&T_Plane.last_plane_flag2==0)
+	    {
 			g_pick_state = ONE;
 			g_dragonfish_flag = 0;//搜索到龙鱼
 			T_Plane.last_plane_flag1=1;
 			T_Plane.last_plane_flag2=1;
 			u5_printf("find plane is ok...\r\n");
 		}
-		else if(T_Plane.g_plane_flag1==0&&T_Plane.g_plane_flag2==0){
+		else if(T_Plane.g_plane_flag1==0&&T_Plane.g_plane_flag2==0)
+		{
 			T_Plane.last_plane_flag1=0;
 			T_Plane.last_plane_flag2=0;
 		}
@@ -108,6 +156,7 @@ void Auto_Pick_Plane(uint8_t flag,uint8_t dir)
 				break;
 				case FOUR:
 					g_pick_state = DONE;
+					g_release_flag = NONE;
 				break;
 			}
 		}
@@ -146,20 +195,26 @@ void Auto_Pick_Plane(uint8_t flag,uint8_t dir)
 				case FOUR:
 					u5_printf("pick plane is ok...\r\n");
 					g_pick_state = DONE;
+					g_release_flag = NONE;
 				break;
 			}
 		}
 	}
 	else if(flag==CLOSE){
-		do{
+		if ((Eject.updown0!=2||Eject.updown1!=2)||(Eject.catch0!=2||Eject.catch1!=2))
+		{
 			UD_Motor_Up();
 			Catch_Motor_Close();
-		}while((Eject.updown0!=2||Eject.updown1!=2)||(Eject.catch0!=2||Eject.catch1!=2));
-		UD_Motor_Stop();
-		PP_Motor_Stop();
-		Catch_Motor_Stop();
-		g_pick_state = NONE;//清空状态机标志
-		u5_printf("pick machine is close...\r\n");
+			Stop_All_Chassicmotor();
+		}
+		else
+		{
+			UD_Motor_Stop();
+			PP_Motor_Stop();
+			Catch_Motor_Stop();
+			g_pick_state = DONE;
+			u5_printf("pick machine is close...\r\n");
+		}
 	}
 }
 
@@ -191,10 +246,25 @@ void RGB_Ctr_Task(void)
 {
 	static uint8_t cnt = 0;
 	uint8_t buf[8] = {0};
-	uint8_t warm = 0,cold = 0x50,red = 0xff,green = 0xff,blue = 0xff;
+	uint8_t warm = 0xff,cold = 0,red = 0xff,green = 0xff,blue = 0xff;
 	cnt++;
-	if(cnt>20){
-		cnt = 0;
+	if(cnt<20){
+		return;
+	}
+	cnt = 0;
+	if(Battery_Msg.Soc<40){
+		{red = 0xff;green = 0;blue = 0;cold = 0,warm = 0;}
+		buf[0] = _5HZ;
+		buf[1] = 254;
+		buf[2] = _FLASH;
+		buf[3] = cold;
+		buf[4] = warm;
+		buf[5] = blue;
+		buf[6] = green;
+		buf[7] = red;
+	}
+	else{
+		{red = 0xff;green = 0xff;blue = 0xff;cold = 0,warm = 0xff;}
 		buf[0] = _1HZ;
 		buf[1] = 254;
 		buf[2] = _BREATH;
@@ -203,8 +273,8 @@ void RGB_Ctr_Task(void)
 		buf[5] = blue;
 		buf[6] = green;
 		buf[7] = red;
-		CAN2_TX_PACKET(0X301,buf,sizeof(buf));
 	}
+	CAN2_TX_PACKET(0X301,buf,sizeof(buf));
 }
 
 T_PLANE T_Plane = {0};
@@ -228,33 +298,31 @@ static int8_t in_black_line_state = -3;//in
 static int8_t out_black_line_state = -3;//out
 static int8_t in_black_line_state1 = -3;//in
 static int8_t out_black_line_state1 = -3;//out
+static int8_t reback_black_line_state = -3;//reback
 void Follow_Line_Clear(void)
 {
 	in_black_line_state = -3;
 	out_black_line_state = -3;
 	in_black_line_state1 = -3;
 	out_black_line_state1 = -3;
+	reback_black_line_state = -3;
 }
 
-#define SPEED	450
-#define SLOW_SPEED	220
+#define SPEED		400
+#define SLOW_SPEED	200
 #define TURN_SPEED	100
 static int16_t speed = 0;
 static float omg = 0;
 static int8_t turn_flag = 0;//自旋标志
-void FollowLine_process(uint8_t dir,uint8_t lrlimit)
+void FollowLine_process(int8_t dir,uint8_t lrlimit)
 {
 	static uint8_t follow_flag = STOP;//,last_follow_flag = STOP;
 	if(Lineb.wlineflag!=1)
-	{
-//		float f_pos = Linef.err;
-//		float b_pos = -1.0f * Lineb.err;
-		
-//		last_follow_flag = follow_flag;
+	{	
 		if (follow_flag == RUN_RIGHT)
 		{
 			{speed = TURN_SPEED;omg = 90;turn_flag = 0;}//run riht
-			u5_printf("run right hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//			u5_printf("run right hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 			if (Lineb.err < 0 || Linef.err > 0)
 			{
 				follow_flag = GO;
@@ -264,7 +332,7 @@ void FollowLine_process(uint8_t dir,uint8_t lrlimit)
 		else if (follow_flag == RUN_LEFT)
 		{
 			{speed = TURN_SPEED;omg = -90;turn_flag = 0;}//run left
-			u5_printf("run left hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//			u5_printf("run left hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 			if (Lineb.err > 0 || Linef.err < 0)
 			{
 				follow_flag = GO;
@@ -280,12 +348,12 @@ void FollowLine_process(uint8_t dir,uint8_t lrlimit)
 		else if((Lineb.err<=-2&&Linef.err<=-2)||(Lineb.err<=1&&Lineb.err>=-1&&Linef.err<-1)||(Linef.err<=1&&Linef.err>=-1&&Lineb.err<-1)){
 			follow_flag = TURN_RIGHT;
 			{speed = TURN_SPEED;omg = 45;turn_flag = 1;}//turn riht
-			u5_printf("turn right hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//			u5_printf("turn right hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 		}
 		else if((Lineb.err>=2&&Linef.err>=2)||(Lineb.err<=1&&Lineb.err>=-1&&Linef.err>1)||(Linef.err<=1&&Linef.err>=-1&&Lineb.err>1)){
 			follow_flag = TURN_LEFT;
 			{speed = TURN_SPEED;omg = 45;turn_flag = -1;}//turn left
-			u5_printf("turn left hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//			u5_printf("turn left hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 		}
 		else if(Lineb.err>(3-lrlimit) && Linef.err<-(3-lrlimit)){
 			follow_flag = RUN_RIGHT;
@@ -297,12 +365,12 @@ void FollowLine_process(uint8_t dir,uint8_t lrlimit)
 			if(dir==OUT){
 				follow_flag = GO;
 				speed = SPEED;
-				u5_printf("go out hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//				u5_printf("go out hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 			}
 			else if(dir==IN){
 				follow_flag = GO;
 				speed = -SPEED;
-				u5_printf("go back hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//				u5_printf("go back hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 			}
 			{omg = 0;turn_flag = 0;}
 		}
@@ -311,252 +379,320 @@ void FollowLine_process(uint8_t dir,uint8_t lrlimit)
 		if(dir==OUT){
 			follow_flag = GO;
 			speed = SPEED;
-			u5_printf("go out hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//			u5_printf("go out hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 		}
 		else if(dir==IN){
 			follow_flag = GO;
 			speed = -SPEED;
-			u5_printf("go back hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
+//			u5_printf("go back hmcf_mid:%.1f hmcb_mid:%.1f\r\n",Linef.mid,Lineb.mid);
 		}
 		{omg = 0;turn_flag = 0;}
 	}
 }
 
 static uint8_t line_flag = 1,last_line_flag = 0;//后边磁导轨传感器遇到横线标志，1为横线
-void Auto_FollowLine_Task(uint8_t dir,uint8_t plane)
+void Auto_FollowLine_Task(int8_t dir,uint8_t plane)
 {
-	static uint16_t runcnt = 0;
-	runcnt++;
-	if(runcnt>10){//2HZ不可修改
-		runcnt = 0;
-		Line_Analysis(T_hmcf.flag,&Linef);
-		Line_Analysis(T_hmcb.flag,&Lineb);
-		last_line_flag = line_flag;
-		line_flag = Lineb.wlineflag;
-		
-		if(g_release_flag!=NONE && g_release_flag!=DONE){//还没有放完飞机
-			speed = 0;omg = 0;turn_flag = 0;
-		}
-		else if(g_pick_state!=NONE && g_pick_state!=DONE){//还没有抬起飞机
-			speed = 0;omg = 0;turn_flag = 0;
-		}
-		else if(plane==WITHPLANE)
+	static uint8_t release_cnt = 0,pick_cnt = 0;
+	Line_Analysis(T_hmcf.flag,&Linef);
+	Line_Analysis(T_hmcb.flag,&Lineb);
+	last_line_flag = line_flag;
+	line_flag = Lineb.wlineflag;
+	
+	if(g_release_flag!=NONE && g_release_flag!=DONE){//还没有放完飞机
+		speed = 0;omg = 0;turn_flag = 0;
+	}
+	else if(g_pick_state!=NONE && g_pick_state!=DONE){//还没有抬起飞机
+		speed = 0;omg = 0;turn_flag = 0;
+	}
+	else if(plane==WITHPLANE)
+	{
+		if(dir==IN)
 		{
-			if(dir==IN)
-			{
-				if(in_black_line_state==-3&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state = -2;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("release plane line find...\r\n");
-				}
-				else if(in_black_line_state==-2&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state = -1;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("release plane line miss...\r\n");
-				}
-				else if(in_black_line_state==-1&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state = 0;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("first line find,agv not stop still go back...\r\n");
-				}
-				else if(in_black_line_state==0&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state = 1;
-					{speed = -SLOW_SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("first line miss,agv not stop still go back...\r\n");
-				}
-				else if(in_black_line_state==1&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state = 2;
+			if(in_black_line_state==-3&&line_flag==1&&last_line_flag!=1){
+				in_black_line_state = -2;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line find,agv not stop still go back...\r\n");
+			}
+			else if(in_black_line_state==-2&&line_flag!=1&&last_line_flag==1){
+				in_black_line_state = -1;
+				{speed = -SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line miss,agv not stop still go back...\r\n");
+			}
+			else if(in_black_line_state==-1&&line_flag==1&&last_line_flag!=1){
+				in_black_line_state = 0;
+				{speed = -SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("exchange line find,agv ready to stop and release plane...\r\n");
+			}
+			
+			else if(in_black_line_state==0&&line_flag==1&&last_line_flag==1){
+				release_cnt++;
+				if(release_cnt>15){
+					release_cnt = 0;
 					g_release_flag = ONE;//agv 停止，释放龙鱼
+					in_black_line_state = 1;
 					{speed = 0;omg = 0;turn_flag = 0;}
-					u5_printf("second line find,agv stop and release plane\r\n");
-				}
-				else if(in_black_line_state==2&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state = 3;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("second line miss,agv go back home\r\n");
-				}
-				else if(in_black_line_state==3&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state = 4;
-					{speed = -SLOW_SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("third line find...\r\n");
-				}
-				else if(in_black_line_state==4&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state = 5;
-					{speed = 0;omg = 0;turn_flag = 0;}
-					g_agv_task_state = RELEASE_PLANE_IN;//agv 停止，充电
-					u5_printf("third line miss,agv stop change...\r\n");
+					u5_printf("exchange line find,agv stop and release plane...\r\n");
 				}
 				else{
-					FollowLine_process(IN,LIMIT);
+					u5_printf("exchange line find,agv ready to stop and release plane...\r\n");	
 				}
 			}
-			else if(dir==OUT){
-				if(out_black_line_state==-3&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state = -2;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("charge line find...\r\n");
-				}
-				else if(out_black_line_state==-2&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state = -1;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("charge line miss...\r\n");
-				}
-				else if(out_black_line_state==-1&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state = 0;
-					{speed = SLOW_SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("first line find...\r\n");
-				}
-				else if(out_black_line_state==0&&line_flag!=1&&last_line_flag==1){
+			
+			else if(in_black_line_state==1&&line_flag!=1&&last_line_flag==1){
+				in_black_line_state = 2;
+				{speed = -SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("exchange line miss,agv go back home...\r\n");
+			}
+			else if(in_black_line_state==2&&line_flag==1&&last_line_flag!=1){
+				in_black_line_state = 3;
+				{speed = -SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("charge line find...\r\n");
+			}
+			else if(in_black_line_state==3&&line_flag!=1&&last_line_flag==1){
+				in_black_line_state = 4;
+				{speed = 0;omg = 0;turn_flag = 0;}
+				g_agv_task_state = RELEASE_PLANE_IN;//agv 停止，充电
+				u5_printf("charge line miss,agv stop change...\r\n");
+			}
+			else{
+				FollowLine_process(IN,LIMIT);
+			}
+		}
+		else if(dir==OUT){
+			if(out_black_line_state==-3&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state = -2;
+				{speed = SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("charge line find...\r\n");
+			}
+			else if(out_black_line_state==-2&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state = -1;
+				{speed = SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("charge line miss...\r\n");
+			}
+			else if(out_black_line_state==-1&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state = 0;
+				{speed = SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("pick plane line find,agv ready to stop and pick plane...\r\n");
+			}
+			else if(out_black_line_state==0&&line_flag==1&&last_line_flag==1){
+				pick_cnt++;
+				if(pick_cnt>10){
+					pick_cnt = 0;
 					out_black_line_state = 1;
 					g_pick_state = ONE;//夹取无人机
 					{speed = 0;omg = 0;turn_flag = 0;}
-					u5_printf("first line miss,agv stop and pick plane...\r\n");
-				}
-				else if(out_black_line_state==1&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state = 2;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("second line find...\r\n");
-				}
-				else if(out_black_line_state==2&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state = 3;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("second line miss,agv still go out...\r\n");
-				}
-				else if(out_black_line_state==3&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state = 4;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("third line find...\r\n");
-				}
-				else if(out_black_line_state==4&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state = 5;
-					{speed = 0;omg = 0;turn_flag = 0;}
-					g_release_flag = ONE;//释放无人机
-					u5_printf("third line miss,agv stop and release plane...\r\n");
+					u5_printf("pick plane line find,agv stop and pick plane...\r\n");
 				}
 				else{
-					FollowLine_process(OUT,SONG);
+					{speed = SLOW_SPEED;omg = 0;turn_flag = 0;}
+					u5_printf("pick plane line find,agv ready to stop and pick plane...\r\n");
 				}
+			}
+			else if(out_black_line_state==1&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state = 2;
+				{speed = SLOW_SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("pick plane line miss,agv go out...\r\n");
+			}
+			else if(out_black_line_state==2&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state = 3;
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line find...\r\n");
+			}
+			else if(out_black_line_state==3&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state = 4;
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line miss,agv still go out...\r\n");
+			}
+			else if(out_black_line_state==4&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state = 5;
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("release plane line find...\r\n");
+			}
+			else if(out_black_line_state==5&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state = 6;
+				{speed = 0;omg = 0;turn_flag = 0;}
+				g_release_flag = ONE;//释放无人机
+				u5_printf("release plane line miss,agv stop and release plane...\r\n");
+			}
+			else{
+				FollowLine_process(OUT,SONG);
 			}
 		}
-		else if(plane==NOPLANE)
-		{
-			if(dir==IN){
-				if(in_black_line_state1==-3&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state1 = -2;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("release plane line find...\r\n");
-				}
-				else if(in_black_line_state1==-2&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state1 = -1;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("release plane line miss...\r\n");
-				}
-				else if(in_black_line_state1==-1&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state1 = 0;
-					g_pick_state = ONE;//收起夹具
-					{speed = 0;omg = 0;turn_flag = 0;}
-					u5_printf("first line find,agv stop and close pick...\r\n");
-				}
-				else if(in_black_line_state1==0&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state1 = 1;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("first line miss...\r\n");
-				}
-				else if(in_black_line_state1==1&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state1 = 2;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("second line find...\r\n");
-				}
-				else if(in_black_line_state1==2&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state1 = 3;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("second line miss,agv still go back...\r\n");
-				}
-				else if(in_black_line_state1==3&&line_flag==1&&last_line_flag!=1){
-					in_black_line_state1 = 4;
-					{speed = -SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("third line find...\r\n");
-				}
-				else if(in_black_line_state1==4&&line_flag!=1&&last_line_flag==1){
-					in_black_line_state1 = 5;
-					{speed = 0;omg = 0;turn_flag = 0;}
-					g_agv_task_state = CHARGE_WITHOUT_PLANE;//切换到充电状态
-					u5_printf("third line miss,agv stop and charge,plane is outside...\r\n");
-				}
-				else{
-					FollowLine_process(IN,LIMIT);
-				}
-			}
-			else if(dir==OUT){
-				if(out_black_line_state1==-3&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state1 = -2;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("charge line find...\r\n");
-				}
-				else if(out_black_line_state1==-2&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state1 = -1;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("charge line miss...\r\n");
-				}
-				else if(out_black_line_state1==-1&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state1 = 0;
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-					u5_printf("first line find...\r\n");
-				}
-				else if(out_black_line_state1==0&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state1 = 1;
-					u5_printf("first line miss,agv is still go out...\r\n");
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-				}
-				else if(out_black_line_state1==1&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state1 = 2;
-					u5_printf("second line find...\r\n");
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-				}
-				else if(out_black_line_state1==2&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state1 = 3;
-					g_release_flag = ONE;//打开夹具
-					u5_printf("second line miss,ready to open pick...\r\n");
-					{speed = 0;omg = 0;turn_flag = 0;}
-				}
-				else if(out_black_line_state1==3&&line_flag==1&&last_line_flag!=1){
-					out_black_line_state1 = 4;
-					u5_printf("third line find...\r\n");
-					{speed = SPEED;omg = 0;turn_flag = 0;}
-				}
-				else if(out_black_line_state1==4&&line_flag!=1&&last_line_flag==1){
-					out_black_line_state1 = 5;
-					g_agv_task_state = CVRTK_FIND_PLANE;//切换到视觉RTK搜索龙鱼
-					g_dragonfish_flag = 1;//要搜索龙鱼
-					u5_printf("third line miss,ready to pick plane...\r\n");
-					{speed = 0;omg = 0;turn_flag = 0;}
-				}
-				else{
-					FollowLine_process(OUT,SONG);
-				}
-			}
-		}
-		Chassic_Motor_Ctr(speed,omg,turn_flag);
 	}
+	else if(plane==NOPLANE)
+	{
+		if(dir==IN)
+		{
+			if(in_black_line_state1==-3&&line_flag==1&&last_line_flag!=1){
+				in_black_line_state1 = -2;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("exchange line find...\r\n");
+			}
+			else if(in_black_line_state1==-2&&line_flag!=1&&last_line_flag==1){
+				in_black_line_state1 = -1;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("exchange line miss,agv still go back...\r\n");
+			}
+			else if(in_black_line_state1==-1&&line_flag==1&&last_line_flag!=1){
+				in_black_line_state1 = 0;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("charge line find...\r\n");
+			}
+			else if(in_black_line_state1==0&&line_flag!=1&&last_line_flag==1){
+				in_black_line_state1 = 1;
+				{speed = 0;omg = 0;turn_flag = 0;}
+				g_agv_task_state = CHARGE_WITHOUT_PLANE;//切换到充电状态
+				u5_printf("charge line miss,agv stop and charge,plane is outside...\r\n");
+			}
+			else{
+				FollowLine_process(IN,LIMIT);
+			}
+		}
+		else if(dir==OUT){
+			if(out_black_line_state1==-3&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state1 = -2;
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("charge line find...\r\n");
+			}
+			else if(out_black_line_state1==-2&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state1 = -1;
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("charge line miss...\r\n");
+			}
+			else if(out_black_line_state1==-1&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state1 = 0;
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("exchange line find...\r\n");
+			}
+			else if(out_black_line_state1==0&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state1 = 1;
+				u5_printf("exchange line miss,agv is still go out...\r\n");
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+			}
+			else if(out_black_line_state1==1&&line_flag==1&&last_line_flag!=1){
+				out_black_line_state1 = 2;
+				u5_printf("start stop line find...\r\n");
+				{speed = SPEED;omg = 0;turn_flag = 0;}
+			}
+			else if(out_black_line_state1==2&&line_flag!=1&&last_line_flag==1){
+				out_black_line_state1 = 3;
+//					g_release_flag = ONE;//打开夹具
+				g_agv_task_state = GOFRONT_FOR_SPACE;
+				u5_printf("start stop line miss,ready to open pick...\r\n");
+				{speed = 0;omg = 0;turn_flag = 0;}
+			}
+			else if(out_black_line_state1==3){
+				u5_printf("start stop line miss,ready to open pick...\r\n");
+				{speed = 0;omg = 0;turn_flag = 0;}
+			}
+			else{
+				FollowLine_process(OUT,SONG);
+			}
+		}
+		else if(dir==REBACK){
+			if(reback_black_line_state==-3&&line_flag==1&&last_line_flag!=1){
+				reback_black_line_state = -2;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("release plane line find...\r\n");
+			}
+			else if(reback_black_line_state==-2&&line_flag!=1&&last_line_flag==1){
+				reback_black_line_state = -1;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("release plane line miss...\r\n");
+			}
+			else if(reback_black_line_state==-1&&line_flag==1&&last_line_flag!=1){
+				reback_black_line_state = 0;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line find...\r\n");
+			}
+			else if(reback_black_line_state==0&&line_flag!=1&&last_line_flag==1){
+				reback_black_line_state = 1;
+				{speed = 0;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line miss,agv stop ...\r\n");
+			}
+			else if(reback_black_line_state == 1){
+				//切换状态
+				{speed = 0;omg = 0;turn_flag = 0;}
+				u5_printf("pick plane out task is ok,agv stop ...\r\n");
+			}
+			else{
+				FollowLine_process(IN,LIMIT);
+			}
+		}
+		else if(dir==GOFRONT){
+			if(reback_black_line_state==-3&&line_flag==1&&last_line_flag!=1){
+				reback_black_line_state = -2;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line find...\r\n");
+			}
+			else if(reback_black_line_state==-2&&line_flag!=1&&last_line_flag==1){
+				reback_black_line_state = -1;
+				{speed = -SPEED;omg = 0;turn_flag = 0;}
+				u5_printf("start stop line miss...\r\n");
+			}
+			else if(reback_black_line_state == -1){
+				{speed = 0;omg = 0;turn_flag = 0;}
+				u5_printf("agv go out,ready to pick plane ...\r\n");
+			}
+			else{
+				FollowLine_process(IN,LIMIT);
+			}
+		}
+	}
+	Chassic_Motor_Ctr(speed,omg,turn_flag);
 }
 
 void Chassic_Motor_Ctr(int16_t sp,float w,int8_t flag)
 {
+	static float last_w = 0.0f;
+	static uint8_t delay_cnt = 0;
+	if (myabs(last_w - w) > 60.0f)
+	{
+		delay_cnt = 32u;
+	}
+	else if (myabs(last_w - w) > 45.0f)
+	{
+		delay_cnt = 20u;
+	}
+	last_w = w;
+	if (delay_cnt > 0u) delay_cnt--;
+	
 	if(flag != 0){//turn riht or turn left
-		motor1_speed = flag*sp;
-		motor2_speed = flag*sp;
-		motor3_speed = flag*sp;
-		motor4_speed = flag*sp;
+		if (delay_cnt == 0u)
+		{
+			motor1_speed = flag*sp;
+			motor2_speed = flag*sp;
+			motor3_speed = flag*sp;
+			motor4_speed = flag*sp;
+		}
+		else
+		{
+			motor1_speed = 0;
+			motor2_speed = 0;
+			motor3_speed = 0;
+			motor4_speed = 0;
+		}
 		omgset_pos1 = -Limit(w*LSB,_90_ANGLE);
 		omgset_pos2 = Limit(w*LSB,_90_ANGLE);
 		omgset_pos3 = -Limit(w*LSB,_90_ANGLE);
 		omgset_pos4 = Limit(w*LSB,_90_ANGLE);
 	}
 	else{//left right front back
-		motor1_speed = -sp;
-		motor2_speed = -sp;
-		motor3_speed = sp;
-		motor4_speed = sp;
+		if (delay_cnt == 0u)
+		{
+			motor1_speed = -sp;
+			motor2_speed = -sp;
+			motor3_speed = sp;
+			motor4_speed = sp;
+		}
+		else
+		{
+			motor1_speed = 0;
+			motor2_speed = 0;
+			motor3_speed = 0;
+			motor4_speed = 0;
+		}
 		omgset_pos1 = Limit(w*LSB,_90_ANGLE);
 		omgset_pos2 = Limit(w*LSB,_90_ANGLE);
 		omgset_pos3 = Limit(w*LSB,_90_ANGLE);
@@ -564,8 +700,8 @@ void Chassic_Motor_Ctr(int16_t sp,float w,int8_t flag)
 	}
 }
 
-#define OMG_ERR	2.0f//角度死区 °
-#define DIS_ERR	0.20f//距离偏差 m
+#define OMG_ERR	1.5f//角度死区 °
+#define DIS_ERR	0.05f//距离偏差 m
 const float p_gain = 15;
 uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t turn)//flag:1,自旋，0前进，2,左右
 {
@@ -596,12 +732,12 @@ uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t turn)//flag:1,自旋，0前
 		if (myabs(diserr) > DIS_ERR)
 		{
 			if(diserr > 0.0f){
-				pint = 500;
+				pint = SPEED;
 				Chassic_Motor_Ctr(pint,90.0f,0);
 //				u5_printf("agv is controled by lr pid,diserr:%.2f agvang:%.2f agvx:%.2f agvy:%.2f...\r\n",diserr,Pos.agv_ang,Pos.agv_x,Pos.agv_y);
 			}
 			else{
-				pint = 500;
+				pint = SPEED;
 				Chassic_Motor_Ctr(pint,-90.0f,0);
 //				u5_printf("agv is controled by lr pid,diserr:%.2f agvang:%.2f agvx:%.2f agvy:%.2f...\r\n",diserr,Pos.agv_ang,Pos.agv_x,Pos.agv_y);
 			}
@@ -614,12 +750,12 @@ uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t turn)//flag:1,自旋，0前
 	else if(turn==FB){//fb
 		if(myabs(diserr - DIS_ERR) > 0.1f){
 			if(diserr - DIS_ERR > 0.1f){
-				pint = 500;
+				pint = SPEED;
 				Chassic_Motor_Ctr(-pint,0.0f,0);
 //				u5_printf("agv is controled by fb pid,diserr:%.2f agvang:%.2f agvx:%.2f agvy:%.2f...\r\n",diserr,Pos.agv_ang,Pos.agv_x,Pos.agv_y);
 			}
 			else if(diserr - DIS_ERR < -0.1f){
-				pint = 500;
+				pint = SPEED;
 				Chassic_Motor_Ctr(pint,0.0f,0);
 //				u5_printf("agv is controled by fb pid,diserr:%.2f agvang:%.2f agvx:%.2f agvy:%.2f...\r\n",diserr,Pos.agv_ang,Pos.agv_x,Pos.agv_y);
 			}
@@ -635,27 +771,44 @@ uint8_t Chassic_Pid_Ctr(float diserr,float omgerr,int8_t turn)//flag:1,自旋，0前
 uint8_t g_cvrtk_findplane_state = NONE,g_cvrtk_findplane_flag = 0;
 void Auto_CVRTK_FindPlane(void)
 {
-	static uint8_t rcnt = 0;
+	static uint16_t cvrtk_cnt = 0,cvt_printf_cnt = 0;
 	double angw_err = 0;
-
-	rcnt++;
-	if(rcnt<5){return;}
-	else{rcnt = 0;}
 	
-	if(g_cvrtk_findplane_flag==0){
+	if(g_cvrtk_findplane_flag==0)
+	{
 		g_cvrtk_findplane_state = ONE;
 		g_cvrtk_findplane_flag = 1;
 	}
-	else{
-		if(agvrtk.good_ok!=0 && drgrtk.good_ok!=0){
+	else
+	{
+		if(agvrtk.good_ok!=0 && drgrtk.good_ok!=0)
+		{
 			pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
 			angw_err = Pos.drg_ang_org - Pos.agv_ang_org;
-//			g_cvrtk_findplane_state = 0;
+			cvt_printf_cnt++;
+			if(cvt_printf_cnt>10){
 u5_printf("agvx:%.2f agvy:%.2f agvang:%.2f drgx:%.2f drgy:%.2f drgang:%.2f Qx:%.2f Qy:%.2f ver:%.2f agv2drg:%.2f agv2Q:%.2f\r\n", \
 Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,Pos.vert_to_drg2Q,Pos.agv2drg,Pos.agv2Q);
-			
+			cvt_printf_cnt = 0;
+			}				
 			switch(g_cvrtk_findplane_state){
 				case ONE:
+					Chassic_Motor_Ctr(SPEED,0,0);
+					cvrtk_cnt++;
+					if(cvrtk_cnt>600){
+						cvrtk_cnt = 0;
+						g_cvrtk_findplane_state = ONE_1;
+					}
+				break;
+				case ONE_1:
+					Chassic_Motor_Ctr(0,0,0);
+					cvrtk_cnt++;
+					if(cvrtk_cnt>10){
+						cvrtk_cnt = 0;
+						g_cvrtk_findplane_state = ONE_11;
+					}
+				break;
+				case ONE_11:
 				if(Chassic_Pid_Ctr(0,angw_err,TURN)){
 					u5_printf("agv is arrived at drgon fish's head...\r\n");
 					g_cvrtk_findplane_state = TWO;
@@ -663,7 +816,11 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 				break;
 				case TWO:
 					Chassic_Motor_Ctr(0,0,0);
-					g_cvrtk_findplane_state = THREE;
+					cvrtk_cnt++;
+					if(cvrtk_cnt>20){
+						cvrtk_cnt = 0;
+						g_cvrtk_findplane_state = THREE;
+					}
 				break;
 				case THREE:
 					if(Chassic_Pid_Ctr(Pos.vert_to_drg2Q,0,LR)){//left right
@@ -673,7 +830,11 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 				break;
 				case FOUR:
 					Chassic_Motor_Ctr(0,0,0);
-					g_cvrtk_findplane_state = FIVE;
+					cvrtk_cnt++;
+					if(cvrtk_cnt>20){
+						cvrtk_cnt = 0;
+						g_cvrtk_findplane_state = FIVE;
+					}
 				break;
 				case FIVE:
 					if(Chassic_Pid_Ctr(0,angw_err,TURN)){
@@ -683,12 +844,20 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 				break;
 				case SIX:
 					Chassic_Motor_Ctr(0,0,0);
-					g_cvrtk_findplane_state = SEVEN;
+					cvrtk_cnt++;
+					if(cvrtk_cnt>20){
+						cvrtk_cnt = 0;
+						g_cvrtk_findplane_state = SEVEN;
+					}
 				break;
 				case SEVEN:
 					if(g_dragonfish_flag!=0){//还没找到龙鱼
-						Chassic_Motor_Ctr(SPEED,0,0);
-						u5_printf("agv go ahead,try to pick drgon fish...\r\n");
+						Chassic_Motor_Ctr(SPEED-100,0,0);
+						cvrtk_cnt++;
+						if(cvrtk_cnt>20){
+							cvrtk_cnt = 0;
+							u5_printf("agv go ahead,try to pick drgon fish...\r\n");
+						}
 					}
 					else{
 						Chassic_Motor_Ctr(0,0,0);//找到龙鱼，停止AGV
@@ -701,13 +870,11 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 				break;
 			}
 		}
-		else{
-		u5_printf("rtk signal is not good!!,please wait...\r\n");
+		else {
+		    u5_printf("rtk signal is not good!! AGV:%d DRG:%d...\r\n",agvrtk.good_ok,drgrtk.good_ok);
 			Chassic_Motor_Ctr(0,0,0);
 		}
 	}
-//	chassic_control_task(CV.agv_spx,CV.agv_spy,CV.agv_spw);
-//	Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
 }
 
 void Auto_CVRTK_FindState_Clear(void)
@@ -719,11 +886,9 @@ void Auto_CVRTK_FindState_Clear(void)
 uint8_t g_find_blackline_state = NONE,g_find_blackline_flag = 0;
 void Auto_Find_BlackLine(void)
 {
-	static uint8_t rttcnt = 0;
+	static uint8_t findblack_cnt = 0;
 	double w_err = 0,x3 = 0,y3 = 0;
-	rttcnt++;
-	if(rttcnt<5){return;}
-	else{rttcnt = 0;}
+	
 	if(g_find_blackline_flag==0){
 		g_find_blackline_flag = 1;
 		g_find_blackline_state = ONE;
@@ -732,9 +897,10 @@ void Auto_Find_BlackLine(void)
 		if(agvrtk.good_ok!=0 && drgrtk.good_ok!=0){
 			pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
 			w_err = 270.0f - Pos.agv_ang_org;
-			x3 = 0.5f - Pos.agv_x;
-			y3 = -0.1f - Pos.agv_y;
-			
+			x3 = -0.5f - Pos.agv_x;
+			y3 = 0.0f - Pos.agv_y;
+u5_printf("agvx:%.2f agvy:%.2f agvang:%.2f drgx:%.2f drgy:%.2f drgang:%.2f Qx:%.2f Qy:%.2f ver:%.2f agv2drg:%.2f agv2Q:%.2f\r\n", \
+Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,Pos.vert_to_drg2Q,Pos.agv2drg,Pos.agv2Q);	
 			switch(g_find_blackline_state){
 				case ONE:
 					if(Chassic_Pid_Ctr(0,w_err,TURN)){
@@ -744,7 +910,11 @@ void Auto_Find_BlackLine(void)
 				break;
 				case TWO:
 					Chassic_Motor_Ctr(0,0,0);
-					g_find_blackline_state = THREE;
+					findblack_cnt++;
+					if(findblack_cnt>20){
+						findblack_cnt = 0;
+						g_find_blackline_state = THREE;
+					}
 				break;
 				case THREE:
 					if(Chassic_Pid_Ctr(-y3,0,LR)){
@@ -754,7 +924,11 @@ void Auto_Find_BlackLine(void)
 				break;
 				case FOUR:
 					Chassic_Motor_Ctr(0,0,0);
-					g_find_blackline_state = FIVE;
+					findblack_cnt++;
+					if(findblack_cnt>20){
+						findblack_cnt = 0;
+						g_find_blackline_state = FIVE;
+					}
 				break;
 				case FIVE:
 					if(Chassic_Pid_Ctr(-x3,0,FB)){
@@ -767,13 +941,13 @@ void Auto_Find_BlackLine(void)
 					g_find_blackline_state = SEVEN;
 				break;
 				case SEVEN:
-					u5_printf("agv is arrived at blackline's release_plane point...\r\n");
+					u5_printf("agv is arrived at coondidate's origin point...\r\n");
 					g_find_blackline_state = DONE;
 				break;
 			}
 		}
 		else{
-			u5_printf("rtk signal is not good!!,please wait...\r\n");
+		u5_printf("rtk signal is not good!! AGV:%d DRG:%d...\r\n",agvrtk.good_ok,drgrtk.good_ok);
 			Chassic_Motor_Ctr(0,0,0);
 		}
 	}

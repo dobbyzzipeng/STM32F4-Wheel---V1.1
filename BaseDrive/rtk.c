@@ -3,15 +3,15 @@
 #include "gps.h"
 #include "bsp_usart.h"
 
-#define AGV_A_LAT (30.86026345)//A靠近机巢，B远离机巢	A->B X正方向，垂直方向，Y
-#define AGV_A_LNG (118.796844724)
-#define AGV_B_LAT (30.860263628)
-#define AGV_B_LNG (118.796883434)
+#define AGV_A_LAT (30.8602958)//A靠近机巢，B远离机巢	A->B X正方向，垂直方向，Y
+#define AGV_A_LNG (118.7968536)
+#define AGV_B_LAT (30.8602958)
+#define AGV_B_LNG (118.7968896)
 
-#define DRG_A_LAT (30.8602121)
-#define DRG_A_LNG (118.7968584)
-#define DRG_B_LAT (30.8602121)
-#define DRG_B_LNG (118.7968974)
+#define DRG_A_LAT (30.8602733)
+#define DRG_A_LNG (118.7968389)
+#define DRG_B_LAT (30.8602735)
+#define DRG_B_LNG (118.7968785)
 
 void llh2ecef(const double *pos, double *r)
 {

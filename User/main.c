@@ -37,12 +37,14 @@ void debug(void)
 {
 	static uint8_t dbgcnt = 0;
 	dbgcnt++;
-	if(dbgcnt>20){
+	if(dbgcnt>30){
 		if(rc_data_flag==0){
-			u5_printf("mode:%d\r\n",g_agv_work_mode);
-//		u5_printf("mode:%d cvx:%.2f cvy:%.2f cvw:%.2f\r\n",g_agv_work_mode,CV.agv_spx,CV.agv_spy,CV.agv_spw);
-//		u5_printf("ch0:%d ch1:%d ch3:%d sp:%d omg:%d bat:%.2f cur:%.2f soc:%.2f\r\n",\
-//Channel_0,Channel_1,Channel_3,motor1_speed,omgset_pos1,Battery_Msg.Voltage,Battery_Msg.Current,Battery_Msg.Soc);
+			u5_printf("mode:%d  auto_state:%d\r\n",g_agv_work_mode,g_agv_task_state);
+//pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
+//u5_printf("agvx:%.2f agvy:%.2f agvang:%.2f drgx:%.2f drgy:%.2f drgang:%.2f Qx:%.2f Qy:%.2f ver:%.2f agv2drg:%.2f agv2Q:%.2f workmode:%d\r\n", \
+//Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,Pos.vert_to_drg2Q,Pos.agv2drg,Pos.agv2Q,g_agv_work_mode);
+//u5_printf("agvx:%.2f agvy:%.2f agvang:%.2f drgx:%.2f drgy:%.2f drgang:%.2f Qx:%.2f Qy:%.2f ver:%.2f agv2drg:%.2f agv2Q:%.2f agv_lon:%lf,agv_lat:%lf,agv_ang:%.2f mode:%d drg_lon:%lf,drg_lat:%lf,drg_ang:%.2f\r\n", \
+//Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,Pos.vert_to_drg2Q,Pos.agv2drg,Pos.agv2Q,agvrtk.lon*100,agvrtk.lat*100,agvrtk.ang,agvrtk.datamode,drgrtk.lon*100,drgrtk.lat*100,drgrtk.ang);
 		dbgcnt = 0;
 		}
 	}
@@ -50,10 +52,10 @@ void debug(void)
 
 int main(void)
 {
+	uint8_t rel_flag = 0;
 	static uint8_t decnt = 0;
 	bsp_init();
 	Enable_All_Motor_Modbus();
-	Auto_Release_Plane(INIT);
 	delay_ms(100);
 	while(1)
 	{
@@ -77,32 +79,27 @@ int main(void)
 						Stop_All_Chassicmotor();
 					}
 					else if(right_Switch==right_Switch_MID){
-						Auto_FollowLine_Task(OUT,WITHPLANE);
+						Stop_All_Chassicmotor();
+						Stop_All_Bldcmotor();
 					}
-					if(left_Wheel>100){//手动调试
-						if(g_agv_task_state==CHARGE_WITHOUT_PLANE){
-							g_agv_task_state = GET_OUT_FIND_PLANE;//手动调试切换状态
+					if(right_Wheel==RW_DOWN){
+						if(left_Wheel>100){//手动调试
+							g_agv_task_state = GOHOME_WITHOUT_PLANE;
 						}
-						g_agv_task_state = GET_OUT_FIND_PLANE;
-//						g_agv_task_state = CVRTK_FIND_PLANE;
+						else{
+							g_agv_task_state = PICK_PLANE_OUT;
+						}
 					}
-					else{
-							decnt++;
-							if(decnt>20){
-pos_analysis(agvrtk.lon,agvrtk.lat,agvrtk.ang,drgrtk.lon,drgrtk.lat,drgrtk.ang,&Pos);
-								u5_printf("agvx:%.2f agvy:%.2f agvang:%.2f drgx:%.2f drgy:%.2f drgang:%.2f Qx:%.2f Qy:%.2f ver:%.2f agv2drg:%.2f agv2Q:%.2f workmode:%d\r\n", \
-Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,Pos.vert_to_drg2Q,Pos.agv2drg,Pos.agv2Q,g_agv_work_mode);
-//u5_printf("agvx:%.2f agvy:%.2f agvang:%.2f drgx:%.2f drgy:%.2f drgang:%.2f Qx:%.2f Qy:%.2f ver:%.2f agv2drg:%.2f agv2Q:%.2f agv_lon:%lf,agv_lat:%lf,agv_ang:%.2f mode:%d drg_lon:%lf,drg_lat:%lf,drg_ang:%.2f\r\n", \
-//Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,Pos.vert_to_drg2Q,Pos.agv2drg,Pos.agv2Q,agvrtk.lon*100,agvrtk.lat*100,agvrtk.ang,agvrtk.datamode,drgrtk.lon*100,drgrtk.lat*100,drgrtk.ang);
-								decnt=0;
-							}
+					else if(right_Wheel==RW_UP){
+						if(left_Wheel>100){//手动调试
+							g_agv_task_state = GET_OUT_FIND_PLANE;
 						}
+						else{
+							g_agv_task_state = CVRTK_FIND_PLANE;
+						}
+					}
 				break;
 				case AUTO_CTR:
-					if(AGV_CMD.agv_cmd!=0 && AGV_CMD.last_agv_cmd==0&&g_agv_task_state==TASK_OK_CHARGE){
-						g_agv_task_state = PICK_PLANE_OUT;
-						AGV_CMD.last_agv_cmd = AGV_CMD.agv_cmd;
-					}
 					switch(g_agv_task_state){
 						case TASK_OK_CHARGE:
 							decnt++;
@@ -114,17 +111,41 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 					u5_printf("task ok,plane in home,agv is charging now...\r\n");
 							}
 						break;
+						// 1. task one
 						case PICK_PLANE_OUT:
-							Auto_FollowLine_Task(OUT,WITHPLANE);
-							Auto_Pick_Plane(FIND,OUT);
-							Auto_Release_Plane(OUT);//g_release_flag = DONE;
-						break;
 						case GOHOME_WITHOUT_PLANE:
-							Auto_FollowLine_Task(IN,NOPLANE);//black line or until charge flag
-							if(g_pick_state!=NONE&&g_pick_state!=DONE){
-								Auto_Pick_Plane(CLOSE,IN);//g_pick_state = NONE;//清空状态机标志
+							if(rel_flag!=1){
+								if(is_release()!=1){
+									Auto_Release_Plane(INIT);
+								}
+								else{
+									rel_flag = 1;
+								}
+							}
+							else{
+								Auto_FollowLine_Task(OUT,WITHPLANE);
+								Auto_Pick_Plane(FIND,OUT);
+								Auto_Release_Plane(OUT);//g_release_flag = DONE;
 							}
 						break;
+						case GOBACK_FOR_SPACE:
+							Auto_FollowLine_Task(REBACK,NOPLANE);
+							rel_flag = 0;
+//							Auto_Pick_Plane(CLOSE,IN);
+//							if(g_pick_state == DONE){
+//								g_agv_task_state = GOHOME_WITHOUT_PLANE;
+//							}
+						break;
+						
+						// 2. task two
+//						case GOHOME_WITHOUT_PLANE:
+//							if(g_pick_state != DONE){
+//								Auto_Pick_Plane(CLOSE,IN);
+//							}
+//							else{
+//								Auto_FollowLine_Task(IN,NOPLANE);//black line or until charge flag
+//							}
+//						break;
 						case CHARGE_WITHOUT_PLANE:
 							decnt++;
 							if(decnt>20){
@@ -132,17 +153,44 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 					u5_printf("task ok,plane out home,agv is charging now...\r\n");
 							}
 						break;
+							
+						// 3. task three
 						case GET_OUT_FIND_PLANE:
 							Auto_FollowLine_Task(OUT,NOPLANE);
-							if(g_release_flag!=NONE&&g_release_flag!=DONE){
-								Auto_Release_Plane(INIT);//g_release_flag==DONE
+//							if(g_release_flag!=NONE&&g_release_flag!=DONE){
+//								Auto_Release_Plane(INIT);//g_release_flag==DONE
+//							}
+//							else if(g_release_flag==DONE){
+//								g_agv_task_state = CVRTK_FIND_PLANE;//切换到视觉RTK搜索龙鱼
+//								g_dragonfish_flag = 1;//要搜索龙鱼
+//							}
+						break;
+						case GOFRONT_FOR_SPACE:
+							Auto_FollowLine_Task(GOFRONT,NOPLANE);
+						    agv_open_arm();
+						    if (g_agv_arm_flag == AGV_ARM_OPEN)
+							{
+								u5_printf("agv arm open at start point!\r\n");
 							}
 						break;
+						
+						// 4. task four
 						case CVRTK_FIND_PLANE://视觉 RTK搜索龙鱼
-							Auto_CVRTK_FindPlane();
-							Auto_Pick_Plane(FIND,IN);//g_pick_state=DONE
-							if(g_pick_state==DONE){
-								g_agv_task_state = FIIND_BLACK_LINE;
+							if(rel_flag!=1){
+								if(is_release()!=1){
+									Auto_Release_Plane(INIT);
+								}
+								else{
+									rel_flag =1;
+								}
+							}
+							 else{
+								Auto_CVRTK_FindPlane();
+								Auto_Pick_Plane(FIND,IN);//g_pick_state=DONE
+								if(g_pick_state==DONE){
+									rel_flag = 0;
+									g_agv_task_state = FIIND_BLACK_LINE;
+								}
 							}
 						break;
 						case FIIND_BLACK_LINE:
@@ -165,6 +213,7 @@ Pos.agv_x,Pos.agv_y,Pos.agv_ang,Pos.drg_x,Pos.drg_y,Pos.drg_ang,Pos.Q_x,Pos.Q_y,
 					Pick_Plane_Ctr_Task(CV.pick_spcatch,CV.pick_sppp,CV.pick_spupdown);
 				break;
 			}
+			debug();
 			Plane_Check_Task();
 			DR16_Unlink_Check();
 			NX_Data_Return();

@@ -2,7 +2,7 @@
 
 T_HMC T_hmcf = {0},T_hmcb = {0};
 T_LINE Linef = {8.5f,0,0,0};
-T_LINE Lineb = {8.5f,0,0,0};
+T_LINE Lineb = {8.0f,0,0,0};
 void Line_Analysis(uint16_t flag,T_LINE *L)
 {
 	uint8_t i = 0,pbuf[17] = {0};

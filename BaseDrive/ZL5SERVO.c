@@ -46,11 +46,11 @@ void Enable_All_Motor_Modbus(void)
 {
 	delay_ms(500);
 	Config_Pos_Mode(0X05);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X05);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready(0X05);
-	delay_ms(10);
+	delay_ms(20);
 //	Set_Driver_Pos(0x05,0);
 //	delay_ms(10);
 //	Start_Driver_Pos_Ctr(0x05);
@@ -59,11 +59,11 @@ void Enable_All_Motor_Modbus(void)
 //	delay_ms(10);		
 	
 	Config_Pos_Mode(0X06);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X06);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready(0X06);
-	delay_ms(10);
+	delay_ms(20);
 //	Set_Driver_Pos(0x06,0);
 //	delay_ms(10);
 //	Start_Driver_Pos_Ctr(0x06);
@@ -72,11 +72,11 @@ void Enable_All_Motor_Modbus(void)
 //	delay_ms(10);
 	
 	Config_Pos_Mode(0X07);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X07);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready(0X07);
-	delay_ms(10);
+	delay_ms(20);
 //	Set_Driver_Pos(0x07,0);
 //	delay_ms(10);
 //	Start_Driver_Pos_Ctr(0x07);
@@ -85,11 +85,11 @@ void Enable_All_Motor_Modbus(void)
 //	delay_ms(10);
 	
 	Config_Pos_Mode(0X08);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X08);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready(0X08);
-	delay_ms(10);
+	delay_ms(20);
 //	Set_Driver_Pos(0x08,0);
 //	delay_ms(10);
 //	Start_Driver_Pos_Ctr(0x08);
@@ -98,32 +98,32 @@ void Enable_All_Motor_Modbus(void)
 //	delay_ms(10);
 	
 	Config_Vel_Mode(0X01);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X01);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready_Vel(0X01);
-	delay_ms(10);
+	delay_ms(20);
 	
 	Config_Vel_Mode(0X02);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X02);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready_Vel(0X02);
-	delay_ms(10);
+	delay_ms(20);
 	
 	Config_Vel_Mode(0X03);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X03);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready_Vel(0X03);
-	delay_ms(10);		
+	delay_ms(20);		
 			
 	Config_Vel_Mode(0X04);
-	delay_ms(10);
+	delay_ms(20);
 	Clear_Errcode(0X04);
-	delay_ms(10);
+	delay_ms(20);
 	Set_Driver_Ready_Vel(0X04);
-	delay_ms(10);
+	delay_ms(20);
 }
 
 void Send_chassic_speed(int16_t s1,int16_t s2,int16_t s3,int16_t s4)

@@ -161,7 +161,7 @@ void usart3_init(unsigned long int baudrate)
 
 uint8_t usart3_dma_tx_flag = 0;
 uint16_t usart3_dmarx_len = 0;
-T_USART_REV U3_rev = {0};
+//T_USART_REV U3_rev = {0};
 void USART3_IRQHandler(void)//串口3中断服务程序
 {
 	uint8_t Res = 0;
@@ -170,43 +170,7 @@ void USART3_IRQHandler(void)//串口3中断服务程序
 	{
 		Res = USART_ReceiveData(USART3);	//读取接收到的数据
 		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-		if(Res=='$'&& U3_rev.sof1_flag !=1){
-			U3_rev.sof1_flag = 1;
-			U3_rev.rx_cnt = 0;
-			USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-			U3_rev.rx_cnt++;
-		}
-		else if(U3_rev.sof1_flag==1){
-			if(Res=='G'&& U3_rev.sof2_flag!=1){
-				U3_rev.sof2_flag = 1;
-				USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-				U3_rev.rx_cnt++;
-			}
-			else if(U3_rev.sof2_flag==1){
-				if(Res=='P'&& U3_rev.sof3_flag!=1){
-					U3_rev.sof3_flag = 1;
-					USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-					U3_rev.rx_cnt++;
-				}
-				else if(U3_rev.sof3_flag==1){
-					if(Res=='G'&& U3_rev.sof4_flag!=1){
-						U3_rev.sof4_flag = 1;
-						USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-						U3_rev.rx_cnt++;
-					}
-					else if(Res=='G'&& U3_rev.sof5_flag!=1){
-						U3_rev.sof5_flag = 1;
-						USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-						U3_rev.rx_cnt++;
-					}
-					else if(Res=='A'&& U3_rev.sof6_flag!=1){
-						U3_rev.sof6_flag = 1;
-						USART3_RX_BUF[U3_rev.rx_cnt] = Res;
-						U3_rev.rx_cnt++;
-					}
-				}
-			}
-		}
+
 	}
 	
 	
@@ -728,7 +692,7 @@ void usart6_init(unsigned long int baudrate)
 
 	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;
-		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽复用输出
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽复用输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_100MHz;
 	GPIO_Init(GPIOC,&GPIO_InitStructure);
@@ -846,7 +810,7 @@ void USART6_IRQHandler(void)
 	{
 		usart6_dma_tx_len = USART6_DMA_RX_LEN(DMA2_Stream1,USART6_MAX_RECV_LEN);
 		//drgrtk
-//		drgrtk_prase(USART6_RX_BUF,128);
+		drgrtk_prase(USART6_RX_BUF,128);
 		DMA_Cmd(DMA2_Stream1,DISABLE);//DMA失能
 		while(DMA_GetCmdStatus(DMA2_Stream1));//检测是否失能成功，DMA失能时需要等待少许时间才失能成功
 		DMA_SetCurrDataCounter(DMA2_Stream1,USART6_MAX_RECV_LEN);//重新设置数据传输量
