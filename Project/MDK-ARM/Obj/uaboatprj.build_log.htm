@@ -27,11 +27,14 @@ Project File Date:  06/01/2021
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'uaboatprj'
-compiling hmcsensor.c...
+compiling can1.c...
+..\..\BaseDrive\can1.c(175): warning:  #550-D: variable "can1_tx_flag"  was set but never used
+  static uint8_t can1_tx_flag = 0;
+..\..\BaseDrive\can1.c: 1 warning, 0 errors
 linking...
-Program Size: Code=65172 RO-data=2296 RW-data=308 ZI-data=6316  
+Program Size: Code=65892 RO-data=2296 RW-data=308 ZI-data=6316  
 FromELF: creating hex file...
-".\Obj\uaboatprj.axf" - 0 Error(s), 0 Warning(s).
+".\Obj\uaboatprj.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 

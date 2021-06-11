@@ -242,5 +242,12 @@ void Stop_All_Chassicmotor(void)
 	motor3_speed = 0;
 	motor4_speed = 0;
 	omgset_pos1 = 0;omgset_pos2 = 0;omgset_pos3 = 0;omgset_pos4 = 0;
-
 }
+
+void Read_Motor_Status(uint8_t id)
+{
+	uint8_t buf[8] = {0X40,0X41,0X60,0X01,0X00,0X00,0X00,0X00};
+
+	CAN1_TX_PACKET(id+CANOPEN_POS_ID,buf,8);
+}
+

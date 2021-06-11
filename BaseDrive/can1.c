@@ -9,7 +9,7 @@
                           CAN1_Configuration
 描述：初始化CAN1配置为1M波特率
 *************************************************************************/
-
+static uint16_t CANID = 0;
 void CAN1_Configuration(uint16_t canid)
 {
     CAN_InitTypeDef        can;
@@ -63,6 +63,7 @@ void CAN1_Configuration(uint16_t canid)
     can.CAN_Prescaler = 6;   //CAN BaudRate 42/(1+9+4)/6=500Kbps
     CAN_Init(CAN1, &can);
 	
+	CANID = canid;
 	can_filter.CAN_FilterNumber = 0;
 	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
 	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
@@ -74,60 +75,93 @@ void CAN1_Configuration(uint16_t canid)
 	can_filter.CAN_FilterActivation=ENABLE;
 	CAN_FilterInit(&can_filter);
 //	
-//	can_filter.CAN_FilterNumber = 4;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+4)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
-//	
-//	can_filter.CAN_FilterNumber = 5;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+5)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
-//	
-//	can_filter.CAN_FilterNumber = 6;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+6)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
-//	
-//	can_filter.CAN_FilterNumber = 7;
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+7)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 0;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
-//	
-//	can_filter.CAN_FilterNumber = 8;                                //固件升级用的CAN中断
-//	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
-//	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
-//	can_filter.CAN_FilterIdHigh = (canid+8)<<5;
-//	can_filter.CAN_FilterIdLow = 0x0000;
-//	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
-//	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
-//	can_filter.CAN_FilterFIFOAssignment = 1;
-//	can_filter.CAN_FilterActivation=ENABLE;
-//	CAN_FilterInit(&can_filter);
+	can_filter.CAN_FilterNumber = 1;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+1)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 2;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+2)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 3;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+3)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 4;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+4)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 5;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+5)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 6;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+6)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 7;
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+7)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
+	
+	can_filter.CAN_FilterNumber = 8;                                //固件升级用的CAN中断
+	can_filter.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter.CAN_FilterScale = CAN_FilterScale_32bit;
+	can_filter.CAN_FilterIdHigh = (canid+8)<<5;
+	can_filter.CAN_FilterIdLow = 0x0000;
+	can_filter.CAN_FilterMaskIdHigh = 0XFFFF;
+	can_filter.CAN_FilterMaskIdLow = 0XFFFE;
+	can_filter.CAN_FilterFIFOAssignment = 0;
+	can_filter.CAN_FilterActivation=ENABLE;
+	CAN_FilterInit(&can_filter);
 	
 	CAN_ITConfig(CAN1,CAN_IT_FMP0,ENABLE);
 	CAN_ITConfig(CAN1,CAN_IT_FMP1,ENABLE);
@@ -158,7 +192,38 @@ void CAN1_RX0_IRQHandler(void)
 	{
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
         CAN_Receive(CAN1, CAN_FIFO0, &rx_message);
-
+		if(rx_message.StdId==(CANID+1))//0X501
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+2))//0X502
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+3))//0X503
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+4))//0X504
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+5))//0X505
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+6))//0X506
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+7))//0X507
+		{
+			
+		}
+		else if(rx_message.StdId==(CANID+8))//0X508
+		{
+			
+		}
 	}
 }
 /*************************************************************************

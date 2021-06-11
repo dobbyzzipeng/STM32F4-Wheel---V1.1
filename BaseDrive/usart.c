@@ -460,6 +460,19 @@ void DMA1_Stream2_IRQHandler(void)//UART4 RX DMA IRQ
 	}
 }
 
+/**
+ * [u4_printf printf 函数]
+ */
+void u4_printf(char* fmt,...)
+{
+	va_list ap;
+	va_start(ap,fmt);
+	vsprintf((char*)USART4_TX_BUF,fmt,ap);
+	va_end(ap);
+	USART4_DMA_Send(USART4_TX_BUF, strlen((const char*)USART4_TX_BUF));
+}
+
+
 #define USE_USART5_TX_DMA 1
 #define USE_USART5_RX_DMA 1
 #define USE_USART5_RX_IDLE 1//使能空闲中断

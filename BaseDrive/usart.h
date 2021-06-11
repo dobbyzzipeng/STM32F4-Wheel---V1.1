@@ -34,6 +34,7 @@ void send_data_dma_u6(uint8_t data[100],uint8_t num);
 void send_data_dma_u4(uint8_t data[100],uint8_t num);
 uint16_t USART4_DMA_RX_LEN(DMA_Stream_TypeDef* DMAy_Streamx,uint16_t BufSize);
 void u3_printf(char* fmt,...);
+void u4_printf(char* fmt,...);
 uint16_t USART6_DMA_RX_LEN(DMA_Stream_TypeDef* DMAy_Streamx,uint16_t BufSize);
 
 #define  SERVER_485_TX()	  	GPIO_SetBits(GPIOC,GPIO_Pin_8)

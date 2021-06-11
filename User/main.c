@@ -24,7 +24,7 @@ void bsp_init(void)
 	usart5_init(115200);//debug
 	server_485_init();
 	delay_ms(1000);
-	CAN1_Configuration(0X01);
+	CAN1_Configuration(0X580);
 	delay_ms(200);
 	CAN2_Configuration(0X501);
 	delay_ms(100);
@@ -84,18 +84,18 @@ int main(void)
 					}
 					if(right_Wheel==RW_DOWN){
 						if(left_Wheel>100){//手动调试
-							g_agv_task_state = GOHOME_WITHOUT_PLANE;
+							g_agv_task_state = GOHOME_WITHOUT_PLANE;//任务2
 						}
 						else{
-							g_agv_task_state = PICK_PLANE_OUT;
+							g_agv_task_state = PICK_PLANE_OUT;//任务1 抬飞机出去
 						}
 					}
 					else if(right_Wheel==RW_UP){
 						if(left_Wheel>100){//手动调试
-							g_agv_task_state = GET_OUT_FIND_PLANE;
+							g_agv_task_state = GET_OUT_FIND_PLANE;//任务3
 						}
 						else{
-							g_agv_task_state = CVRTK_FIND_PLANE;
+							g_agv_task_state = CVRTK_FIND_PLANE;//任务4
 						}
 					}
 				break;
